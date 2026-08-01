@@ -1,0 +1,68 @@
+[
+  {
+    "packageRef": "catalog:steam",
+    "why": "Точка входа в игровой ПК",
+    "tag": "Выбор редакции",
+    "descriptionOverlay": "Steam — крупнейший магазин игр с мастерской, облачными сохранениями и внутриигровым оверлеем.",
+    "whyEn": "The front door to PC gaming",
+    "tagEn": "Editor's choice",
+    "descriptionOverlayEn": "Steam is the largest PC game store, with Workshop mods, cloud saves and an in-game overlay."
+  },
+  {
+    "packageRef": "catalog:gog-galaxy",
+    "why": "Игры без DRM и единая библиотека",
+    "tag": "Для игроков",
+    "descriptionOverlay": "GOG Galaxy подтягивает игры из Steam, Epic и Xbox в один список и продаёт копии без DRM.",
+    "whyEn": "DRM-free games in one library",
+    "tagEn": "For gamers",
+    "descriptionOverlayEn": "GOG Galaxy pulls your Steam, Epic and Xbox games into a single list and sells DRM-free copies."
+  },
+  {
+    "packageRef": "catalog:vscode",
+    "why": "Стандарт индустрии для разработки",
+    "tag": "Must-have",
+    "descriptionOverlay": "VS Code — универсальный редактор с расширениями почти под любой язык и встроенной работой с Git.",
+    "whyEn": "The industry-standard editor",
+    "tagEn": "Must-have",
+    "descriptionOverlayEn": "VS Code is a general-purpose editor with extensions for nearly every language and built-in Git support."
+  },
+  {
+    "packageRef": "catalog:firefox",
+    "why": "Лучший выбор для приватного серфинга",
+    "tag": "Приватность",
+    "descriptionOverlay": "Firefox блокирует межсайтовые трекеры по умолчанию и остаётся независимым от Chromium движком.",
+    "whyEn": "The best pick for private browsing",
+    "tagEn": "Privacy",
+    "descriptionOverlayEn": "Firefox blocks cross-site trackers by default and remains the one major engine independent of Chromium."
+  },
+  {
+    "packageRef": "catalog:7zip",
+    "why": "Бесплатная альтернатива платным архиваторам",
+    "tag": "Утилита",
+    "whyEn": "A free alternative to paid archivers",
+    "tagEn": "Utility"
+  },
+  {
+    "packageRef": "catalog:obs-studio",
+    "why": "Идеален для стримеров и блогеров",
+    "tag": "Креаторам",
+    "whyEn": "Made for streamers and video makers",
+    "tagEn": "For creators"
+  },
+  {
+    "packageRef": "catalog:powertoys",
+    "why": "Windows становится удобнее за пять минут",
+    "tag": "Системное",
+    "descriptionOverlay": "PowerToys добавляет менеджер окон FancyZones, продвинутый поиск и пакетное переименование файлов.",
+    "whyEn": "Five minutes to a friendlier Windows",
+    "tagEn": "System",
+    "descriptionOverlayEn": "PowerToys adds the FancyZones window manager, a smarter search bar and bulk file renaming."
+  },
+  {
+    "packageRef": "catalog:bitwarden",
+    "why": "Пароли под контролем на всех устройствах",
+    "tag": "Безопасность",
+    "whyEn": "Your passwords, synced everywhere",
+    "tagEn": "Security"
+  }
+]

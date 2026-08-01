@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" role="img" aria-label="GetBox">
+  <defs>
+    <linearGradient id="gb-face" x1="8" y1="6" x2="34" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2b8fc4"/>
+      <stop offset="1" stop-color="#155a86"/>
+    </linearGradient>
+    <linearGradient id="gb-lid" x1="6" y1="8" x2="28" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#66c0f4"/>
+      <stop offset="1" stop-color="#3a9fd4"/>
+    </linearGradient>
+  </defs>
+  <!-- base tile -->
+  <rect width="40" height="40" rx="8" fill="#0d1a24"/>
+  <rect x="1.5" y="1.5" width="37" height="37" rx="6.5" stroke="#1e4a66" stroke-width="1"/>
+  <!-- open box body -->
+  <path
+    d="M8 16.5 L20 10.5 L32 16.5 L32 28.5 L20 34.5 L8 28.5 Z"
+    fill="url(#gb-face)"
+    opacity="0.95"
+  />
+  <!-- inner cavity -->
+  <path
+    d="M11.5 18.2 L20 13.8 L28.5 18.2 L28.5 26.8 L20 31.2 L11.5 26.8 Z"
+    fill="#0b1219"
+  />
+  <!-- open lid (hinged back) -->
+  <path
+    d="M8 16.5 L20 10.5 L26 7.2 L14 13.2 Z"
+    fill="url(#gb-lid)"
+  />
+  <!-- get arrow into box -->
+  <path
+    d="M20 15.2 V24.2 M20 24.2 L16.2 20.4 M20 24.2 L23.8 20.4"
+    stroke="#d2efa4"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

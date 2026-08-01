@@ -1,0 +1,181 @@
+export interface Package {
+  id: string;
+  provider: string;
+  name: string;
+  description?: string;
+  version?: string;
+  category?: string;
+  sourceUrl?: string;
+  installUrl?: string;
+  silentArgs?: string;
+  wikiTitle?: string;
+  logoSlug?: string;
+  simpleSlug?: string;
+  features?: string[];
+  recommended?: boolean;
+}
+
+export interface InstallResult {
+  ok: boolean;
+  message: string;
+  detail?: string;
+}
+
+export interface ProviderStatus {
+  ok: boolean;
+  version?: string;
+  message?: string;
+}
+
+/** Which half of an install a job is in: fetching the payload or running it. */
+export type InstallPhase = 'download' | 'install';
+
+export interface InstallProgress {
+  phase: InstallPhase;
+  /** 0–100 when measurable; omitted while the step is indeterminate. */
+  percent?: number;
+  bytesDone?: number;
+  bytesTotal?: number;
+  /** Bytes per second over the last sample window. */
+  bytesPerSecond?: number;
+  /** Short line worth showing, e.g. the installer's own status output. */
+  note?: string;
+}
+
+export interface InstallOptions {
+  quiet: boolean;
+  onProgress?: (progress: InstallProgress) => void;
+}
+
+/** What a provider can tell us about one package beyond its id and version. */
+export interface PackageDetails {
+  description?: string;
+  homepage?: string;
+  publisher?: string;
+}
+
+export interface PackageProvider {
+  id: string;
+  displayName: string;
+  search(query: string): Promise<Package[]>;
+  install(packageId: string, opts: InstallOptions): Promise<InstallResult>;
+  listInstalled(): Promise<Set<string>>;
+  available(): Promise<ProviderStatus>;
+  listAll?(): Promise<Package[]>;
+  /** Description and homepage for a single package, used to fill in index entries. */
+  describe?(packageId: string): Promise<PackageDetails | undefined>;
+}
+
+export interface CuratedEntry {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  category: string;
+  packageId: string;
+  provider: string;
+  wikiTitle?: string;
+  logoSlug?: string;
+  /** simple-icons slug when it differs from logoSlug. */
+  simpleSlug?: string;
+  /** Hand-verified icon source that wins over both icon CDNs. */
+  iconUrl?: string;
+  /** Vendor site; its favicon is the icon of last resort. */
+  homepage?: string;
+  recommended?: boolean;
+  installUrl?: string;
+  silentArgs?: string;
+}
+
+export interface PickEntry {
+  packageRef: string;
+  why: string;
+  tag: string;
+  descriptionOverlay?: string;
+  /** English editorial copy; falls back to the Russian text when absent. */
+  whyEn?: string;
+  tagEn?: string;
+  descriptionOverlayEn?: string;
+}
+
+export interface ProfileEntry {
+  id: string;
+  name: string;
+  description: string;
+  packages: Array<{ provider: string; packageId: string }>;
+}
+
+export interface MergedApp extends Package {
+  curatedId?: string;
+  isInstalled: boolean;
+  isFavorite: boolean;
+  enrichedDescription?: string;
+  iconUrl?: string;
+  /** Brand hex used for capsule and banner gradients. */
+  brandColor?: string;
+  pickTag?: string;
+  pickWhy?: string;
+  metaPending?: boolean;
+}
+
+export interface SearchResult {
+  results: Package[];
+  fromCache: boolean;
+  stale: boolean;
+}
+
+export interface QueueJob {
+  id: string;
+  packageId: string;
+  provider: string;
+  name: string;
+  status: 'pending' | 'running' | 'done' | 'failed';
+  message?: string;
+  detail?: string;
+  progress?: InstallProgress;
+}
+
+export interface AppSettings {
+  enabledProviders: string[];
+  quietInstall: boolean;
+  remoteCatalogUrl?: string;
+  language: 'ru' | 'en';
+}
+
+export const APP_NAME = 'GetBox';
+
+export function packageKey(provider: string, packageId: string): string {
+  return `${provider}:${packageId}`;
+}
+
+export function normalizeName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9а-яё]/gi, '');
+}
+
+function abbrevNorm(name: string): string {
+  return normalizeName(name)
+    .replace(/visualstudio/g, 'vs')
+    .replace(/nodejs/g, 'node');
+}
+
+const SHORT_TOKENS = new Set(['git', 'code', 'go', 'npm', 'jdk', 'jre', 'vc', 'vs']);
+
+export function softIsInstalled(appName: string, installedSet: Set<string>): boolean {
+  const norm = normalizeName(appName);
+  const abbrev = abbrevNorm(appName);
+  if (norm.length < 5) return false;
+  if (SHORT_TOKENS.has(norm)) return false;
+
+  for (const inst of installedSet) {
+    const instNorm = normalizeName(inst);
+    if (instNorm.length < 2) continue;
+    if (SHORT_TOKENS.has(instNorm) && SHORT_TOKENS.has(norm)) continue;
+    const forms = [norm, abbrev];
+    for (const form of forms) {
+      if (instNorm === form || instNorm.includes(form) || form.includes(instNorm)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

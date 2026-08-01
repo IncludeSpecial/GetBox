@@ -1,0 +1,64 @@
+[
+  {
+    "id": "gaming-rig",
+    "name": "Gaming Rig",
+    "description": "Игровые лаунчеры и голосовой чат: Steam, Epic, GOG Galaxy, Discord",
+    "packages": [
+      { "provider": "catalog", "packageId": "steam" },
+      { "provider": "catalog", "packageId": "epicgameslauncher" },
+      { "provider": "catalog", "packageId": "gog-galaxy" },
+      { "provider": "catalog", "packageId": "discord" }
+    ]
+  },
+  {
+    "id": "dev-starter",
+    "name": "Dev Starter",
+    "description": "Базовый набор для разработчика: Git, Node.js, VS Code",
+    "packages": [
+      { "provider": "catalog", "packageId": "git" },
+      { "provider": "catalog", "packageId": "nodejs-lts" },
+      { "provider": "catalog", "packageId": "vscode" }
+    ]
+  },
+  {
+    "id": "essentials",
+    "name": "Essentials",
+    "description": "Базовые утилиты: 7-Zip, Everything, PowerToys",
+    "packages": [
+      { "provider": "catalog", "packageId": "7zip" },
+      { "provider": "catalog", "packageId": "everything" },
+      { "provider": "catalog", "packageId": "powertoys" }
+    ]
+  },
+  {
+    "id": "media-suite",
+    "name": "Media Suite",
+    "description": "Мультимедиа: VLC, Spotify, OBS",
+    "packages": [
+      { "provider": "catalog", "packageId": "vlc" },
+      { "provider": "catalog", "packageId": "spotify" },
+      { "provider": "catalog", "packageId": "obs-studio" }
+    ]
+  },
+  {
+    "id": "creator-kit",
+    "name": "Creator Kit",
+    "description": "Графика и стрим: GIMP, Krita, ShareX, OBS",
+    "packages": [
+      { "provider": "catalog", "packageId": "gimp" },
+      { "provider": "catalog", "packageId": "krita" },
+      { "provider": "catalog", "packageId": "sharex" },
+      { "provider": "catalog", "packageId": "obs-studio" }
+    ]
+  },
+  {
+    "id": "privacy-pack",
+    "name": "Privacy Pack",
+    "description": "Приватность: Bitwarden, WireGuard, VeraCrypt",
+    "packages": [
+      { "provider": "catalog", "packageId": "bitwarden" },
+      { "provider": "catalog", "packageId": "wireguard" },
+      { "provider": "catalog", "packageId": "veracrypt" }
+    ]
+  }
+]

@@ -1,0 +1,710 @@
+{
+  "firefox": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/firefox.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/firefox.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/firefox.svg",
+    "color": "#ff7139"
+  },
+  "google-chrome": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-chrome.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/google-chrome.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-chrome.svg",
+    "color": "#d93025"
+  },
+  "microsoft-edge": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft-edge.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/microsoft-edge.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft-edge.svg",
+    "color": "#66eb6e"
+  },
+  "brave": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/brave.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/brave.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/brave.svg",
+    "color": "#fb542b"
+  },
+  "opera": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/opera.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/opera.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/opera.svg",
+    "color": "#ff1b2d"
+  },
+  "vivaldi": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vivaldi.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/vivaldi.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vivaldi.svg",
+    "color": "#ef3939"
+  },
+  "steam": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/steam.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/steam.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/steam.svg",
+    "color": "#000000"
+  },
+  "epic-games": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/epic-games.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/epic-games.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/epic-games.svg",
+    "color": "#2f2d2e"
+  },
+  "gog-galaxy": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gog-galaxy.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/gogdotcom.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/gogdotcom.svg",
+    "color": "#86328a"
+  },
+  "battlenet": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/battlenet.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/battledotnet.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/battledotnet.svg",
+    "color": "#4381c3"
+  },
+  "ubisoft-connect": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/ubisoft-connect.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/ubisoft.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/ubisoft.svg",
+    "color": "#000000"
+  },
+  "electronic-arts": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/electronic-arts.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/ea.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/electronic-arts.svg",
+    "color": "#000000"
+  },
+  "rockstar-games": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rockstar-games.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/rockstargames.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/rockstargames.svg",
+    "color": "#fcaf17"
+  },
+  "playnite": {
+    "source": "https://playnite.link/applogo.png#v3",
+    "tier": "explicit",
+    "url": "https://playnite.link/applogo.png",
+    "color": "#6f9f38"
+  },
+  "heroic": {
+    "source": "https://raw.githubusercontent.com/Heroic-Games-Launcher/HeroicGamesLauncher/main/public/icon.png#v3",
+    "tier": "explicit",
+    "url": "https://raw.githubusercontent.com/Heroic-Games-Launcher/HeroicGamesLauncher/main/public/icon.png",
+    "color": "#749f38"
+  },
+  "vscode": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vscode.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/vscode.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vscode.svg",
+    "color": "#0065a9"
+  },
+  "git": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/git.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/git.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/git.svg",
+    "color": "#f05032"
+  },
+  "nodejs": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nodejs.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/nodejs.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nodejs.svg",
+    "color": "#3e863d"
+  },
+  "python": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/python.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/python.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/python.svg",
+    "color": "#3776ab"
+  },
+  "notepad-plus-plus": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/notepad-plus-plus.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/notepadplusplus.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/notepadplusplus.svg",
+    "color": "#90e59a"
+  },
+  "docker": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/docker.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/docker.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/docker.svg",
+    "color": "#2496ed"
+  },
+  "postman": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/postman.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/postman.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/postman.svg",
+    "color": "#ff6c37"
+  },
+  "go": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/go.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/go.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/go.svg",
+    "color": "#00add8"
+  },
+  "rust": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rust.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/rust.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rust.svg",
+    "color": "#000000"
+  },
+  "java": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/java.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/java.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/java.svg",
+    "color": "#5382a1"
+  },
+  "intellij": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/intellij.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/intellijidea.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/intellij.svg",
+    "color": "#000000"
+  },
+  "pycharm": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pycharm.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/pycharm.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/pycharm.svg",
+    "color": "#000000"
+  },
+  "sublime-text": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/sublime-text.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sublimetext.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sublimetext.svg",
+    "color": "#ff9800"
+  },
+  "neovim": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/neovim.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/neovim.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/neovim.svg",
+    "color": "#57a143"
+  },
+  "dbeaver": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/dbeaver.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/dbeaver.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/dbeaver.svg",
+    "color": "#382923"
+  },
+  "wireshark": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/wireshark.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/wireshark.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/wireshark.svg",
+    "color": "#1679a7"
+  },
+  "virtualbox": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/virtualbox.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/virtualbox.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/virtualbox.svg",
+    "color": "#183a61"
+  },
+  "discord": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/discord.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/discord.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/discord.svg",
+    "color": "#5865f2"
+  },
+  "telegram": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/telegram.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/telegram.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/telegram.svg",
+    "color": "#26a5e4"
+  },
+  "slack": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/slack.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/slack.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/slack.svg",
+    "color": "#4a154b"
+  },
+  "microsoft-teams": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft-teams.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/microsoft-teams.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft-teams.svg",
+    "color": "#5059c9"
+  },
+  "zoom": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zoom.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/zoom.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zoom.svg",
+    "color": "#0b5cff"
+  },
+  "vlc": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vlc.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/vlcmediaplayer.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/vlcmediaplayer.svg",
+    "color": "#ff8800"
+  },
+  "spotify": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/spotify.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg",
+    "color": "#1db954"
+  },
+  "obs-studio": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/obs-studio.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/obsstudio.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/obsstudio.svg",
+    "color": "#302e31"
+  },
+  "audacity": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/audacity.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/audacity.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/audacity.svg",
+    "color": "#0000cc"
+  },
+  "handbrake": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/handbrake.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/handbrake.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/handbrake.svg",
+    "color": "#48b19b"
+  },
+  "kodi": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kodi.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/kodi.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kodi.svg",
+    "color": "#17b2e7"
+  },
+  "foobar2000": {
+    "source": "https://www.google.com/s2/favicons?domain=foobar2000.org&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=foobar2000.org&sz=256",
+    "color": "#000000"
+  },
+  "gimp": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gimp.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/gimp.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gimp.svg",
+    "color": "#5c5543"
+  },
+  "krita": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/krita.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/krita.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/krita.svg",
+    "color": "#3babff"
+  },
+  "blender": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/blender.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/blender.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/blender.svg",
+    "color": "#e87d0d"
+  },
+  "inkscape": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/inkscape.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/inkscape.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/inkscape.svg",
+    "color": "#000000"
+  },
+  "figma": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/figma.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/figma.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/figma.svg",
+    "color": "#f24e1e"
+  },
+  "sharex": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/sharex.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sharex.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sharex.svg",
+    "color": "#2885f1"
+  },
+  "7zip": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/7zip.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/7zip.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/7zip.svg",
+    "color": "#000000"
+  },
+  "winrar": {
+    "source": "https://www.google.com/s2/favicons?domain=win-rar.com&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=win-rar.com&sz=256",
+    "color": "#389f63"
+  },
+  "everything": {
+    "source": "https://www.google.com/s2/favicons?domain=voidtools.com&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=voidtools.com&sz=256",
+    "color": "#9f3893"
+  },
+  "qbittorrent": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/qbittorrent.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/qbittorrent.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/qbittorrent.svg",
+    "color": "#2f67ba"
+  },
+  "putty": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/putty.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/putty.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/putty.svg",
+    "color": "#bfbfbf"
+  },
+  "winscp": {
+    "source": "https://www.google.com/s2/favicons?domain=winscp.net&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=winscp.net&sz=256",
+    "color": "#38759f"
+  },
+  "filezilla": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/filezilla.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/filezilla.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/filezilla.svg",
+    "color": "#bf0000"
+  },
+  "anydesk": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/anydesk.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/anydesk.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/anydesk.svg",
+    "color": "#ef443b"
+  },
+  "teamviewer": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/teamviewer.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/teamviewer.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/teamviewer.svg",
+    "color": "#004680"
+  },
+  "parsec": {
+    "source": "https://www.google.com/s2/favicons?domain=parsec.app&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=parsec.app&sz=256",
+    "color": "#7c389f"
+  },
+  "moonlight": {
+    "source": "https://www.google.com/s2/favicons?domain=moonlight-stream.org&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=moonlight-stream.org&sz=256",
+    "color": "#589f38"
+  },
+  "cpu-z": {
+    "source": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256",
+    "color": "#77389f"
+  },
+  "hwmonitor": {
+    "source": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256",
+    "color": "#9f6638"
+  },
+  "crystaldiskinfo": {
+    "source": "https://www.google.com/s2/favicons?domain=crystalmark.info&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=crystalmark.info&sz=256",
+    "color": "#9f4438"
+  },
+  "powertoys": {
+    "source": "https://raw.githubusercontent.com/microsoft/PowerToys/main/src/settings-ui/Settings.UI/Assets/Settings/icon.ico#v3",
+    "tier": "explicit",
+    "url": "https://raw.githubusercontent.com/microsoft/PowerToys/main/src/settings-ui/Settings.UI/Assets/Settings/icon.ico",
+    "color": "#389f61"
+  },
+  "rufus": {
+    "source": "https://rufus.ie/pics/rufus-128.png#v3",
+    "tier": "explicit",
+    "url": "https://rufus.ie/pics/rufus-128.png",
+    "color": "#449f38"
+  },
+  "treesize": {
+    "source": "https://www.google.com/s2/favicons?domain=jam-software.com&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=jam-software.com&sz=256",
+    "color": "#389f58"
+  },
+  "keepass": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/keepass.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/keepass.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/keepass.svg",
+    "color": "#fdfdfe"
+  },
+  "bitwarden": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/bitwarden.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/bitwarden.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/bitwarden.svg",
+    "color": "#175ddc"
+  },
+  "vera-crypt": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vera-crypt.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/vera-crypt.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vera-crypt.svg",
+    "color": "#20acd9"
+  },
+  "malwarebytes": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/malwarebytes.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/malwarebytes.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/malwarebytes.svg",
+    "color": "#0d3ecc"
+  },
+  "keepassxc": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/keepassxc.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/keepassxc.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/keepassxc.svg",
+    "color": "#6cac4d"
+  },
+  "wireguard": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/wireguard.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/wireguard.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/wireguard.svg",
+    "color": "#88171a"
+  },
+  "tailscale": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/tailscale.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/tailscale.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/tailscale.svg",
+    "color": "#242424"
+  },
+  "libreoffice": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/libreoffice.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/libreoffice.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/libreoffice.svg",
+    "color": "#18a303"
+  },
+  "thunderbird": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/thunderbird.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/thunderbird.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/thunderbird.svg",
+    "color": "#0a84ff"
+  },
+  "obsidian": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/obsidian.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/obsidian.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/obsidian.svg",
+    "color": "#7c3aed"
+  },
+  "sumatrapdf": {
+    "source": "https://www.google.com/s2/favicons?domain=sumatrapdfreader.org&sz=256#v3",
+    "tier": "explicit",
+    "url": "https://www.google.com/s2/favicons?domain=sumatrapdfreader.org&sz=256",
+    "color": "#9f3893"
+  },
+  "calibre": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/calibre.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/calibre.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/calibre.svg",
+    "color": "#5b757b"
+  },
+  "amazon-games": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/amazon-games.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/amazongames.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/amazongames.svg",
+    "color": "#ff9900"
+  },
+  "minecraft": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/minecraft.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/minecraft.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/minecraft.svg",
+    "color": "#3c8527"
+  },
+  "prism-launcher": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/prism-launcher.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/prism-launcher.svg|https://prismlauncher.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=prismlauncher.org&sz=256",
+    "color": "#38709f"
+  },
+  "roblox": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/roblox.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/roblox.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/roblox.svg",
+    "color": "#000000"
+  },
+  "yandex-browser": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/yandex-browser.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/yandex-browser.svg|https://browser.yandex.ru/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=browser.yandex.ru&sz=256",
+    "color": "#9f8d38"
+  },
+  "element": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/element.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/element.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/element.svg",
+    "color": "#0dbd8b"
+  },
+  "teamspeak": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/teamspeak.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/teamspeak.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/teamspeak.svg",
+    "color": "#4b69b6"
+  },
+  "mpc-hc": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/mpc-hc.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/mpc-hc.svg|https://mpc-hc.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=mpc-hc.org&sz=256",
+    "color": "#386f9f"
+  },
+  "kdenlive": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kdenlive.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/kdenlive.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/kdenlive.svg",
+    "color": "#527eb2"
+  },
+  "shotcut": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/shotcut.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/shotcut.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/shotcut.svg",
+    "color": "#115c77"
+  },
+  "darktable": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/darktable.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/darktable.svg|https://www.darktable.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=www.darktable.org&sz=256",
+    "color": "#7c389f"
+  },
+  "pinta": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pinta.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/pinta.svg|https://www.pinta-project.com/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=www.pinta-project.com&sz=256",
+    "color": "#9b389f"
+  },
+  "xnview": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/xnview.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/xnview.svg|https://www.xnview.com/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=www.xnview.com&sz=256",
+    "color": "#38389f"
+  },
+  "imageglass": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/imageglass.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/imageglass.svg|https://imageglass.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=imageglass.org&sz=256",
+    "color": "#389f51"
+  },
+  "freecad": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/freecad.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/freecad.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/freecad.svg",
+    "color": "#729fcf"
+  },
+  "visual-studio": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/visual-studio.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/visualstudio.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/visualstudio.svg",
+    "color": "#5c2d91"
+  },
+  "dotnet": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/dotnet.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/dotnet.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/dotnet.svg",
+    "color": "#512bd4"
+  },
+  "powershell": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/powershell.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/powershell.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/powershell.svg",
+    "color": "#5391fe"
+  },
+  "github-desktop": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-desktop.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/github.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/github.svg",
+    "color": "#181717"
+  },
+  "insomnia": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/insomnia.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/insomnia.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/insomnia.svg",
+    "color": "#4000bf"
+  },
+  "winmerge": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/winmerge.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/winmerge.svg|https://winmerge.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=winmerge.org&sz=256",
+    "color": "#9f9138"
+  },
+  "cmake": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/cmake.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/cmake.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/cmake.svg",
+    "color": "#064f8c"
+  },
+  "miniconda": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/miniconda.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/anaconda.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/anaconda.svg",
+    "color": "#44a833"
+  },
+  "postgresql": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/postgresql.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/postgresql.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/postgresql.svg",
+    "color": "#4169e1"
+  },
+  "pgadmin": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pgadmin.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/pgadmin.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pgadmin.svg",
+    "color": "#336791"
+  },
+  "mongodb-compass": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/mongodb-compass.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/mongodb.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/mongodb.svg",
+    "color": "#47a248"
+  },
+  "ollama": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/ollama.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/ollama.svg|https://ollama.com/#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/ollama.svg",
+    "color": "#d8dde2"
+  },
+  "zotero": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zotero.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/zotero.svg|#v3",
+    "tier": "simple",
+    "url": "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/zotero.svg",
+    "color": "#cc2936"
+  },
+  "joplin": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/joplin.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/joplin.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/joplin.svg",
+    "color": "#1071d3"
+  },
+  "logseq": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/logseq.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/logseq.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/logseq.svg",
+    "color": "#85c8c8"
+  },
+  "anki": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/anki.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/anki.svg|https://apps.ankiweb.net/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=apps.ankiweb.net&sz=256",
+    "color": "#9f6638"
+  },
+  "system-informer": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/system-informer.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/system-informer.svg|https://systeminformer.sourceforge.io/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=systeminformer.sourceforge.io&sz=256",
+    "color": "#387b9f"
+  },
+  "wiztree": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/wiztree.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/wiztree.svg|https://diskanalyzer.com/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=diskanalyzer.com&sz=256",
+    "color": "#9f4238"
+  },
+  "bleachbit": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/bleachbit.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/bleachbit.svg|https://www.bleachbit.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=www.bleachbit.org&sz=256",
+    "color": "#9f383b"
+  },
+  "google-drive": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-drive.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/googledrive.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-drive.svg",
+    "color": "#4285f4"
+  },
+  "nextcloud": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nextcloud.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/nextcloud.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nextcloud.svg",
+    "color": "#0082c9"
+  },
+  "free-download-manager": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/free-download-manager.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/free-download-manager.svg|https://www.freedownloadmanager.org/#v3",
+    "tier": "favicon",
+    "url": "https://www.google.com/s2/favicons?domain=www.freedownloadmanager.org&sz=256",
+    "color": "#5f9f38"
+  },
+  "rustdesk": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rustdesk.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/rustdesk.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rustdesk.svg",
+    "color": "#024eff"
+  },
+  "openvpn": {
+    "source": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openvpn.svg|https://cdn.jsdelivr.net/npm/simple-icons@11/icons/openvpn.svg|#v3",
+    "tier": "dashboard",
+    "url": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openvpn.svg",
+    "color": "#ea7e20"
+  }
+}
