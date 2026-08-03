@@ -12,12 +12,14 @@ interface ShelfRowProps {
   categories: Record<string, string>;
   activeJobs?: Map<string, QueueJob>;
   onInstall: (app: MergedApp) => void;
+  onRetry?: (app: MergedApp) => void;
+  onCancel?: (jobId: string) => void;
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
   onSeeAll?: () => void;
 }
 
-export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onOpen, onToggleFavorite, onSeeAll }: ShelfRowProps) {
+export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, onSeeAll }: ShelfRowProps) {
   const { t } = useI18n();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -83,6 +85,8 @@ export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onOpe
             categoryLabel={app.category ? categoryLabel(t, app.category, categories[app.category]) : undefined}
             job={activeJobs?.get(packageKey(app.provider, app.id))}
             onInstall={onInstall}
+            onRetry={onRetry}
+            onCancel={onCancel}
             onOpen={onOpen}
             onToggleFavorite={onToggleFavorite}
           />

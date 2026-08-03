@@ -890,6 +890,14 @@ button, input, select {
 .capsule-cta.reinstall { background: linear-gradient(180deg, #3b526b, #2a3a4c); color: var(--text-primary); }
 .capsule-cta.reinstall:hover { background: linear-gradient(180deg, #48627e, #33455a); }
 
+.capsule-cta.failed {
+  background: color-mix(in srgb, var(--danger) 55%, #2a1515);
+  color: #ffd0d0;
+}
+.capsule-cta.failed:hover {
+  background: color-mix(in srgb, var(--danger) 70%, #2a1515);
+}
+
 .capsule-cta.busy {
   position: relative;
   overflow: hidden;
@@ -1177,8 +1185,59 @@ button, input, select {
 .queue-item.running { border-left-color: var(--accent); }
 .queue-item.done { border-left-color: var(--ok); }
 .queue-item.failed { border-left-color: var(--danger); }
+.queue-item.cancelled { border-left-color: var(--text-muted); }
+
+.queue-item-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
 
 .queue-item-name { font-size: 12px; font-weight: 600; }
+
+.queue-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.queue-detail-toggle {
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.queue-item-detail--full {
+  max-height: 120px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.install-btn-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.install-btn-error {
+  font-size: 11px;
+  color: var(--danger);
+  max-width: 280px;
+  line-height: 1.35;
+}
+
+.btn-danger-soft {
+  background: color-mix(in srgb, var(--danger) 40%, var(--bg-raised)) !important;
+  color: #ffd0d0 !important;
+}
 
 .queue-item-status {
   font-size: 10px;
@@ -1191,6 +1250,7 @@ button, input, select {
 .queue-item.running .queue-item-status { color: var(--accent); }
 .queue-item.done .queue-item-status { color: var(--ok); }
 .queue-item.failed .queue-item-status { color: var(--danger); }
+.queue-item.cancelled .queue-item-status { color: var(--text-muted); }
 
 .queue-item-detail {
   grid-column: 1 / -1;

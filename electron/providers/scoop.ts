@@ -11,6 +11,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testScoop, runCmd, loadRuntimeState } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { classifyError } from './install-errors.js';
 import { getAppDataDir } from '../paths.js';
 import path from 'node:path';
 
@@ -214,14 +215,16 @@ export class ScoopProvider implements PackageProvider {
         timeout: 300000,
         env: resolved.env,
         onProgress: opts.onProgress,
+        signal: opts.signal,
       });
       installedCache = null;
       if (code !== 0) {
-        return { ok: false, message: `Ошибка установки ${packageId}`, detail: output.slice(-500) };
+        return { ok: false, errorCode: 'installer', message: `Ошибка установки ${packageId}`, detail: output.slice(-500) };
       }
       return { ok: true, message: `Установлено: ${packageId}`, detail: output.slice(-500) };
     } catch (err) {
-      return { ok: false, message: `Ошибка установки ${packageId}`, detail: err instanceof Error ? err.message : String(err) };
+      const c = classifyError(err);
+      return { ok: false, errorCode: c.code, message: c.code === 'cancelled' ? 'Установка отменена' : `Ошибка установки ${packageId}`, detail: c.detail || c.message };
     }
   }
 

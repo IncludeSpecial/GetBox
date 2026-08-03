@@ -9,11 +9,13 @@ interface HeroBannerProps {
   related: MergedApp[];
   job?: QueueJob;
   onInstall: (app: MergedApp) => void;
+  onRetry?: (app: MergedApp) => void;
+  onCancel?: (jobId: string) => void;
   onOpen: (app: MergedApp) => void;
   onSelect: (app: MergedApp) => void;
 }
 
-export function HeroBanner({ featured, related, job, onInstall, onOpen, onSelect }: HeroBannerProps) {
+export function HeroBanner({ featured, related, job, onInstall, onRetry, onCancel, onOpen, onSelect }: HeroBannerProps) {
   const { t } = useI18n();
   const desc = appDescription(featured, t);
   const tag = featured.pickTag ?? (featured.recommended ? t.app.recommended : undefined);
@@ -44,7 +46,7 @@ export function HeroBanner({ featured, related, job, onInstall, onOpen, onSelect
             </div>
           )}
           <div className="hero-banner-actions">
-            <InstallButton app={featured} job={job} onInstall={onInstall} />
+            <InstallButton app={featured} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />
             <button className="btn btn-accent" onClick={() => onOpen(featured)}>
               {t.app.details}
             </button>

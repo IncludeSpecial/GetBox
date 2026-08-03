@@ -124,6 +124,40 @@ function verifyStructure(catalog, categories, picks, profiles) {
       seenPackageIds.add(entry.packageId);
     }
 
+    if (entry.installUrlFallbacks !== undefined) {
+      if (!Array.isArray(entry.installUrlFallbacks)) {
+        errors.push(`${label}: installUrlFallbacks must be an array`);
+      } else {
+        for (const fb of entry.installUrlFallbacks) {
+          if (typeof fb !== 'string' || !fb.trim()) {
+            errors.push(`${label}: installUrlFallbacks contains invalid URL`);
+          }
+        }
+      }
+    }
+
+    if (entry.noWingetFallback !== undefined && typeof entry.noWingetFallback !== 'boolean') {
+      errors.push(`${label}: noWingetFallback must be a boolean`);
+    }
+
+    if (entry.altProvider !== undefined) {
+      const ap = entry.altProvider;
+      if (!ap || typeof ap !== 'object') {
+        errors.push(`${label}: altProvider must be an object`);
+      } else {
+        if (!['winget', 'scoop'].includes(ap.provider)) {
+          errors.push(`${label}: altProvider.provider must be winget or scoop, got "${ap.provider}"`);
+        }
+        if (!ap.packageId || String(ap.packageId).trim() === '') {
+          errors.push(`${label}: altProvider.packageId is required`);
+        }
+      }
+    }
+
+    if (entry.recommended && !entry.installUrlFallbacks?.length && !entry.altProvider) {
+      warnings.push(`${label}: recommended app has no installUrlFallbacks or altProvider`);
+    }
+
     const slug = entry.logoSlug || entry.id;
     const hasIcon = ICON_EXTENSIONS.some((ext) => fs.existsSync(path.join(ICONS, slug + ext)));
     if (!hasIcon) {
@@ -165,6 +199,39 @@ function verifyStructure(catalog, categories, picks, profiles) {
   }
 }
 
+function verifyWingetMap(catalog) {
+  let wingetMap;
+  try {
+    wingetMap = readJson('winget-map.json');
+  } catch (err) {
+    errors.push(`winget-map.json: ${err.message}`);
+    return;
+  }
+
+  if (typeof wingetMap !== 'object' || wingetMap === null || Array.isArray(wingetMap)) {
+    errors.push('winget-map.json must be a JSON object');
+    return;
+  }
+
+  const idPattern = /^[A-Za-z0-9][A-Za-z0-9_.+-]+\.[A-Za-z0-9][A-Za-z0-9_.+-]+$/;
+  const catalogIds = new Set(catalog.map((e) => e.id));
+
+  for (const [id, pkgId] of Object.entries(wingetMap)) {
+    if (!catalogIds.has(id)) {
+      warnings.push(`winget-map.json: orphan key "${id}" (not in catalog)`);
+    }
+    if (typeof pkgId !== 'string' || !idPattern.test(pkgId)) {
+      errors.push(`winget-map.json: invalid Id for "${id}": "${pkgId}"`);
+    }
+  }
+
+  for (const entry of catalog) {
+    if (entry.noWingetFallback) continue;
+    if (wingetMap[entry.id] || entry.altProvider?.provider === 'winget') continue;
+    errors.push(`${entry.id}: no winget-map entry and no noWingetFallback`);
+  }
+}
+
 (async () => {
   let catalog;
   let categories;
@@ -187,6 +254,7 @@ function verifyStructure(catalog, categories, picks, profiles) {
 
   console.log(`Catalog: ${catalog.length} apps, ${Object.keys(categories).length} categories\n`);
   verifyStructure(catalog, categories, picks, profiles);
+  verifyWingetMap(catalog);
 
   const byCategory = {};
   for (const entry of catalog) byCategory[entry.category] = (byCategory[entry.category] || 0) + 1;
@@ -195,35 +263,42 @@ function verifyStructure(catalog, categories, picks, profiles) {
   }
 
   if (CHECK_LINKS) {
-    const targets = catalog.filter((e) => e.installUrl);
-    console.log(`\nChecking ${targets.length} install links…`);
-    const results = await mapLimit(targets, CONCURRENCY, async (entry) => {
-      const res = await checkUrl(entry.installUrl);
-      if (!res.ok) console.log(`  x ${entry.id.padEnd(18)} ${res.status}`);
-      return { entry, res };
+    const linkTargets = [];
+    for (const entry of catalog) {
+      if (entry.installUrl) linkTargets.push({ entry, url: entry.installUrl, kind: 'primary' });
+      for (const fb of entry.installUrlFallbacks || []) {
+        linkTargets.push({ entry, url: fb, kind: 'fallback' });
+      }
+    }
+    console.log(`\nChecking ${linkTargets.length} install links (${catalog.filter((e) => e.installUrl).length} apps)…`);
+    const results = await mapLimit(linkTargets, CONCURRENCY, async ({ entry, url, kind }) => {
+      const res = await checkUrl(url);
+      if (!res.ok) console.log(`  x ${entry.id.padEnd(18)} [${kind}] ${res.status}`);
+      return { entry, url, kind, res };
     });
 
     let ok = 0;
     let unverified = 0;
-    for (const { entry, res } of results) {
+    for (const { entry, url, kind, res } of results) {
       if (res.ok) {
         ok++;
-        if (res.length && res.length < 20000) {
+        if (kind === 'primary' && res.length && res.length < 20000) {
           warnings.push(`${entry.id}: installUrl is only ${res.length} bytes, may be an error page`);
         }
         continue;
       }
-      // A reset connection, a bot-blocking 403 or a rate-limiting 429/503 means
-      // we could not check the link, not that the installer is gone. Only a real
-      // HTTP error is fatal.
       if (res.network || UNVERIFIABLE_STATUS.has(res.status)) {
         unverified++;
-        warnings.push(`${entry.id}: could not verify (${res.status}) — ${entry.installUrl}`);
+        warnings.push(`${entry.id}: could not verify ${kind} (${res.status}) — ${url}`);
         continue;
       }
-      errors.push(`${entry.id}: installUrl returned ${res.status} — ${entry.installUrl}`);
+      if (kind === 'fallback') {
+        warnings.push(`${entry.id}: fallback URL returned ${res.status} — ${url}`);
+        continue;
+      }
+      errors.push(`${entry.id}: installUrl returned ${res.status} — ${url}`);
     }
-    console.log(`  ${ok} OK, ${unverified} unverifiable, ${targets.length - ok - unverified} broken`);
+    console.log(`  ${ok} OK, ${unverified} unverifiable, ${linkTargets.length - ok - unverified} broken`);
   }
 
   if (warnings.length > 0) {

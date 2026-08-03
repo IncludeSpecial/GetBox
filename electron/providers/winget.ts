@@ -8,6 +8,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testWinget, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { classifyError } from './install-errors.js';
 
 /** winget prints in the Windows display language, so every label needs both forms. */
 const FIELD_LABELS: Record<keyof PackageDetails, RegExp> = {
@@ -42,6 +43,20 @@ export function parseShowOutput(out: string): PackageDetails | undefined {
   }
 
   return details.description || details.homepage ? details : undefined;
+}
+
+/** winget uses non-zero exit codes when the package is already present — still a success for us. */
+export function isWingetInstallSuccess(code: number, output: string): boolean {
+  if (code === 0) return true;
+  const text = output.slice(-3000);
+  if (/Successfully installed|Успешно установлен/i.test(text)) return true;
+  if (/already installed|already exists|существующ.*установлен|уже установлен/i.test(text)) return true;
+  if (/No available upgrade|no applicable update|Доступные обновления не найдены|Более новые версии.*недоступны/i.test(text)) {
+    return true;
+  }
+  // Common winget HRESULTs: already installed / no upgrade available
+  if (code === -1978335189 || code === -1978335212) return true;
+  return false;
 }
 
 export class WingetProvider implements PackageProvider {
@@ -128,18 +143,22 @@ export class WingetProvider implements PackageProvider {
         'install', '--id', packageId, '-e',
         '--accept-package-agreements', '--accept-source-agreements',
         '--disable-interactivity',
+        '--scope', 'user',
       ];
       if (opts.quiet) args.push('--silent');
       const { code, output } = await runCliWithProgress(exe, args, {
         timeout: 600000,
         onProgress: opts.onProgress,
+        signal: opts.signal,
       });
-      if (code !== 0) {
-        return { ok: false, message: `Ошибка winget: ${packageId}`, detail: output.slice(-500) };
+      const exitCode = code ?? 1;
+      if (!isWingetInstallSuccess(exitCode, output)) {
+        return { ok: false, errorCode: 'installer', message: `Ошибка winget: ${packageId}`, detail: output.slice(-500) };
       }
       return { ok: true, message: `Установлено: ${packageId}`, detail: output.slice(-500) };
     } catch (err) {
-      return { ok: false, message: `Ошибка winget: ${packageId}`, detail: err instanceof Error ? err.message : String(err) };
+      const c = classifyError(err);
+      return { ok: false, errorCode: c.code, message: c.code === 'cancelled' ? 'Установка отменена' : `Ошибка winget: ${packageId}`, detail: c.detail || c.message };
     }
   }
 

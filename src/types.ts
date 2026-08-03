@@ -34,14 +34,25 @@ export interface InstallProgress {
   note?: string;
 }
 
+export type InstallErrorCode =
+  | 'cancelled'
+  | 'not_found'
+  | 'forbidden'
+  | 'network'
+  | 'timeout'
+  | 'http'
+  | 'installer'
+  | 'unknown';
+
 export interface QueueJob {
   id: string;
   packageId: string;
   provider: string;
   name: string;
-  status: 'pending' | 'running' | 'done' | 'failed';
+  status: 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
   message?: string;
   detail?: string;
+  errorCode?: InstallErrorCode;
   progress?: InstallProgress;
 }
 

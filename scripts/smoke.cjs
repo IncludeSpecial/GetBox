@@ -293,7 +293,7 @@ test('out-of-range percent is rejected', () => {
 });
 
 console.log('\npackage metadata:');
-const { parseShowOutput } = loadTsModule(
+const { parseShowOutput, isWingetInstallSuccess } = loadTsModule(
   path.join(__dirname, '..', 'electron', 'providers', 'winget.ts'),
   { electron: electronStub },
 );
@@ -301,6 +301,14 @@ const { parseInfoOutput } = loadTsModule(
   path.join(__dirname, '..', 'electron', 'providers', 'chocolatey.ts'),
   { electron: electronStub },
 );
+
+test('winget treats already-installed as success', () => {
+  assert.equal(
+    isWingetInstallSuccess(1, 'Found an existing package already installed.\nNo available upgrade found.'),
+    true,
+  );
+  assert.equal(isWingetInstallSuccess(1, 'Installer failed with unknown error'), false);
+});
 
 test('winget show yields description and homepage', () => {
   const d = parseShowOutput(
@@ -378,6 +386,139 @@ test('runtime-state shape is documented in runtime.ts', () => {
   assert.ok(src.includes('runtime-state.json'), 'runtime state file missing');
   assert.ok(src.includes('bootstrapRuntime'), 'bootstrapRuntime missing');
   assert.ok(src.includes('isBootstrapComplete'), 'isBootstrapComplete missing');
+});
+
+console.log('\ninstall errors + queue cancel:');
+const {
+  classifyError,
+  classifyHttpStatus,
+  isRetryableDownloadError,
+  shouldTryAltProvider,
+  InstallError,
+} = loadTsModule(path.join(__dirname, '..', 'electron', 'providers', 'install-errors.ts'), {
+  electron: electronStub,
+});
+
+test('HTTP 404 maps to not_found', () => {
+  assert.equal(classifyHttpStatus(404), 'not_found');
+  const c = classifyError(new Error('Download failed: 404'));
+  assert.equal(c.code, 'not_found');
+});
+
+test('HTTP 403 maps to forbidden (geo/CDN)', () => {
+  assert.equal(classifyHttpStatus(403), 'forbidden');
+  const c = classifyError(new Error('Download failed: 403'));
+  assert.equal(c.code, 'forbidden');
+});
+
+test('ECONNRESET suggests retry / winget instead of bare offline', () => {
+  const c = classifyError(Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' }));
+  assert.equal(c.code, 'network');
+  assert.ok(/Повторить|winget/i.test(c.message), c.message);
+});
+
+test('network and timeout codes are retryable; 404 is not', () => {
+  assert.equal(isRetryableDownloadError(new InstallError('network', 'x')), true);
+  assert.equal(isRetryableDownloadError(new InstallError('timeout', 'x')), true);
+  assert.equal(isRetryableDownloadError(new InstallError('not_found', 'x')), false);
+  assert.equal(isRetryableDownloadError(new InstallError('forbidden', 'x')), false);
+  assert.equal(isRetryableDownloadError(new InstallError('cancelled', 'x')), false);
+});
+
+test('shouldTryAltProvider includes forbidden/not_found for winget fallback', () => {
+  assert.equal(shouldTryAltProvider(new InstallError('forbidden', 'x')), true);
+  assert.equal(shouldTryAltProvider(new InstallError('not_found', 'x')), true);
+  assert.equal(shouldTryAltProvider(new InstallError('network', 'x')), true);
+  assert.equal(shouldTryAltProvider(new InstallError('cancelled', 'x')), false);
+  assert.equal(shouldTryAltProvider(new InstallError('installer', 'x')), false);
+});
+
+test('catalog uses shouldTryAltProvider for winget fallback', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'), 'utf-8');
+  assert.ok(src.includes('shouldTryAltProvider(err)'), 'install should use shouldTryAltProvider');
+  assert.ok(src.includes('resolveInstallFallback'), 'resolveInstallFallback missing');
+});
+
+const { resolveInstallFallback } = loadTsModule(path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'), {
+  electron: electronStub,
+});
+
+test('resolveInstallFallback prefers altProvider then winget-map', () => {
+  const alt = resolveInstallFallback({
+    id: 'discord',
+    altProvider: { provider: 'winget', packageId: 'Discord.Discord' },
+  });
+  assert.deepEqual(alt, { provider: 'winget', packageId: 'Discord.Discord' });
+
+  const mapped = resolveInstallFallback({ id: 'putty' });
+  assert.equal(mapped?.provider, 'winget');
+  assert.ok(mapped?.packageId, 'putty should resolve via winget-map');
+
+  const skipped = resolveInstallFallback({ id: 'x', noWingetFallback: true });
+  assert.equal(skipped, null);
+});
+
+test('queue exposes cancel / dismiss / retryJob APIs', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'electron', 'queue', 'install-queue.ts'), 'utf-8');
+  assert.ok(src.includes('cancel(jobId'), 'cancel missing');
+  assert.ok(src.includes('dismiss(jobId'), 'dismiss missing');
+  assert.ok(src.includes('retryJob(jobId'), 'retryJob missing');
+  assert.ok(src.includes('signal:'), 'AbortSignal not passed to install');
+});
+
+test('catalog download uses browser User-Agent', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'), 'utf-8');
+  assert.ok(src.includes('User-Agent'), 'UA header missing');
+  assert.ok(src.includes('Chrome/131'), 'UA not aligned with verify-catalog');
+  assert.ok(src.includes('.part'), 'temp .part file missing');
+  assert.ok(src.includes('IDLE_TIMEOUT_MS'), 'idle timeout missing');
+});
+
+console.log('\ninstall queue in-memory:');
+const { InstallQueue } = loadTsModule(path.join(__dirname, '..', 'electron', 'queue', 'install-queue.ts'), {
+  '../providers/registry.js': {
+    getProvider: () => ({
+      install: () => new Promise((resolve) => setTimeout(() => resolve({ ok: true, message: 'ok' }), 50)),
+    }),
+  },
+  '../store/settings.js': { getSettings: () => ({ quietInstall: true, enabledProviders: ['catalog'] }) },
+});
+
+test('cancel pending job marks cancelled', async () => {
+  const q = new InstallQueue();
+  q.add('catalog', 'blocker', 'Blocker');
+  q.add('catalog', 'test', 'Test');
+  await new Promise((r) => setTimeout(r, 20));
+  const pending = q.getJobs().find((j) => j.packageId === 'test');
+  assert.ok(pending, 'second job should exist');
+  assert.equal(pending.status, 'pending');
+  assert.ok(q.cancel(pending.id));
+  assert.equal(q.getJobs().find((j) => j.id === pending.id).status, 'cancelled');
+  assert.equal(q.getJobs().find((j) => j.id === pending.id).errorCode, 'cancelled');
+});
+
+test('retryJob resets failed job to pending', () => {
+  const q = new InstallQueue();
+  q.add('catalog', 'test', 'Test');
+  const id = q.getJobs()[0].id;
+  q.getJobs()[0].status = 'failed';
+  q.getJobs()[0].errorCode = 'network';
+  assert.ok(q.retryJob(id));
+  assert.equal(q.getJobs()[0].status, 'pending');
+  assert.equal(q.getJobs()[0].errorCode, undefined);
+});
+
+test('clearDone removes done, cancelled, and failed', () => {
+  const q = new InstallQueue();
+  q.add('catalog', 'a', 'A');
+  q.add('catalog', 'b', 'B');
+  q.add('catalog', 'c', 'C');
+  const jobs = q.getJobs();
+  jobs[0].status = 'done';
+  jobs[1].status = 'cancelled';
+  jobs[2].status = 'failed';
+  q.clearDone();
+  assert.equal(q.getJobs().length, 0);
 });
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

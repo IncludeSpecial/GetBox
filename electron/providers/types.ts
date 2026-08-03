@@ -1,3 +1,6 @@
+import type { InstallErrorCode } from './install-errors.js';
+export type { InstallErrorCode } from './install-errors.js';
+
 export interface Package {
   id: string;
   provider: string;
@@ -19,6 +22,7 @@ export interface InstallResult {
   ok: boolean;
   message: string;
   detail?: string;
+  errorCode?: InstallErrorCode;
 }
 
 export interface ProviderStatus {
@@ -45,6 +49,8 @@ export interface InstallProgress {
 export interface InstallOptions {
   quiet: boolean;
   onProgress?: (progress: InstallProgress) => void;
+  /** Abort in-flight download/CLI install. */
+  signal?: AbortSignal;
 }
 
 /** What a provider can tell us about one package beyond its id and version. */
@@ -84,6 +90,16 @@ export interface CuratedEntry {
   homepage?: string;
   recommended?: boolean;
   installUrl?: string;
+  /** Extra direct download mirrors tried after installUrl fails. */
+  installUrlFallbacks?: string[];
+  /**
+   * When every catalog download URL fails (CDN reset / geo-block), install via
+   * another provider instead of leaving the user stuck.
+   * Legacy per-app override; winget-map.json covers the rest of the catalog.
+   */
+  altProvider?: { provider: string; packageId: string };
+  /** Skip winget fallback (no package in winget store). */
+  noWingetFallback?: boolean;
   silentArgs?: string;
 }
 
@@ -129,9 +145,10 @@ export interface QueueJob {
   packageId: string;
   provider: string;
   name: string;
-  status: 'pending' | 'running' | 'done' | 'failed';
+  status: 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
   message?: string;
   detail?: string;
+  errorCode?: InstallErrorCode;
   progress?: InstallProgress;
 }
 

@@ -9,6 +9,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testChocolatey, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { classifyError } from './install-errors.js';
 
 const INFO_LABEL = /^\s*(Summary|Description|Software Site|Title)\s*:\s*(.*)$/i;
 
@@ -103,13 +104,15 @@ export class ChocolateyProvider implements PackageProvider {
       const { code, output } = await runCliWithProgress(this.chocoExe(), args, {
         timeout: 600000,
         onProgress: opts.onProgress,
+        signal: opts.signal,
       });
       if (code !== 0) {
-        return { ok: false, message: `Ошибка choco: ${packageId}`, detail: output.slice(-500) };
+        return { ok: false, errorCode: 'installer', message: `Ошибка choco: ${packageId}`, detail: output.slice(-500) };
       }
       return { ok: true, message: `Установлено: ${packageId}`, detail: output.slice(-500) };
     } catch (err) {
-      return { ok: false, message: `Ошибка choco: ${packageId}`, detail: err instanceof Error ? err.message : String(err) };
+      const c = classifyError(err);
+      return { ok: false, errorCode: c.code, message: c.code === 'cancelled' ? 'Установка отменена' : `Ошибка choco: ${packageId}`, detail: c.detail || c.message };
     }
   }
 

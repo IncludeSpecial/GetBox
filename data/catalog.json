@@ -10,6 +10,10 @@
     "wikiTitle": "Mozilla_Firefox",
     "logoSlug": "firefox",
     "installUrl": "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=ru",
+    "installUrlFallbacks": [
+      "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Mozilla.Firefox" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -24,6 +28,7 @@
     "wikiTitle": "Google_Chrome",
     "logoSlug": "google-chrome",
     "installUrl": "https://dl.google.com/chrome/install/latest/chrome_installer.exe",
+    "altProvider": { "provider": "winget", "packageId": "Google.Chrome" },
     "silentArgs": "/silent /install"
   },
   {
@@ -89,6 +94,10 @@
     "wikiTitle": "Steam_(service)",
     "logoSlug": "steam",
     "installUrl": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
+    "installUrlFallbacks": [
+      "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Valve.Steam" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -103,6 +112,7 @@
     "wikiTitle": "Epic_Games_Store",
     "logoSlug": "epic-games",
     "installUrl": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi",
+    "altProvider": { "provider": "winget", "packageId": "EpicGames.EpicGamesLauncher" },
     "silentArgs": "/quiet /norestart",
     "recommended": true
   },
@@ -118,6 +128,7 @@
     "logoSlug": "gog-galaxy",
     "simpleSlug": "gogdotcom",
     "installUrl": "https://webinstallers.gog.com/download/GOG_Galaxy_2.0.exe",
+    "altProvider": { "provider": "winget", "packageId": "GOG.Galaxy" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -216,6 +227,7 @@
     "wikiTitle": "Visual_Studio_Code",
     "logoSlug": "vscode",
     "installUrl": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
+    "altProvider": { "provider": "winget", "packageId": "Microsoft.VisualStudioCode" },
     "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
@@ -230,6 +242,7 @@
     "wikiTitle": "Git",
     "logoSlug": "git",
     "installUrl": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.3/Git-2.55.0.3-64-bit.exe",
+    "altProvider": { "provider": "winget", "packageId": "Git.Git" },
     "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
@@ -244,6 +257,7 @@
     "wikiTitle": "Node.js",
     "logoSlug": "nodejs",
     "installUrl": "https://nodejs.org/dist/v22.11.0/node-v22.11.0-x64.msi",
+    "altProvider": { "provider": "winget", "packageId": "OpenJS.NodeJS.LTS" },
     "silentArgs": "/quiet",
     "recommended": true
   },
@@ -446,7 +460,12 @@
     "provider": "catalog",
     "wikiTitle": "Discord",
     "logoSlug": "discord",
-    "installUrl": "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64",
+    "installUrl": "https://discord.com/api/download?platform=win",
+    "installUrlFallbacks": [
+      "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64",
+      "https://discordapp.com/api/download?platform=win"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Discord.Discord" },
     "silentArgs": "-s",
     "recommended": true
   },
@@ -461,6 +480,10 @@
     "wikiTitle": "Telegram_(software)",
     "logoSlug": "telegram",
     "installUrl": "https://telegram.org/dl/desktop/win64",
+    "installUrlFallbacks": [
+      "https://updates.tdesktop.com/tsetup/x64/tsetup-x64.latest.exe"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Telegram.TelegramDesktop" },
     "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
@@ -475,6 +498,7 @@
     "wikiTitle": "Slack_(software)",
     "logoSlug": "slack",
     "installUrl": "https://downloads.slack-edge.com/desktop-releases/windows/x64/4.42.115/SlackSetup.exe",
+    "altProvider": { "provider": "winget", "packageId": "SlackTechnologies.Slack" },
     "silentArgs": "/silent"
   },
   {
@@ -501,6 +525,10 @@
     "wikiTitle": "Zoom_(software)",
     "logoSlug": "zoom",
     "installUrl": "https://zoom.us/client/latest/ZoomInstallerFull.exe",
+    "installUrlFallbacks": [
+      "https://zoom.us/client/latest/ZoomInstaller.exe"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Zoom.Zoom" },
     "silentArgs": "/silent"
   },
 
@@ -516,6 +544,10 @@
     "logoSlug": "vlc",
     "simpleSlug": "vlcmediaplayer",
     "installUrl": "https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe",
+    "installUrlFallbacks": [
+      "https://mirror.accum.se/mirror/videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "VideoLAN.VLC" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -530,6 +562,10 @@
     "wikiTitle": "Spotify",
     "logoSlug": "spotify",
     "installUrl": "https://download.scdn.co/SpotifySetup.exe",
+    "installUrlFallbacks": [
+      "https://www.spotify.com/download/win/"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Spotify.Spotify" },
     "silentArgs": "/silent"
   },
   {
@@ -544,6 +580,7 @@
     "logoSlug": "obs-studio",
     "simpleSlug": "obsstudio",
     "installUrl": "https://github.com/obsproject/obs-studio/releases/download/32.2.1/OBS-Studio-32.2.1-Windows-x64-Installer.exe",
+    "altProvider": { "provider": "winget", "packageId": "OBSProject.OBSStudio" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -653,6 +690,7 @@
     "logoSlug": "inkscape",
     "simpleSlug": "inkscape",
     "installUrl": "https://inkscape.org/gallery/item/53678/inkscape-1.4.msi",
+    "altProvider": { "provider": "winget", "packageId": "Inkscape.Inkscape" },
     "silentArgs": "/quiet"
   },
   {
@@ -694,6 +732,7 @@
     "wikiTitle": "7-Zip",
     "logoSlug": "7zip",
     "installUrl": "https://www.7-zip.org/a/7z2501-x64.exe",
+    "altProvider": { "provider": "winget", "packageId": "7zip.7zip" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -723,6 +762,7 @@
     "logoSlug": "everything",
     "iconUrl": "https://www.google.com/s2/favicons?domain=voidtools.com&sz=256",
     "installUrl": "https://www.voidtools.com/Everything-1.4.1.1024.x64-Setup.exe",
+    "altProvider": { "provider": "winget", "packageId": "voidtools.Everything" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -737,6 +777,7 @@
     "wikiTitle": "QBitTorrent",
     "logoSlug": "qbittorrent",
     "installUrl": "https://sourceforge.net/projects/qbittorrent/files/qbittorrent-win32/qbittorrent-5.0.3/qbittorrent_5.0.3_x64_setup.exe/download",
+    "altProvider": { "provider": "winget", "packageId": "qBittorrent.qBittorrent" },
     "silentArgs": "/S"
   },
   {
@@ -777,6 +818,10 @@
     "wikiTitle": "FileZilla",
     "logoSlug": "filezilla",
     "installUrl": "https://dl2.cdn.filezilla-project.org/client/FileZilla_3.68.1_win64-setup.exe",
+    "installUrlFallbacks": [
+      "https://dl1.cdn.filezilla-project.org/client/FileZilla_3.68.1_win64-setup.exe"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "TimKosse.FileZilla.Client" },
     "silentArgs": "/S"
   },
   {
@@ -804,6 +849,10 @@
     "logoSlug": "teamviewer",
     "simpleSlug": "teamviewer",
     "installUrl": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe",
+    "installUrlFallbacks": [
+      "https://download.teamviewer.com/full"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "TeamViewer.TeamViewer" },
     "silentArgs": "/S"
   },
   {
@@ -887,6 +936,7 @@
     "logoSlug": "powertoys",
     "iconUrl": "https://raw.githubusercontent.com/microsoft/PowerToys/main/src/settings-ui/Settings.UI/Assets/Settings/icon.ico",
     "installUrl": "https://github.com/microsoft/PowerToys/releases/download/v0.100.2/PowerToysUserSetup-0.100.2-x64.exe",
+    "altProvider": { "provider": "winget", "packageId": "Microsoft.PowerToys" },
     "silentArgs": "/silent",
     "recommended": true
   },
@@ -929,6 +979,7 @@
     "wikiTitle": "KeePass",
     "logoSlug": "keepass",
     "installUrl": "https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.57/KeePass-2.57-Setup.exe/download",
+    "altProvider": { "provider": "winget", "packageId": "DominikReichl.KeePass" },
     "silentArgs": "/VERYSILENT"
   },
   {
@@ -942,6 +993,7 @@
     "wikiTitle": "Bitwarden",
     "logoSlug": "bitwarden",
     "installUrl": "https://vault.bitwarden.com/download/?app=desktop&platform=windows&variant=exe",
+    "altProvider": { "provider": "winget", "packageId": "Bitwarden.Bitwarden" },
     "silentArgs": "/S",
     "recommended": true
   },
@@ -970,6 +1022,7 @@
     "logoSlug": "malwarebytes",
     "simpleSlug": "malwarebytes",
     "installUrl": "https://downloads.malwarebytes.com/file/mb-windows",
+    "altProvider": { "provider": "winget", "packageId": "Malwarebytes.Malwarebytes" },
     "silentArgs": "/silent"
   },
   {
@@ -996,6 +1049,7 @@
     "wikiTitle": "WireGuard",
     "logoSlug": "wireguard",
     "installUrl": "https://download.wireguard.com/windows-client/wireguard-installer.exe",
+    "altProvider": { "provider": "winget", "packageId": "WireGuard.WireGuard" },
     "silentArgs": "/S"
   },
   {
@@ -1023,6 +1077,7 @@
     "wikiTitle": "LibreOffice",
     "logoSlug": "libreoffice",
     "installUrl": "https://download.documentfoundation.org/libreoffice/stable/26.2.5/win/x86_64/LibreOffice_26.2.5_Win_x86-64.msi",
+    "altProvider": { "provider": "winget", "packageId": "TheDocumentFoundation.LibreOffice" },
     "silentArgs": "/quiet /norestart",
     "recommended": true
   },
@@ -1037,6 +1092,10 @@
     "wikiTitle": "Mozilla_Thunderbird",
     "logoSlug": "thunderbird",
     "installUrl": "https://download.mozilla.org/?product=thunderbird-latest&os=win64&lang=ru",
+    "installUrlFallbacks": [
+      "https://download.mozilla.org/?product=thunderbird-latest&os=win64&lang=en-US"
+    ],
+    "altProvider": { "provider": "winget", "packageId": "Mozilla.Thunderbird" },
     "silentArgs": "/S"
   },
   {
@@ -1050,6 +1109,7 @@
     "wikiTitle": "Obsidian_(software)",
     "logoSlug": "obsidian",
     "installUrl": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.4/Obsidian-1.13.4.exe",
+    "altProvider": { "provider": "winget", "packageId": "Obsidian.Obsidian" },
     "silentArgs": "/S"
   },
   {
@@ -1077,6 +1137,7 @@
     "wikiTitle": "Calibre_(software)",
     "logoSlug": "calibre",
     "installUrl": "https://download.calibre-ebook.com/7.23.0/calibre-64bit-7.23.0.msi",
+    "altProvider": { "provider": "winget", "packageId": "calibre.calibre" },
     "silentArgs": "/quiet"
   },
 
@@ -1215,7 +1276,7 @@
     "wikiTitle": "Shotcut",
     "logoSlug": "shotcut",
     "simpleSlug": "shotcut",
-    "installUrl": "https://github.com/mltframework/shotcut/releases/download/v26.7.30/shotcut-win64-26.7.30.exe",
+    "installUrl": "https://github.com/mltframework/shotcut/releases/download/v26.6.25/shotcut-win64-26.6.25.exe",
     "silentArgs": "/S"
   },
 

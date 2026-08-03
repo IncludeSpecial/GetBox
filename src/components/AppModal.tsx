@@ -10,10 +10,12 @@ interface AppModalProps {
   job?: QueueJob;
   onClose: () => void;
   onInstall: (app: MergedApp) => void;
+  onRetry?: (app: MergedApp) => void;
+  onCancel?: (jobId: string) => void;
   onToggleFavorite: (app: MergedApp) => void;
 }
 
-export function AppModal({ app, job, onClose, onInstall, onToggleFavorite }: AppModalProps) {
+export function AppModal({ app, job, onClose, onInstall, onRetry, onCancel, onToggleFavorite }: AppModalProps) {
   const { t } = useI18n();
   const desc = appDescription(app, t);
 
@@ -44,7 +46,7 @@ export function AppModal({ app, job, onClose, onInstall, onToggleFavorite }: App
           </div>
         )}
         <div className="modal-actions">
-          <InstallButton app={app} job={job} onInstall={onInstall} />
+          <InstallButton app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />
           <button className="btn btn-accent" onClick={() => onToggleFavorite(app)}>
             {app.isFavorite ? (
               <><IconStarFilled size={14} /> {t.app.unfavorite}</>

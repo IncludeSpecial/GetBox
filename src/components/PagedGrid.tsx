@@ -22,6 +22,8 @@ interface PagedGridProps {
   categories: Record<string, string>;
   activeJobs?: Map<string, QueueJob>;
   onInstall: (app: MergedApp) => void;
+  onRetry?: (app: MergedApp) => void;
+  onCancel?: (jobId: string) => void;
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
   onVisibleChange?: (visibleApps: MergedApp[]) => void;
@@ -32,6 +34,8 @@ export function PagedGrid({
   categories,
   activeJobs,
   onInstall,
+  onRetry,
+  onCancel,
   onOpen,
   onToggleFavorite,
   onVisibleChange,
@@ -84,6 +88,8 @@ export function PagedGrid({
             categoryLabel={metaLabel(app, t, categories)}
             job={activeJobs?.get(packageKey(app.provider, app.id))}
             onInstall={onInstall}
+            onRetry={onRetry}
+            onCancel={onCancel}
             onOpen={onOpen}
             onToggleFavorite={onToggleFavorite}
           />

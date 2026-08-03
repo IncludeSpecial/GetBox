@@ -51,6 +51,9 @@ export interface GetBoxAPI {
   clearDoneQueue: () => Promise<void>;
   clearAllQueue: () => Promise<void>;
   retryFailedQueue: () => Promise<void>;
+  cancelQueueJob: (jobId: string) => Promise<boolean>;
+  dismissQueueJob: (jobId: string) => Promise<boolean>;
+  retryQueueJob: (jobId: string) => Promise<boolean>;
   onQueueUpdated: (cb: (jobs: QueueJob[]) => void) => () => void;
   rebuildIndex: () => Promise<{ ok: boolean; count: number; message?: string }>;
   onIndexProgress: (cb: (msg: string) => void) => () => void;
@@ -116,6 +119,9 @@ const api: GetBoxAPI = {
   clearDoneQueue: () => ipcRenderer.invoke('queue:clearDone'),
   clearAllQueue: () => ipcRenderer.invoke('queue:clearAll'),
   retryFailedQueue: () => ipcRenderer.invoke('queue:retryFailed'),
+  cancelQueueJob: (jobId) => ipcRenderer.invoke('queue:cancel', jobId),
+  dismissQueueJob: (jobId) => ipcRenderer.invoke('queue:dismiss', jobId),
+  retryQueueJob: (jobId) => ipcRenderer.invoke('queue:retryJob', jobId),
   onQueueUpdated: (cb) => {
     const handler = (_: unknown, jobs: QueueJob[]) => cb(jobs);
     ipcRenderer.on('queue:updated', handler);

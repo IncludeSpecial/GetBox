@@ -284,6 +284,28 @@ export default function App() {
     }
   }, [addToast, t]);
 
+  const handleCancelJob = useCallback((jobId: string) => {
+    void window.getbox.cancelQueueJob(jobId);
+  }, []);
+
+  const handleRetryJob = useCallback(
+    (app: MergedApp) => {
+      const key = packageKey(app.provider, app.id);
+      const job = queueJobs.find(
+        (j) =>
+          packageKey(j.provider, j.packageId) === key &&
+          (j.status === 'failed' || j.status === 'cancelled'),
+      );
+      if (job) {
+        void window.getbox.retryQueueJob(job.id);
+        setQueueOpen(true);
+        return;
+      }
+      void handleInstall(app);
+    },
+    [queueJobs, handleInstall],
+  );
+
   const handleToggleFavorite = useCallback(async (app: MergedApp) => {
     try {
       const isFav = await window.getbox.toggleFavorite(app.provider, app.id);
@@ -433,7 +455,13 @@ export default function App() {
   const featured = heroPool.find((a) => a.id === featuredId) ?? heroPool[0] ?? storeApps[0];
   const activeQueueJobs = queueJobs.filter((j) => j.status === 'pending' || j.status === 'running');
   const activeQueueCount = activeQueueJobs.length;
-  const activeJobs = new Map(activeQueueJobs.map((j) => [packageKey(j.provider, j.packageId), j]));
+  // Latest job per package for surface UI (includes failed so Retry is visible on cards).
+  const activeJobs = new Map<string, QueueJob>();
+  for (const j of queueJobs) {
+    if (j.status === 'pending' || j.status === 'running' || j.status === 'failed') {
+      activeJobs.set(packageKey(j.provider, j.packageId), j);
+    }
+  }
   const runningPercent = activeQueueJobs.find((j) => j.status === 'running')?.progress?.percent;
   const categoryCounts = storeApps.reduce<Record<string, number>>((acc, app) => {
     if (app.category) acc[app.category] = (acc[app.category] ?? 0) + 1;
@@ -506,6 +534,8 @@ export default function App() {
                       related={heroPool}
                       job={activeJobs.get(packageKey(featured.provider, featured.id))}
                       onInstall={handleInstall}
+                      onRetry={handleRetryJob}
+                      onCancel={handleCancelJob}
                       onOpen={setSelectedApp}
                       onSelect={(app) => setFeaturedId(app.id)}
                     />
@@ -536,6 +566,8 @@ export default function App() {
                       categories={categories}
                       activeJobs={activeJobs}
                       onInstall={handleInstall}
+                      onRetry={handleRetryJob}
+                      onCancel={handleCancelJob}
                       onOpen={setSelectedApp}
                       onToggleFavorite={handleToggleFavorite}
                       onSeeAll={() => handleNavigate('catalog', catId)}
@@ -691,6 +723,8 @@ export default function App() {
                       categories={categories}
                       activeJobs={activeJobs}
                       onInstall={handleInstall}
+                      onRetry={handleRetryJob}
+                      onCancel={handleCancelJob}
                       onOpen={setSelectedApp}
                       onToggleFavorite={handleToggleFavorite}
                       onVisibleChange={enrichVisible}
@@ -710,6 +744,9 @@ export default function App() {
         onClearDone={() => window.getbox.clearDoneQueue()}
         onClearAll={() => window.getbox.clearAllQueue()}
         onRetryFailed={() => window.getbox.retryFailedQueue()}
+        onCancel={handleCancelJob}
+        onRetry={(jobId) => void window.getbox.retryQueueJob(jobId)}
+        onDismiss={(jobId) => void window.getbox.dismissQueueJob(jobId)}
       />
 
       {selectedApp && (
@@ -718,6 +755,8 @@ export default function App() {
           job={activeJobs.get(packageKey(selectedApp.provider, selectedApp.id))}
           onClose={() => setSelectedApp(null)}
           onInstall={handleInstall}
+          onRetry={handleRetryJob}
+          onCancel={handleCancelJob}
           onToggleFavorite={handleToggleFavorite}
         />
       )}

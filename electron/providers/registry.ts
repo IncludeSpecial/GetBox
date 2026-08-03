@@ -5,12 +5,15 @@ import { WingetProvider } from './winget.js';
 import { ChocolateyProvider } from './chocolatey.js';
 
 const providers = new Map<string, PackageProvider>();
+let providersReady = false;
 
 export function initProviders(): void {
+  if (providersReady) return;
   providers.set('catalog', new CatalogProvider());
   providers.set('scoop', new ScoopProvider());
   providers.set('winget', new WingetProvider());
   providers.set('chocolatey', new ChocolateyProvider());
+  providersReady = true;
 }
 
 export function getProvider(id: string): PackageProvider | undefined {

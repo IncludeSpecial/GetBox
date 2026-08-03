@@ -1,5 +1,6 @@
-import { spawn } from 'node:child_process';
+import { spawn, execFile } from 'node:child_process';
 import type { InstallPhase, InstallProgress } from './types.js';
+import { InstallError } from './install-errors.js';
 
 /**
  * Package CLIs (scoop, winget, choco) report their progress as plain stdout,
@@ -16,6 +17,7 @@ export interface CliRunOptions {
   timeout?: number;
   env?: Record<string, string>;
   onProgress?: (progress: InstallProgress) => void;
+  signal?: AbortSignal;
 }
 
 const PROGRESS_INTERVAL_MS = 200;
@@ -77,14 +79,35 @@ export function parseProgressLine(line: string, phase: InstallPhase): InstallPro
   return progress;
 }
 
+/** Kill a process and its children on Windows; fall back to SIGTERM elsewhere. */
+export function killProcessTree(pid: number | undefined): void {
+  if (!pid || pid <= 0) return;
+  if (process.platform === 'win32') {
+    execFile('taskkill', ['/T', '/F', '/PID', String(pid)], { windowsHide: true }, () => {
+      // best-effort
+    });
+    return;
+  }
+  try {
+    process.kill(pid, 'SIGTERM');
+  } catch {
+    // already gone
+  }
+}
+
 export function runCliWithProgress(
   exe: string,
   args: string[],
   opts: CliRunOptions = {},
 ): Promise<CliRunResult> {
-  const { timeout = 600_000, env, onProgress } = opts;
+  const { timeout = 600_000, env, onProgress, signal } = opts;
 
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new InstallError('cancelled', 'Установка отменена'));
+      return;
+    }
+
     const child = spawn(exe, args, {
       windowsHide: true,
       shell: true,
@@ -98,8 +121,8 @@ export function runCliWithProgress(
     let settled = false;
 
     const timer = setTimeout(() => {
-      child.kill();
-      finish(new Error(`Timed out after ${Math.round(timeout / 1000)}s`));
+      killProcessTree(child.pid);
+      finish(new InstallError('timeout', 'Превышено время ожидания', `Timed out after ${Math.round(timeout / 1000)}s`));
     }, timeout);
 
     const flush = setInterval(() => {
@@ -109,11 +132,18 @@ export function runCliWithProgress(
       lastEmit = Date.now();
     }, PROGRESS_INTERVAL_MS);
 
+    const onAbort = () => {
+      killProcessTree(child.pid);
+      finish(new InstallError('cancelled', 'Установка отменена'));
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+
     function finish(err?: Error, code?: number | null): void {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
       clearInterval(flush);
+      signal?.removeEventListener('abort', onAbort);
       if (err) reject(err);
       else resolve({ code: code ?? null, output: output.trim() });
     }
@@ -123,7 +153,6 @@ export function runCliWithProgress(
       output = (output + text).slice(-MAX_OUTPUT_CHARS);
       if (!onProgress) return;
 
-      // Carriage returns separate redraws of the same status line.
       for (const line of text.split(/[\r\n]+/)) {
         const progress = parseProgressLine(line, phase);
         if (!progress) continue;
@@ -141,6 +170,12 @@ export function runCliWithProgress(
     child.stdout?.on('data', consume);
     child.stderr?.on('data', consume);
     child.on('error', (err) => finish(err));
-    child.on('close', (code) => finish(undefined, code));
+    child.on('close', (code) => {
+      if (signal?.aborted) {
+        finish(new InstallError('cancelled', 'Установка отменена'));
+        return;
+      }
+      finish(undefined, code);
+    });
   });
 }

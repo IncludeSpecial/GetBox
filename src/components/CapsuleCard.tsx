@@ -9,13 +9,16 @@ interface CapsuleCardProps {
   categoryLabel?: string;
   job?: QueueJob;
   onInstall: (app: MergedApp) => void;
+  onRetry?: (app: MergedApp) => void;
+  onCancel?: (jobId: string) => void;
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
 }
 
-function CapsuleCardInner({ app, categoryLabel, job, onInstall, onOpen, onToggleFavorite }: CapsuleCardProps) {
+function CapsuleCardInner({ app, categoryLabel, job, onInstall, onRetry, onCancel, onOpen, onToggleFavorite }: CapsuleCardProps) {
   const { t } = useI18n();
   const busy = job?.status === 'running' || job?.status === 'pending';
+  const failed = job?.status === 'failed';
   const percent = job?.progress?.percent;
 
   const stop = (fn: () => void) => (e: React.MouseEvent) => {
@@ -51,7 +54,13 @@ function CapsuleCardInner({ app, categoryLabel, job, onInstall, onOpen, onToggle
           {categoryLabel && <div className="capsule-meta">{categoryLabel}</div>}
         </div>
         {busy ? (
-          <div className="capsule-cta busy" aria-live="polite">
+          <button
+            type="button"
+            className="capsule-cta busy"
+            aria-live="polite"
+            onClick={stop(() => job && onCancel?.(job.id))}
+            title={t.app.cancel}
+          >
             <span
               className={`capsule-cta-fill${typeof percent === 'number' ? '' : ' pulse'}`}
               style={typeof percent === 'number' ? { width: `${Math.round(percent)}%` } : undefined}
@@ -63,7 +72,15 @@ function CapsuleCardInner({ app, categoryLabel, job, onInstall, onOpen, onToggle
                   ? `${Math.round(percent)}%`
                   : t.queue.phase[job?.progress?.phase ?? 'install']}
             </span>
-          </div>
+          </button>
+        ) : failed ? (
+          <button
+            className="capsule-cta failed"
+            onClick={stop(() => (onRetry ?? onInstall)(app))}
+            title={job?.errorCode ? t.queue.errors[job.errorCode] : t.app.failed}
+          >
+            {t.app.retry}
+          </button>
         ) : (
           <button
             className={`capsule-cta${app.isInstalled ? ' reinstall' : ''}`}
@@ -87,6 +104,9 @@ export const CapsuleCard = memo(CapsuleCardInner, (prev, next) => (
   prev.app.name === next.app.name &&
   prev.categoryLabel === next.categoryLabel &&
   prev.job?.status === next.job?.status &&
+  prev.job?.errorCode === next.job?.errorCode &&
   prev.job?.progress?.phase === next.job?.progress?.phase &&
-  prev.job?.progress?.percent === next.job?.progress?.percent
+  prev.job?.progress?.percent === next.job?.progress?.percent &&
+  prev.onCancel === next.onCancel &&
+  prev.onRetry === next.onRetry
 ));

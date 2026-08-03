@@ -213,6 +213,9 @@ function setupIpc(): void {
   ipcMain.handle('queue:clearDone', () => installQueue.clearDone());
   ipcMain.handle('queue:clearAll', () => installQueue.clearAll());
   ipcMain.handle('queue:retryFailed', () => installQueue.retryFailed());
+  ipcMain.handle('queue:cancel', (_e, jobId: string) => installQueue.cancel(jobId));
+  ipcMain.handle('queue:dismiss', (_e, jobId: string) => installQueue.dismiss(jobId));
+  ipcMain.handle('queue:retryJob', (_e, jobId: string) => installQueue.retryJob(jobId));
 
   ipcMain.handle('index:rebuild', () => runIndexBuild());
 
