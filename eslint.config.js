@@ -32,4 +32,10 @@ export default tseslint.config(
     languageOptions: { sourceType: 'commonjs', globals: globals.node },
     rules: { '@typescript-eslint/no-require-imports': 'off' },
   },
+  {
+    // Playwright scripts: Node, plus browser globals inside page.evaluate callbacks.
+    files: ['promo/**/*.cjs'],
+    languageOptions: { sourceType: 'commonjs', globals: { ...globals.node, ...globals.browser } },
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
 );

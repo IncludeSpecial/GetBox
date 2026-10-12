@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox promo</title>
+<style>
+  :root {
+    --bg: #0b1219; --bg2: #111b25; --accent: #66c0f4; --accent2: #a5d8ff;
+    --green: #7cb928; --text: #dfe7ee; --muted: #93a3b3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(1200px 700px at 50% 120%, #14304a 0%, transparent 60%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
+  .glow { position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(120px); opacity: .35; }
+  .glow.a { background: #1f6fa3; } .glow.b { background: #3f6a12; }
+  .grid { position: absolute; inset: -200px; opacity: .07;
+    background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+    background-size: 64px 64px; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .logo { width: 220px; height: 220px; filter: drop-shadow(0 30px 60px rgba(102,192,244,.35)); }
+  .brand { font-size: 132px; font-weight: 800; letter-spacing: .02em; margin-top: 28px; }
+  .brand span { color: var(--accent); }
+  .tag { font-size: 40px; color: var(--muted); margin-top: 14px; font-weight: 500; }
+  .kicker { font-size: 22px; font-weight: 700; letter-spacing: .32em; text-transform: uppercase; color: var(--accent); }
+  .h1 { font-size: 76px; font-weight: 800; line-height: 1.08; letter-spacing: -.01em; }
+  .h2 { font-size: 54px; font-weight: 750; line-height: 1.12; }
+  .muted { color: var(--muted); }
+  .green { color: var(--green); }
+  .blue { color: var(--accent); }
+  .pain { font-size: 58px; font-weight: 700; color: #c9d5df; margin: 12px 0; position: relative; display: inline-block; }
+  .pain .strike { position: absolute; left: -10px; top: 54%; height: 6px; background: #e06767; border-radius: 3px; }
+  .caption { position: absolute; left: 0; right: 0; top: 64px; text-align: center; }
+  .caption .h2 { margin-top: 12px; }
+  .win { position: absolute; left: 50%; top: 236px; width: 1312px; height: 820px; margin-left: -656px;
+    border-radius: 14px; overflow: hidden; background: #0a1118;
+    box-shadow: 0 50px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.08); }
+  .win .cam { position: absolute; left: 0; top: 0; width: 1312px; height: 820px; transform-origin: 0 0; }
+  .win img { width: 100%; height: 100%; display: block; }
+  .hl { position: absolute; border-radius: 12px; border: 4px solid var(--accent);
+    box-shadow: 0 0 0 9999px rgba(5,10,15,.55), 0 0 40px rgba(102,192,244,.6); opacity: 0; }
+  .pill { position: absolute; padding: 18px 28px; border-radius: 14px; font-size: 30px; font-weight: 700;
+    background: rgba(17,27,37,.92); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    display: flex; align-items: center; gap: 16px; white-space: nowrap; opacity: 0; }
+  .pill .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--green); box-shadow: 0 0 16px var(--green); }
+  .cards { display: grid; grid-template-columns: repeat(2, 640px); gap: 28px; margin-top: 56px; }
+  .card { padding: 34px 38px; border-radius: 18px; text-align: left; background: rgba(26,39,53,.85);
+    border: 1px solid rgba(255,255,255,.09); opacity: 0; }
+  .card .t { font-size: 36px; font-weight: 750; display: flex; align-items: center; gap: 16px; }
+  .card .d { font-size: 25px; color: var(--muted); margin-top: 10px; line-height: 1.4; }
+  .ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 26px; font-weight: 800; }
+  .cta { margin-top: 44px; display: inline-flex; align-items: center; gap: 16px; padding: 22px 44px; border-radius: 10px;
+    font-size: 34px; font-weight: 750; color: #10200a; background: linear-gradient(180deg, #96da33, #5f9a1b); }
+  .url { margin-top: 26px; font-size: 28px; color: var(--muted); font-family: 'DejaVu Sans Mono', monospace; }
+  .counter { font-size: 230px; font-weight: 850; line-height: 1; color: var(--accent);
+    text-shadow: 0 20px 80px rgba(102,192,244,.35); font-variant-numeric: tabular-nums; }
+  .bar { position: absolute; left: 0; bottom: 0; height: 6px; background: linear-gradient(90deg, var(--accent), var(--green)); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grid" id="grid"></div>
+  <div class="glow a" id="glowA"></div>
+  <div class="glow b" id="glowB"></div>
+
+  <!-- 1. Intro -->
+  <div class="scene center" id="s-intro">
+    <img class="logo" id="introLogo" src="../data/logo.svg" alt="">
+    <div class="brand" id="introBrand">Get<span>Box</span></div>
+    <div class="tag" id="introTag">Магазин программ для Windows</div>
+  </div>
+
+  <!-- 2. Pain -->
+  <div class="scene center" id="s-pain">
+    <div class="kicker" id="painKick">Знакомо?</div>
+    <div style="margin-top:36px">
+      <div><span class="pain" id="p1">Искать установщики по сайтам<i class="strike"></i></span></div>
+      <div><span class="pain" id="p2">Десять раз нажимать «Далее»<i class="strike"></i></span></div>
+      <div><span class="pain" id="p3">Бояться скачать не то<i class="strike"></i></span></div>
+    </div>
+    <div class="h1" id="painOut" style="margin-top:50px">Есть способ проще.</div>
+  </div>
+
+  <!-- 3. Catalog -->
+  <div class="scene" id="s-home">
+    <div class="caption" id="homeCap"><div class="kicker">Каталог</div><div class="h2"><span class="blue">118</span> проверенных программ — в один клик</div></div>
+    <div class="win" id="homeWin"><div class="cam" id="homeCam"><img src="shots/home.png" alt=""></div></div>
+  </div>
+
+  <!-- 4. Categories -->
+  <div class="scene" id="s-games">
+    <div class="caption"><div class="kicker">По полочкам</div><div class="h2">Игры, браузеры, разработка, медиа</div></div>
+    <div class="win" id="gamesWin"><div class="cam" id="gamesCam"><img src="shots/games.png" alt=""></div></div>
+  </div>
+
+  <!-- 5. Queue -->
+  <div class="scene" id="s-queue">
+    <div class="caption"><div class="kicker">Очередь установок</div><div class="h2">Нажали — и занимайтесь своими делами</div></div>
+    <div class="win" id="queueWin"><div class="cam" id="queueCam"><img src="shots/queue.png" alt="">
+      <div class="hl" id="queueHl" style="left:77.2%;top:10.5%;width:22.2%;height:12.2%"></div></div></div>
+    <div class="pill" id="queuePill1" style="left:180px;top:620px"><span class="dot"></span>Тихая установка, без мастеров</div>
+    <div class="pill" id="queuePill2" style="left:180px;top:730px"><span class="dot"></span>SHA256 сверяется до запуска</div>
+  </div>
+
+  <!-- 6. Recommendations -->
+  <div class="scene" id="s-rec">
+    <div class="caption"><div class="kicker">Рекомендации</div><div class="h2">Подбирает программы под <span class="green">вас</span></div></div>
+    <div class="win" id="recWin"><div class="cam" id="recCam"><img src="shots/home-scrolled.png" alt="">
+      <div class="hl" id="recHl" style="left:16.2%;top:18.6%;width:81.8%;height:21%"></div></div></div>
+  </div>
+
+  <!-- 7. Related -->
+  <div class="scene" id="s-modal">
+    <div class="caption"><div class="kicker">Ставят вместе</div><div class="h2">Подскажет, что пригодится — и чем заменить</div></div>
+    <div class="win" id="modalWin"><div class="cam" id="modalCam"><img src="shots/modal.png" alt="">
+      <div class="hl" id="modalHl" style="left:29.6%;top:48.4%;width:35.8%;height:18.6%"></div></div></div>
+  </div>
+
+  <!-- 8. Trust -->
+  <div class="scene center" id="s-trust">
+    <div class="kicker">Под капотом</div>
+    <div class="h1" style="margin-top:18px">Надёжно, как и должно быть</div>
+    <div class="cards">
+      <div class="card" id="c1"><div class="t"><span class="ico" style="background:#1d4f74">W</span>Официальные источники</div><div class="d">Установщики из манифестов winget — без зеркал и «репаков»</div></div>
+      <div class="card" id="c2"><div class="t"><span class="ico" style="background:#3f6a12">#</span>Проверка SHA256</div><div class="d">Файл с чужим хэшем никогда не запустится</div></div>
+      <div class="card" id="c3"><div class="t"><span class="ico" style="background:#5a3d8a">↻</span>Запасной путь</div><div class="d">Сайт недоступен — поставит через winget, Scoop или Chocolatey</div></div>
+      <div class="card" id="c4"><div class="t"><span class="ico" style="background:#7a4a1a">⚑</span>Portable и RU / EN</div><div class="d">Один .exe, ничего не нужно ставить заранее</div></div>
+    </div>
+  </div>
+
+  <!-- 9. Outro -->
+  <div class="scene center" id="s-outro">
+    <img class="logo" id="outroLogo" src="../data/logo.svg" alt="" style="width:170px;height:170px">
+    <div class="brand" style="font-size:110px">Get<span>Box</span></div>
+    <div class="tag">Скачали GetBox.exe — готово.</div>
+    <div class="cta" id="outroCta">Скачать бесплатно</div>
+    <div class="url">github.com/IncludeSpecial/GetBox</div>
+  </div>
+
+  <div class="bar" id="bar"></div>
+</div>
+
+<script>
+  const DURATION = 40;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const outCubic = (x) => 1 - Math.pow(1 - x, 3);
+  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const outBack = (x) => { const c = 1.70158, d = c + 1; return 1 + d * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+  const $ = (id) => document.getElementById(id);
+  const lerp = (a, b, x) => a + (b - a) * x;
+
+  /** Scene visibility with a short cross-fade at each end. */
+  function scene(id, t, a, b, fade = 0.45) {
+    const el = $(id);
+    const o = Math.min(seg(t, a, a + fade), 1 - seg(t, b - fade, b));
+    el.style.opacity = o;
+    el.style.visibility = o > 0 ? 'visible' : 'hidden';
+    return t - a;
+  }
+  /** Element entrance: fade + rise. */
+  function enter(el, t, at, dur = 0.6, dist = 40) {
+    const x = outCubic(seg(t, at, at + dur));
+    el.style.opacity = x;
+    el.style.transform = `translateY(${(1 - x) * dist}px)`;
+  }
+  /** Window flies in with a slight tilt, then the camera drifts/zooms. */
+  function win(winId, camId, lt, dur, cam) {
+    const w = $(winId);
+    const x = outCubic(seg(lt, 0, 0.9));
+    w.style.transform = `perspective(2400px) translateY(${(1 - x) * 120}px) rotateX(${(1 - x) * 10}deg) scale(${0.94 + 0.06 * x})`;
+    const k = inOut(seg(lt, cam.from ?? 0.8, cam.to ?? dur - 0.3));
+    const s = lerp(cam.s0 ?? 1, cam.s1 ?? 1, k);
+    const fx = lerp(cam.x0 ?? 0.5, cam.x1 ?? 0.5, k), fy = lerp(cam.y0 ?? 0.5, cam.y1 ?? 0.5, k);
+    // keep focus point (fx, fy) of the screenshot at the window center
+    const W = 1312, H = 820;
+    let tx = W / 2 - fx * W * s, ty = H / 2 - fy * H * s;
+    tx = clamp(tx, W - W * s, 0); ty = clamp(ty, H - H * s, 0);
+    $(camId).style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  }
+  function hl(id, lt, a, b) {
+    const o = Math.min(outCubic(seg(lt, a, a + 0.5)), 1 - seg(lt, b - 0.4, b));
+    $(id).style.opacity = o;
+  }
+
+  window.render = function (t) {
+    // ambient background
+    $('glowA').style.transform = `translate(${-200 + Math.sin(t * 0.35) * 160}px, ${-300 + Math.cos(t * 0.27) * 120}px)`;
+    $('glowB').style.transform = `translate(${1250 + Math.cos(t * 0.3) * 160}px, ${500 + Math.sin(t * 0.22) * 140}px)`;
+    $('grid').style.transform = `translate(${(t * 12) % 64}px, ${(t * 8) % 64}px)`;
+    $('bar').style.width = `${(t / DURATION) * 100}%`;
+
+    // 1. Intro 0–4.2
+    let lt = scene('s-intro', t, 0, 4.2, 0.6);
+    const lg = outBack(seg(lt, 0.2, 1.2));
+    $('introLogo').style.transform = `scale(${0.4 + 0.6 * lg}) rotate(${(1 - lg) * -18}deg)`;
+    $('introLogo').style.opacity = seg(lt, 0.2, 0.7);
+    enter($('introBrand'), lt, 0.8, 0.8, 50);
+    enter($('introTag'), lt, 1.4, 0.8, 30);
+
+    // 2. Pain 4.2–9.4
+    lt = scene('s-pain', t, 4.2, 9.4);
+    enter($('painKick'), lt, 0.2, 0.5, 20);
+    ['p1', 'p2', 'p3'].forEach((id, i) => {
+      const el = $(id);
+      enter(el, lt, 0.5 + i * 0.55, 0.6, 30);
+      el.querySelector('.strike').style.width = `${outCubic(seg(lt, 2.4 + i * 0.3, 2.9 + i * 0.3)) * (el.offsetWidth + 20)}px`;
+      el.style.color = seg(lt, 2.4 + i * 0.3, 2.9 + i * 0.3) > 0.5 ? '#6b7c8c' : '';
+    });
+    enter($('painOut'), lt, 3.6, 0.7, 40);
+
+    // 3. Catalog 9.4–15
+    lt = scene('s-home', t, 9.4, 15);
+    enter($('homeCap'), lt, 0.1, 0.6, 20);
+    win('homeWin', 'homeCam', lt, 5.6, { s0: 1, s1: 1.18, x0: 0.5, y0: 0.4, x1: 0.62, y1: 0.42 });
+
+    // 4. Categories 15–19.6
+    lt = scene('s-games', t, 15, 19.6);
+    win('gamesWin', 'gamesCam', lt, 4.6, { s0: 1.08, s1: 1.32, x0: 0.45, y0: 0.3, x1: 0.62, y1: 0.36 });
+
+    // 5. Queue 19.6–25.6
+    lt = scene('s-queue', t, 19.6, 25.6);
+    win('queueWin', 'queueCam', lt, 6, { from: 0.9, to: 2.6, s0: 1, s1: 1.7, x0: 0.5, y0: 0.5, x1: 0.9, y1: 0.3 });
+    hl('queueHl', lt, 2.6, 5.8);
+    ['queuePill1', 'queuePill2'].forEach((id, i) => {
+      const el = $(id); const x = outCubic(seg(lt, 3 + i * 0.5, 3.6 + i * 0.5));
+      el.style.opacity = Math.min(x, 1 - seg(lt, 5.6, 6)); el.style.transform = `translateX(${(1 - x) * -60}px)`;
+    });
+
+    // 6. Recommendations 25.6–30.6
+    lt = scene('s-rec', t, 25.6, 30.6);
+    win('recWin', 'recCam', lt, 5, { from: 0.9, to: 2.4, s0: 1, s1: 1.2, x0: 0.5, y0: 0.5, x1: 0.58, y1: 0.3 });
+    hl('recHl', lt, 2.4, 4.8);
+
+    // 7. Related 30.6–34.6
+    lt = scene('s-modal', t, 30.6, 34.6);
+    win('modalWin', 'modalCam', lt, 4, { from: 0.8, to: 2.2, s0: 1, s1: 1.45, x0: 0.5, y0: 0.5, x1: 0.48, y1: 0.55 });
+    hl('modalHl', lt, 2.2, 3.9);
+
+  };
+
+  // Trust + outro, layered on top of the first seven scenes.
+  const firstHalf = window.render;
+  window.render = function (t) {
+    firstHalf(t);
+    let lt = scene('s-trust', t, 34.6, 38.2);
+    ['c1', 'c2', 'c3', 'c4'].forEach((id, i) => enter($(id), lt, 0.4 + i * 0.22, 0.6, 40));
+
+    lt = scene('s-outro', t, 38.2, DURATION + 1, 0.5);
+    const lg = outBack(seg(lt, 0.1, 0.9));
+    $('outroLogo').style.transform = `scale(${0.5 + 0.5 * lg})`;
+    const pulse = 1 + Math.sin(Math.max(0, lt - 0.8) * 5) * 0.025 * seg(lt, 0.8, 1.2);
+    $('outroCta').style.transform = `scale(${pulse})`;
+  };
+  window.DURATION = DURATION;
+  render(Number(new URLSearchParams(location.search).get('t') ?? 0));
+</script>
+</body>
+</html>
