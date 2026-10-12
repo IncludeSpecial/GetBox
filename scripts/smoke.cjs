@@ -521,5 +521,55 @@ test('clearDone removes done, cancelled, and failed', () => {
   assert.equal(q.getJobs().length, 0);
 });
 
+// --- installer signature policy (electron/providers/signature.ts) ---
+{
+  const { checkSignature } = loadTsModule(path.join(__dirname, '..', 'electron', 'providers', 'signature.ts'));
+  const code = (info, expected) => checkSignature(info, expected)?.code ?? null;
+
+  test('signature: valid + matching publisher passes (case-insensitive)', () => {
+    assert.equal(code({ status: 'Valid', signer: 'Mozilla Corporation' }, { publisher: 'mozilla corporation' }), null);
+    assert.equal(code({ status: 'Valid', signer: 'B' }, { publisher: ['A', 'B'] }), null);
+  });
+
+  test('signature: valid but different publisher is rejected', () => {
+    assert.equal(code({ status: 'Valid', signer: 'Evil LLC' }, { publisher: 'Mozilla Corporation' }), 'untrusted');
+  });
+
+  test('signature: valid with no recorded publisher passes', () => {
+    assert.equal(code({ status: 'Valid', signer: 'Anyone' }, {}), null);
+  });
+
+  test('signature: unsigned passes only when catalog marks it unsigned', () => {
+    assert.equal(code({ status: 'NotSigned' }, {}), 'untrusted');
+    assert.equal(code({ status: 'NotSigned' }, { publisher: 'X' }), 'untrusted');
+    assert.equal(code({ status: 'NotSigned' }, { unsigned: true }), null);
+  });
+
+  test('signature: tampered or untrusted chain is always rejected', () => {
+    for (const status of ['HashMismatch', 'NotTrusted', 'UnknownError', 'NotSupportedFileFormat']) {
+      assert.equal(code({ status, signer: 'Mozilla Corporation' }, { publisher: 'Mozilla Corporation' }), 'untrusted', status);
+      assert.equal(code({ status }, { unsigned: true }), 'untrusted', status);
+    }
+  });
+
+  test('catalog: publisher / unsigned fields are well-formed', () => {
+    const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'catalog.json'), 'utf-8'));
+    for (const item of catalog) {
+      if (item.publisher !== undefined) {
+        const list = [item.publisher].flat();
+        assert.ok(list.length > 0 && list.every((p) => typeof p === 'string' && p.trim()), item.id);
+        assert.ok(!item.unsigned, `${item.id}: publisher and unsigned are exclusive`);
+      }
+      if (item.unsigned !== undefined) assert.equal(item.unsigned, true, item.id);
+      if (item.installUrl) assert.ok(item.installUrl.startsWith('https://'), `${item.id}: installUrl must be https`);
+      // Mirrors SAFE_INSTALLER_ARG in electron/providers/catalog.ts — args reach cmd.exe.
+      for (const arg of (item.silentArgs ?? '').split(' ').filter(Boolean)) {
+        assert.match(arg, /^[A-Za-z0-9_\-/=.:]+$/, `${item.id}: unsafe silentArgs`);
+      }
+      for (const u of item.installUrlFallbacks ?? []) assert.ok(u.startsWith('https://'), `${item.id}: fallback must be https`);
+    }
+  });
+}
+
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed > 0 ? 1 : 0);

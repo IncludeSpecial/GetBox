@@ -7,6 +7,7 @@ export type InstallErrorCode =
   | 'timeout'
   | 'http'
   | 'installer'
+  | 'untrusted'
   | 'unknown';
 
 export class InstallError extends Error {
@@ -87,6 +88,7 @@ export function classifyError(err: unknown): {
       timeout: 'Превышено время ожидания',
       http: `Ошибка загрузки (HTTP ${status})`,
       installer: 'Ошибка установщика',
+      untrusted: 'Установщик не прошёл проверку подлинности',
       unknown: 'Неизвестная ошибка',
     };
     return { code, message: labels[code], detail: msg };
@@ -118,7 +120,8 @@ export function shouldTryAltProvider(err: unknown): boolean {
       err.code === 'network' ||
       err.code === 'http' ||
       err.code === 'forbidden' ||
-      err.code === 'not_found'
+      err.code === 'not_found' ||
+      err.code === 'untrusted'
     );
   }
   const { code } = classifyError(err);

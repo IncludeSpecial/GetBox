@@ -265,7 +265,19 @@ function setupIpc(): void {
     return { ok: true, message: `Добавлено в очередь: ${items.length}` };
   });
 
-  ipcMain.handle('shell:openExternal', (_e, url: string) => shell.openExternal(url));
+  ipcMain.handle('shell:openExternal', (_e, url: string) => {
+    // Only web links: file:, ms-*, search-ms: and friends can launch local programs.
+    let protocol = '';
+    try {
+      protocol = new URL(url).protocol;
+    } catch {
+      // malformed → rejected below
+    }
+    if (protocol !== 'https:' && protocol !== 'http:') {
+      throw new Error(`Blocked external URL: ${String(url).slice(0, 200)}`);
+    }
+    return shell.openExternal(url);
+  });
 
   ipcMain.handle('bootstrap:status', async () => {
     const state = loadRuntimeState();

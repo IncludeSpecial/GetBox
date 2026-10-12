@@ -24,6 +24,7 @@ import {
   shouldTryAltProvider,
 } from './install-errors.js';
 import { killProcessTree } from './cli-progress.js';
+import { verifyInstallerSignature } from './signature.js';
 import { debugLog } from '../debug-log.js';
 
 interface CatalogItem extends CuratedEntry {
@@ -33,6 +34,10 @@ interface CatalogItem extends CuratedEntry {
   noWingetFallback?: boolean;
   silentArgs?: string;
   version?: string;
+  /** Expected Authenticode signer CN — kept current by scripts/fetch-publishers.cjs. */
+  publisher?: string | string[];
+  /** Vendor ships an unsigned installer; skip the signer check. */
+  unsigned?: boolean;
 }
 
 export type InstallFallback = { provider: 'winget'; packageId: string };
@@ -143,9 +148,45 @@ async function fetchRemoteCatalog(url: string): Promise<CatalogItem[]> {
   }
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  remoteCatalogCache = (await res.json()) as CatalogItem[];
+  remoteCatalogCache = sanitizeRemoteCatalog(await res.json());
   remoteCatalogFetchedAt = Date.now();
   return remoteCatalogCache;
+}
+
+/**
+ * Remote catalogs only extend search and listing; installs always use the
+ * bundled catalog. Still drop anything malformed so a bad feed cannot break
+ * the UI, and strip install fields so they can never be trusted by accident.
+ */
+function sanitizeRemoteCatalog(raw: unknown): CatalogItem[] {
+  if (!Array.isArray(raw)) throw new Error('Remote catalog is not an array');
+  return raw
+    .filter(
+      (i): i is CatalogItem =>
+        Boolean(i) &&
+        typeof i === 'object' &&
+        typeof i.id === 'string' &&
+        typeof i.name === 'string' &&
+        typeof i.packageId === 'string',
+    )
+    .map(({ installUrl: _u, installUrlFallbacks: _f, silentArgs: _a, publisher: _p, unsigned: _n, ...rest }) => ({
+      ...rest,
+      description: typeof rest.description === 'string' ? rest.description : '',
+      features: Array.isArray(rest.features) ? rest.features.filter((f) => typeof f === 'string') : [],
+      category: typeof rest.category === 'string' ? rest.category : 'other',
+      provider: 'catalog',
+    }));
+}
+
+/** Installers run with the user's rights, so they only travel over HTTPS (loopback is for tests). */
+function isAllowedDownloadUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    if (u.protocol === 'https:') return true;
+    return u.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(u.hostname);
+  } catch {
+    return false;
+  }
 }
 
 function unlinkQuiet(filePath: string): void {
@@ -185,6 +226,11 @@ function downloadFileOnce(
     }
     if (depth > 5) {
       reject(new InstallError('http', 'Слишком много перенаправлений'));
+      return;
+    }
+    // Checked per hop: an https link that redirects to plain http is refused too.
+    if (!isAllowedDownloadUrl(url)) {
+      reject(new InstallError('untrusted', 'Небезопасная ссылка на загрузку (не HTTPS)', url));
       return;
     }
 
@@ -365,6 +411,44 @@ async function downloadUrlWithRetries(
   throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
+type InstallerKind = 'exe' | 'msi';
+
+/** Identify a download by its magic bytes: PE ("MZ") or OLE compound file (MSI). */
+export function detectInstallerKind(filePath: string): InstallerKind | null {
+  const head = Buffer.alloc(8);
+  const fd = fs.openSync(filePath, 'r');
+  try {
+    if (fs.readSync(fd, head, 0, 8, 0) < 8) return null;
+  } finally {
+    fs.closeSync(fd);
+  }
+  if (head.readUInt16LE(0) === 0x5a4d) return 'exe';
+  if (head.readUInt32LE(0) === 0xe011cfd0 && head.readUInt32LE(4) === 0xe11ab1a1) return 'msi';
+  return null;
+}
+
+/**
+ * Give the download the extension its content calls for. Links like
+ * go.microsoft.com/fwlink serve an MSI without saying so, and a broken link
+ * often serves an HTML page with status 200 — that must never be executed.
+ */
+function prepareInstaller(downloaded: string): string {
+  const kind = detectInstallerKind(downloaded);
+  if (!kind) {
+    throw new InstallError('untrusted', 'Скачанный файл не является установщиком', path.basename(downloaded));
+  }
+  const target = downloaded.replace(/\.download$/, `.${kind}`);
+  unlinkQuiet(target);
+  fs.renameSync(downloaded, target);
+  return target;
+}
+
+/** Silent-install switches: /S, --silent, /InstallationType=JustMe, PrependPath=1 … */
+export const SAFE_INSTALLER_ARG = /^[A-Za-z0-9_\-/=.:]+$/;
+
+/** Windows Installer "success, reboot required/initiated" — the app is installed. */
+const REBOOT_EXIT_CODES = [3010, 1641];
+
 function runInstaller(exe: string, args: string[], signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
@@ -372,7 +456,15 @@ function runInstaller(exe: string, args: string[], signal?: AbortSignal): Promis
       return;
     }
 
-    const child = spawn(exe, args, { windowsHide: true, shell: true });
+    // cmd.exe stays in the loop: it raises the UAC prompt for installers that
+    // require elevation and opens .msi via its file association. So the path is
+    // quoted (profiles with spaces) and args may not carry shell metacharacters.
+    const unsafe = args.find((a) => !SAFE_INSTALLER_ARG.test(a));
+    if (unsafe !== undefined) {
+      reject(new InstallError('untrusted', 'Недопустимые аргументы установщика', unsafe));
+      return;
+    }
+    const child = spawn(`"${exe}"`, args, { windowsHide: true, shell: true });
     let settled = false;
 
     const timer = setTimeout(() => {
@@ -401,7 +493,7 @@ function runInstaller(exe: string, args: string[], signal?: AbortSignal): Promis
         finish(new InstallError('cancelled', 'Установка отменена'));
         return;
       }
-      if (code !== 0 && code !== null) {
+      if (code !== 0 && code !== null && !REBOOT_EXIT_CODES.includes(code)) {
         finish(new InstallError('installer', 'Ошибка установщика', `Exit code ${code}`));
         return;
       }
@@ -508,13 +600,9 @@ export class CatalogProvider implements PackageProvider {
     const urls = [item.installUrl, ...(item.installUrlFallbacks ?? [])];
     const tempDir = path.join(getAppDataDir(), 'downloads');
     fs.mkdirSync(tempDir, { recursive: true });
-    let ext = '.exe';
-    try {
-      ext = path.extname(new URL(item.installUrl).pathname) || '.exe';
-    } catch {
-      ext = '.exe';
-    }
-    const dest = path.join(tempDir, `${packageId}${ext}`);
+    // The real type comes from the file's magic bytes once it is on disk.
+    const dest = path.join(tempDir, `${packageId}.download`);
+    let installer: string | null = null;
 
     const fallback = resolveInstallFallback(item);
 
@@ -547,8 +635,10 @@ export class CatalogProvider implements PackageProvider {
       }
 
       opts.onProgress?.({ phase: 'install' });
-      const args = opts.quiet && item.silentArgs ? item.silentArgs.split(' ') : [];
-      await runInstaller(dest, args, opts.signal);
+      installer = prepareInstaller(dest);
+      await verifyInstallerSignature(installer, item);
+      const args = opts.quiet && item.silentArgs ? item.silentArgs.split(' ').filter(Boolean) : [];
+      await runInstaller(installer, args, opts.signal);
 
       if (opts.signal?.aborted) {
         return { ok: false, errorCode: 'cancelled', message: 'Установка отменена' };
@@ -565,6 +655,7 @@ export class CatalogProvider implements PackageProvider {
     } catch (err) {
       unlinkQuiet(dest);
       unlinkQuiet(`${dest}.part`);
+      if (installer) unlinkQuiet(installer);
 
       if (isCancelledError(err)) {
         return { ok: false, errorCode: 'cancelled', message: 'Установка отменена' };

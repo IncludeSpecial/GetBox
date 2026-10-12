@@ -79,7 +79,7 @@ async function withServer(handler, fn) {
   }
 }
 
-const { downloadFile } = loadTsModule(
+const { downloadFile, detectInstallerKind } = loadTsModule(
   path.join(ROOT, 'electron', 'providers', 'catalog.ts'),
   { electron: electronStub },
 );
@@ -197,6 +197,46 @@ console.log('\ndownload integration:');
         assert.ok(isInstallError(err, 'forbidden'));
       }
     });
+  });
+
+  await test('redirect to plain http on another host is refused', async () => {
+    await withServer((_req, res) => {
+      res.writeHead(302, { Location: 'http://example.com/setup.exe' });
+      res.end();
+    }, async (base) => {
+      const dest = tempFile('downgrade.exe');
+      unlinkQuiet(dest);
+      await assert.rejects(
+        () => downloadFile(`${base}/start`, dest),
+        (err) => isInstallError(err, 'untrusted'),
+      );
+      assert.ok(!fs.existsSync(dest));
+    });
+  });
+
+  await test('non-https catalog url is refused before connecting', async () => {
+    const dest = tempFile('plain.exe');
+    unlinkQuiet(dest);
+    await assert.rejects(
+      () => downloadFile('http://example.com/setup.exe', dest),
+      (err) => isInstallError(err, 'untrusted'),
+    );
+  });
+
+  await test('detectInstallerKind reads magic bytes, not the name', async () => {
+    const cases = [
+      ['kind-pe.download', Buffer.from('4d5a900003000000', 'hex'), 'exe'],
+      ['kind-msi.download', Buffer.from('d0cf11e0a1b11ae1', 'hex'), 'msi'],
+      ['kind-html.download', Buffer.from('<!DOCTYPE html>'), null],
+      ['kind-msix.download', Buffer.from('504b030414000800', 'hex'), null],
+      ['kind-empty.download', Buffer.alloc(0), null],
+    ];
+    for (const [name, bytes, expected] of cases) {
+      const file = tempFile(name);
+      fs.writeFileSync(file, bytes);
+      assert.equal(detectInstallerKind(file), expected, name);
+      unlinkQuiet(file);
+    }
   });
 
   console.log(`\n${passed} passed, ${failed} failed\n`);
