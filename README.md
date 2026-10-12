@@ -127,7 +127,7 @@ npm run dist
 ### Выпуск релиза
 
 1. Поднимите `version` в `package.json` и добавьте раздел `## X.Y.Z` в `CHANGELOG.md`.
-2. После слияния в `main` поставьте тег: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+2. После слияния в `main` поставьте тег `git tag vX.Y.Z && git push origin vX.Y.Z` — или запустите workflow **Release** вручную на вкладке *Actions*: тег `v<версия из package.json>` создастся сам.
 3. Workflow `release.yml` на `windows-latest` прогонит проверки, соберёт `GetBox-X.Y.Z-portable.exe` и опубликует релиз «GetBox X.Y.Z» с разделом из `CHANGELOG.md`.
 
 ## Структура репозитория

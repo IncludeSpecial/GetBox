@@ -1,10 +1,14 @@
 name: Release
 
-# Push a tag vX.Y.Z on main → build the Windows portable exe and publish the
-# GitHub release with the matching CHANGELOG.md section as its notes.
+# Build the Windows portable exe and publish the GitHub release with the
+# matching CHANGELOG.md section as its notes. Two ways in:
+#   - push a tag vX.Y.Z;
+#   - run it from the Actions tab on main: the tag v<package.json version>
+#     is created on that commit when the release is published.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,13 +22,19 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Tag matches package.json
+      - name: Resolve tag
+        id: meta
         shell: bash
         run: |
-          expected="v$(node -p "require('./package.json').version")"
-          if [ "$expected" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::tag $GITHUB_REF_NAME does not match package.json ($expected)"; exit 1
+          tag="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "$tag" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json ($tag)"; exit 1
           fi
+          if [ "$GITHUB_REF_TYPE" != "tag" ] && git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "::error::$tag already exists; bump the version in package.json first"; exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=GetBox ${tag#v}" >> "$GITHUB_OUTPUT"
       - run: npm ci
       - run: npm run lint
       - name: Tests
@@ -39,14 +49,13 @@ jobs:
       - name: Package portable exe
         run: npx electron-builder --win portable --publish never
       - name: Release notes
-        id: notes
         shell: bash
-        run: |
-          node scripts/release-notes.cjs "$GITHUB_REF_NAME" > release-notes.md
-          echo "name=GetBox ${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: node scripts/release-notes.cjs "${{ steps.meta.outputs.tag }}" > release-notes.md
       - uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.notes.outputs.name }}
+          tag_name: ${{ steps.meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.meta.outputs.name }}
           body_path: release-notes.md
           files: release/GetBox-*-portable.exe
           fail_on_unmatched_files: true
