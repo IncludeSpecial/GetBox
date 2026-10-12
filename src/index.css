@@ -875,6 +875,15 @@ button, input, select {
   text-transform: uppercase;
 }
 
+.capsule-reason {
+  padding: 0 9px 8px;
+  overflow: hidden;
+  color: var(--accent-hover);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .capsule-cta {
   flex-shrink: 0;
   padding: 4px 9px;

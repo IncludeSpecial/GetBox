@@ -333,8 +333,10 @@ function downloadFileOnce(
     unlinkQuiet(destPart);
 
     const getter = url.startsWith('https') ? get : httpGet;
+    // eslint-disable-next-line prefer-const -- assigned below, but read by fail() which is defined first
     let req: ClientRequest;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    // eslint-disable-next-line prefer-const -- same: cleanupTimers() closes over it before assignment
     let overallTimer: ReturnType<typeof setTimeout> | undefined;
     let settled = false;
 

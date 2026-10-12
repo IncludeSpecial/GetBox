@@ -277,6 +277,8 @@ export default function App() {
   useEffect(() => {
     if (loading || storeApps.length === 0) return;
     enrichVisible(storeApps.slice(0, 40));
+    // storeApps is a fresh array every render; its length is the change worth reacting to.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, storeApps.length, enrichVisible]);
 
   const handleInstall = useCallback(async (app: MergedApp) => {
@@ -559,7 +561,7 @@ export default function App() {
                     title={forYouTitle}
                     hint={forYouHint}
                     apps={recommendations.slice(0, 12).map((r) => r.app)}
-                    subtitles={reasonByKey}
+                    reasons={reasonByKey}
                     categories={categories}
                     activeJobs={activeJobs}
                     onInstall={handleInstall}
@@ -760,7 +762,7 @@ export default function App() {
                       onOpen={setSelectedApp}
                       onToggleFavorite={handleToggleFavorite}
                       onVisibleChange={enrichVisible}
-                      subtitles={view === 'recommended' ? reasonByKey : undefined}
+                      reasons={view === 'recommended' ? reasonByKey : undefined}
                     />
                   )}
                 </>

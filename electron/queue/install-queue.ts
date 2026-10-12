@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import type { InstallProgress, QueueJob } from '../providers/types.js';
 import { getProvider } from '../providers/registry.js';
 import { getSettings } from '../store/settings.js';
-import { classifyError, isCancelledError } from '../providers/install-errors.js';
+import { classifyError } from '../providers/install-errors.js';
 
 const PROGRESS_EMIT_MS = 250;
 

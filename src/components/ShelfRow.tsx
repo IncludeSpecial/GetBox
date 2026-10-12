@@ -17,12 +17,12 @@ interface ShelfRowProps {
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
   onSeeAll?: () => void;
-  /** Per-app line shown instead of the category, keyed by packageKey. */
-  subtitles?: Map<string, string>;
+  /** Why each app is shown, keyed by packageKey. */
+  reasons?: Map<string, string>;
   hint?: string;
 }
 
-export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, onSeeAll, subtitles, hint }: ShelfRowProps) {
+export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, onSeeAll, reasons, hint }: ShelfRowProps) {
   const { t } = useI18n();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -86,10 +86,8 @@ export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRet
           <CapsuleCard
             key={`${app.provider}:${app.id}`}
             app={app}
-            categoryLabel={
-              subtitles?.get(packageKey(app.provider, app.id)) ??
-              (app.category ? categoryLabel(t, app.category, categories[app.category]) : undefined)
-            }
+            categoryLabel={app.category ? categoryLabel(t, app.category, categories[app.category]) : undefined}
+            reason={reasons?.get(packageKey(app.provider, app.id))}
             job={activeJobs?.get(packageKey(app.provider, app.id))}
             onInstall={onInstall}
             onRetry={onRetry}

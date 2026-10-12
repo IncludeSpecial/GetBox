@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, shell, protocol, Menu } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initProviders, getAllProviders, setCatalogRemoteUrl } from './providers/registry.js';
-import { warmMetaCacheFromDisk, enrichMeta, prewarmMeta, maybeAutoPrewarm, getMetaCompleteness, getMetaProgress, type MetaProgress } from './enrich/meta-cache.js';
+import { warmMetaCacheFromDisk, enrichMeta, prewarmMeta, maybeAutoPrewarm, getMetaCompleteness, getMetaProgress } from './enrich/meta-cache.js';
 import { enqueuePackageMeta, onPackageMetaUpdate, type PackageMetaRequest } from './enrich/package-meta.js';
 import { getCatalog, invalidateCatalog, setInstalledSet, findApp } from './catalog/merge.js';
 import { searchPackages } from './search-cache.js';
@@ -12,7 +12,6 @@ import { getSettings, updateSettings } from './store/settings.js';
 import { toggleFavorite, isFavorite } from './store/favorites.js';
 import { registerMediaProtocol } from './protocol.js';
 import { loadCuratedCatalog } from './providers/catalog.js';
-import { packageKey } from './providers/types.js';
 import fs from 'node:fs';
 import { getDataDir } from './paths.js';
 import type { ProfileEntry } from './providers/types.js';
@@ -90,6 +89,16 @@ function resolvePreloadPath(): string {
   return path.join(__dirname, 'preload.cjs');
 }
 
+/** Only web links leave the app: file:, ms-*, search-ms: and friends can launch local programs. */
+function isWebUrl(url: string): boolean {
+  try {
+    const scheme = new URL(url).protocol;
+    return scheme === 'https:' || scheme === 'http:';
+  } catch {
+    return false;
+  }
+}
+
 function createWindow(): void {
   const preloadPath = resolvePreloadPath();
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -107,7 +116,8 @@ function createWindow(): void {
       preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      // The preload only needs contextBridge + ipcRenderer, both available in the sandbox.
+      sandbox: true,
     },
     title: 'GetBox',
     show: false,
@@ -122,6 +132,18 @@ function createWindow(): void {
 
   mainWindow.webContents.on('preload-error', (_e, preload, err) => {
     console.error('[GetBox] preload-error:', preload, err);
+  });
+
+  // The renderer is the app UI only: links leave for the browser, nothing navigates in place.
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (isWebUrl(url)) void shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    const devUrl = process.env.VITE_DEV_SERVER_URL;
+    if (devUrl && url.startsWith(devUrl)) return;
+    event.preventDefault();
+    if (isWebUrl(url)) void shell.openExternal(url);
   });
 
   const devUrl = process.env.VITE_DEV_SERVER_URL;
@@ -266,16 +288,7 @@ function setupIpc(): void {
   });
 
   ipcMain.handle('shell:openExternal', (_e, url: string) => {
-    // Only web links: file:, ms-*, search-ms: and friends can launch local programs.
-    let protocol = '';
-    try {
-      protocol = new URL(url).protocol;
-    } catch {
-      // malformed → rejected below
-    }
-    if (protocol !== 'https:' && protocol !== 'http:') {
-      throw new Error(`Blocked external URL: ${String(url).slice(0, 200)}`);
-    }
+    if (!isWebUrl(url)) throw new Error(`Blocked external URL: ${String(url).slice(0, 200)}`);
     return shell.openExternal(url);
   });
 

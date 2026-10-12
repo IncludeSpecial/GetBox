@@ -319,7 +319,6 @@ export async function bootstrapChocolateyWithUAC(onProgress?: (msg: string) => v
   const existing = await testChocolatey();
   if (existing.ok) return 'ok';
 
-  const chocoDir = path.join(getRuntimeDir(), 'chocolatey');
   const installScript = `
     Set-ExecutionPolicy Bypass -Scope Process -Force
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072

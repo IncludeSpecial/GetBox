@@ -27,8 +27,8 @@ interface PagedGridProps {
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
   onVisibleChange?: (visibleApps: MergedApp[]) => void;
-  /** Per-app line shown instead of the category, keyed by packageKey. */
-  subtitles?: Map<string, string>;
+  /** Why each app is shown, keyed by packageKey. */
+  reasons?: Map<string, string>;
 }
 
 export function PagedGrid({
@@ -41,7 +41,7 @@ export function PagedGrid({
   onOpen,
   onToggleFavorite,
   onVisibleChange,
-  subtitles,
+  reasons,
 }: PagedGridProps) {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
@@ -88,7 +88,8 @@ export function PagedGrid({
           <CapsuleCard
             key={`${app.provider}:${app.id}`}
             app={app}
-            categoryLabel={subtitles?.get(packageKey(app.provider, app.id)) ?? metaLabel(app, t, categories)}
+            categoryLabel={metaLabel(app, t, categories)}
+            reason={reasons?.get(packageKey(app.provider, app.id))}
             job={activeJobs?.get(packageKey(app.provider, app.id))}
             onInstall={onInstall}
             onRetry={onRetry}

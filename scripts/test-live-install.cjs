@@ -34,7 +34,7 @@ const packageId = process.argv[2] || 'discord';
 
 (async () => {
   console.log(`\nLive install probe: ${packageId}\n`);
-  const { CatalogProvider, initProviders } = loadTsModule(
+  const { CatalogProvider } = loadTsModule(
     path.join(ROOT, 'electron', 'providers', 'catalog.ts'),
     { electron: electronStub },
   );

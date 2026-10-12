@@ -4,7 +4,7 @@
 const { strict: assert } = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const crypto = require('node:crypto');
+const { createHash } = require('node:crypto');
 
 let passed = 0;
 let failed = 0;
@@ -104,14 +104,14 @@ const SEARCH_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 function writeSearchCache(dir, query, results) {
   fs.mkdirSync(dir, { recursive: true });
-  const hash = crypto.createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
+  const hash = createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
   const entry = { query, results, cachedAt: Date.now() };
   fs.writeFileSync(path.join(dir, `${hash}.json`), JSON.stringify(entry));
   return hash;
 }
 
 function readSearchCache(dir, query) {
-  const hash = crypto.createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
+  const hash = createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
   const p = path.join(dir, `${hash}.json`);
   if (!fs.existsSync(p)) return null;
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
