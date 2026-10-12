@@ -255,6 +255,7 @@
     $('outroCta').style.transform = `scale(${pulse})`;
   };
   window.DURATION = DURATION;
+  window.FORMAT = { width: 1920, height: 1080, fps: 30, duration: DURATION };
   render(Number(new URLSearchParams(location.search).get('t') ?? 0));
 </script>
 </body>
