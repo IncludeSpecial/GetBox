@@ -83,6 +83,7 @@ export interface GetBoxAPI {
   windowMaximize: () => Promise<boolean>;
   windowClose: () => Promise<void>;
   windowIsMaximized: () => Promise<boolean>;
+  windowNativeMica: () => Promise<boolean>;
   onWindowState: (cb: (state: { maximized: boolean }) => void) => () => void;
 }
 
@@ -192,6 +193,7 @@ const api: GetBoxAPI = {
   windowMaximize: () => ipcRenderer.invoke('window:maximize'),
   windowClose: () => ipcRenderer.invoke('window:close'),
   windowIsMaximized: () => ipcRenderer.invoke('window:isMaximized'),
+  windowNativeMica: () => ipcRenderer.invoke('window:nativeMica'),
   onWindowState: (cb) => {
     const handler = (_: unknown, state: { maximized: boolean }) => cb(state);
     ipcRenderer.on('window:state', handler);

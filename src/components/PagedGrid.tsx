@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useI18n } from '../i18n/I18nContext';
 import { categoryLabel } from '../i18n/helpers';
-import type { MergedApp, QueueJob } from '../types';
+import type { ListView, MergedApp, QueueJob } from '../types';
 import { listIdentity, packageKey } from '../types';
 import { CapsuleCard } from './CapsuleCard';
+import { AppListRow, AppTable } from './AppRows';
 
 const PAGE_SIZE = 48;
 
@@ -29,6 +30,7 @@ interface PagedGridProps {
   onVisibleChange?: (visibleApps: MergedApp[]) => void;
   /** Why each app is shown, keyed by packageKey. */
   reasons?: Map<string, string>;
+  layout?: ListView;
 }
 
 export function PagedGrid({
@@ -42,6 +44,7 @@ export function PagedGrid({
   onToggleFavorite,
   onVisibleChange,
   reasons,
+  layout = 'cards',
 }: PagedGridProps) {
   const { t } = useI18n();
   const [page, setPage] = useState(1);
@@ -79,27 +82,63 @@ export function PagedGrid({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMore, loadMore]);
+    // The sentinel element is remounted when the layout changes.
+  }, [hasMore, loadMore, layout]);
 
   return (
     <div className="paged-grid-wrap">
-      <div className="paged-grid">
-        {visible.map((app) => (
-          <CapsuleCard
-            key={`${app.provider}:${app.id}`}
-            app={app}
-            categoryLabel={metaLabel(app, t, categories)}
-            reason={reasons?.get(packageKey(app.provider, app.id))}
-            job={activeJobs?.get(packageKey(app.provider, app.id))}
+      {layout === 'table' ? (
+        <>
+          <AppTable
+            apps={visible}
+            activeJobs={activeJobs}
+            metaLabel={(app) => metaLabel(app, t, categories)}
             onInstall={onInstall}
             onRetry={onRetry}
             onCancel={onCancel}
             onOpen={onOpen}
             onToggleFavorite={onToggleFavorite}
           />
-        ))}
-        {hasMore && <div ref={sentinelRef} className="grid-sentinel" />}
-      </div>
+          {hasMore && <div ref={sentinelRef} className="grid-sentinel" />}
+        </>
+      ) : layout === 'list' ? (
+        <div className="app-list">
+          {visible.map((app) => (
+            <AppListRow
+              key={`${app.provider}:${app.id}`}
+              app={app}
+              metaLabel={metaLabel(app, t, categories)}
+              reason={reasons?.get(packageKey(app.provider, app.id))}
+              job={activeJobs?.get(packageKey(app.provider, app.id))}
+              onInstall={onInstall}
+              onRetry={onRetry}
+              onCancel={onCancel}
+              onOpen={onOpen}
+              onToggleFavorite={onToggleFavorite}
+            />
+          ))}
+          {hasMore && <div ref={sentinelRef} className="grid-sentinel" />}
+        </div>
+      ) : (
+        <div className={`paged-grid${layout === 'tiles' ? ' paged-grid--tiles' : ''}`}>
+          {visible.map((app) => (
+            <CapsuleCard
+              key={`${app.provider}:${app.id}`}
+              app={app}
+              tile={layout === 'tiles'}
+              categoryLabel={metaLabel(app, t, categories)}
+              reason={reasons?.get(packageKey(app.provider, app.id))}
+              job={activeJobs?.get(packageKey(app.provider, app.id))}
+              onInstall={onInstall}
+              onRetry={onRetry}
+              onCancel={onCancel}
+              onOpen={onOpen}
+              onToggleFavorite={onToggleFavorite}
+            />
+          ))}
+          {hasMore && <div ref={sentinelRef} className="grid-sentinel" />}
+        </div>
+      )}
       {hasMore && (
         <button className="btn btn-secondary load-more-btn" onClick={loadMore}>
           {t.app.loadMore} ({apps.length - visible.length} {t.app.remaining})

@@ -149,7 +149,19 @@ export interface AppSettings {
   quietInstall: boolean;
   remoteCatalogUrl?: string;
   language: 'ru' | 'en';
+  theme: ThemeId;
+  /** Custom accent hex; overrides the theme's own accent when set. */
+  accent?: string;
+  /** Interface zoom factor, 0.9–1.25. */
+  uiScale: number;
+  listView: ListView;
 }
+
+export const THEME_IDS = ['classic', 'light', 'oled', 'contrast', 'mica'] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
+
+export const LIST_VIEWS = ['cards', 'list', 'table', 'tiles'] as const;
+export type ListView = (typeof LIST_VIEWS)[number];
 
 export const APP_NAME = 'GetBox';
 

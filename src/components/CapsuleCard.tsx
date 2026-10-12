@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/I18nContext';
 import type { MergedApp, QueueJob } from '../types';
 import { AppCover } from './AppMonogram';
 import { IconStar, IconStarFilled } from './Icons';
+import { AppAction } from './AppAction';
 
 interface CapsuleCardProps {
   app: MergedApp;
@@ -15,13 +16,12 @@ interface CapsuleCardProps {
   onCancel?: (jobId: string) => void;
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
+  /** Square tile with name only; used by the "tiles" list view. */
+  tile?: boolean;
 }
 
-function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry, onCancel, onOpen, onToggleFavorite }: CapsuleCardProps) {
+function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, tile }: CapsuleCardProps) {
   const { t } = useI18n();
-  const busy = job?.status === 'running' || job?.status === 'pending';
-  const failed = job?.status === 'failed';
-  const percent = job?.progress?.percent;
 
   const stop = (fn: () => void) => (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -30,7 +30,7 @@ function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry,
 
   return (
     <article
-      className="capsule"
+      className={`capsule${tile ? ' capsule--tile' : ''}`}
       style={{ ['--brand' as string]: app.brandColor ?? '#3a4b5c' }}
       onClick={() => onOpen(app)}
     >
@@ -55,42 +55,7 @@ function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry,
           <div className="capsule-name" title={app.name}>{app.name}</div>
           {categoryLabel && <div className="capsule-meta">{categoryLabel}</div>}
         </div>
-        {busy ? (
-          <button
-            type="button"
-            className="capsule-cta busy"
-            aria-live="polite"
-            onClick={stop(() => job && onCancel?.(job.id))}
-            title={t.app.cancel}
-          >
-            <span
-              className={`capsule-cta-fill${typeof percent === 'number' ? '' : ' pulse'}`}
-              style={typeof percent === 'number' ? { width: `${Math.round(percent)}%` } : undefined}
-            />
-            <span className="capsule-cta-label">
-              {job?.status === 'pending'
-                ? t.queue.status.pending
-                : typeof percent === 'number'
-                  ? `${Math.round(percent)}%`
-                  : t.queue.phase[job?.progress?.phase ?? 'install']}
-            </span>
-          </button>
-        ) : failed ? (
-          <button
-            className="capsule-cta failed"
-            onClick={stop(() => (onRetry ?? onInstall)(app))}
-            title={job?.errorCode ? t.queue.errors[job.errorCode] : t.app.failed}
-          >
-            {t.app.retry}
-          </button>
-        ) : (
-          <button
-            className={`capsule-cta${app.isInstalled ? ' reinstall' : ''}`}
-            onClick={stop(() => onInstall(app))}
-          >
-            {app.isInstalled ? t.app.reinstall : t.app.install}
-          </button>
-        )}
+        <AppAction app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />
       </div>
       {reason && <div className="capsule-reason" title={reason}>{reason}</div>}
     </article>
@@ -106,6 +71,8 @@ export const CapsuleCard = memo(CapsuleCardInner, (prev, next) => (
   prev.app.brandColor === next.app.brandColor &&
   prev.app.name === next.app.name &&
   prev.categoryLabel === next.categoryLabel &&
+  prev.reason === next.reason &&
+  prev.tile === next.tile &&
   prev.job?.status === next.job?.status &&
   prev.job?.errorCode === next.job?.errorCode &&
   prev.job?.progress?.phase === next.job?.progress?.phase &&

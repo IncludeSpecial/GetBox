@@ -68,7 +68,14 @@ export interface AppSettings {
   quietInstall: boolean;
   remoteCatalogUrl?: string;
   language: 'ru' | 'en';
+  theme: ThemeId;
+  accent?: string;
+  uiScale: number;
+  listView: ListView;
 }
+
+export type ThemeId = 'classic' | 'light' | 'oled' | 'contrast' | 'mica';
+export type ListView = 'cards' | 'list' | 'table' | 'tiles';
 
 export interface MetaProgress {
   running: boolean;

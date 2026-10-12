@@ -1,25 +1,47 @@
 import Store from 'electron-store';
-import type { AppSettings } from '../providers/types.js';
+import { LIST_VIEWS, THEME_IDS, type AppSettings } from '../providers/types.js';
+
+const DEFAULTS: AppSettings = {
+  enabledProviders: ['catalog', 'scoop', 'winget', 'chocolatey'],
+  quietInstall: true,
+  remoteCatalogUrl: undefined,
+  language: 'ru',
+  theme: 'classic',
+  accent: undefined,
+  uiScale: 1,
+  listView: 'cards',
+};
+
+export const UI_SCALE_MIN = 0.9;
+export const UI_SCALE_MAX = 1.25;
 
 const store = new Store<{ settings: AppSettings }>({
   name: 'getbox-settings',
-  defaults: {
-    settings: {
-      enabledProviders: ['catalog', 'scoop', 'winget', 'chocolatey'],
-      quietInstall: true,
-      remoteCatalogUrl: undefined,
-      language: 'ru',
-    },
-  },
+  defaults: { settings: DEFAULTS },
 });
 
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+
+/** Drops appearance values the renderer cannot apply, so a bad store never breaks the UI. */
+function sanitize(s: AppSettings): AppSettings {
+  const theme = (THEME_IDS as readonly string[]).includes(s.theme) ? s.theme : DEFAULTS.theme;
+  const listView = (LIST_VIEWS as readonly string[]).includes(s.listView) ? s.listView : DEFAULTS.listView;
+  const accent = typeof s.accent === 'string' && HEX_COLOR.test(s.accent) ? s.accent.toLowerCase() : undefined;
+  const scale = Number(s.uiScale);
+  const uiScale = Number.isFinite(scale)
+    ? Math.min(UI_SCALE_MAX, Math.max(UI_SCALE_MIN, Math.round(scale * 100) / 100))
+    : DEFAULTS.uiScale;
+  return { ...s, theme, listView, accent, uiScale };
+}
+
 export function getSettings(): AppSettings {
-  return store.get('settings');
+  // Stores written by older versions lack the appearance keys.
+  return sanitize({ ...DEFAULTS, ...store.get('settings') });
 }
 
 export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   const current = getSettings();
-  const next = { ...current, ...partial };
+  const next = sanitize({ ...current, ...partial });
   store.set('settings', next);
   return next;
 }

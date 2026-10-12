@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell, protocol, Menu } from 'electron';
 import path from 'node:path';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { initProviders, getAllProviders, setCatalogRemoteUrl } from './providers/registry.js';
 import { warmMetaCacheFromDisk, enrichMeta, prewarmMeta, maybeAutoPrewarm, getMetaCompleteness, getMetaProgress } from './enrich/meta-cache.js';
@@ -153,8 +154,26 @@ function createWindow(): void {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
+  mainWindow.webContents.on('did-finish-load', applyAppearance);
   mainWindow.once('ready-to-show', () => mainWindow?.show());
   mainWindow.on('closed', () => { mainWindow = null; });
+}
+
+/** Mica needs Windows 11 22H2+ (build 22621); elsewhere the theme falls back to a painted backdrop. */
+function supportsMica(): boolean {
+  if (process.platform !== 'win32') return false;
+  const build = Number(os.release().split('.')[2]);
+  return Number.isFinite(build) && build >= 22621;
+}
+
+function applyAppearance(): void {
+  if (!mainWindow) return;
+  const { uiScale, theme } = getSettings();
+  mainWindow.webContents.setZoomFactor(uiScale);
+  if (!supportsMica()) return;
+  const mica = theme === 'mica';
+  mainWindow.setBackgroundColor(mica ? '#00000000' : '#0a1118');
+  mainWindow.setBackgroundMaterial(mica ? 'mica' : 'none');
 }
 
 function sendToRenderer(channel: string, ...args: unknown[]): void {
@@ -253,10 +272,12 @@ function setupIpc(): void {
   });
 
   ipcMain.handle('settings:get', () => getSettings());
+  ipcMain.handle('window:nativeMica', () => supportsMica());
   ipcMain.handle('settings:update', (_e, partial) => {
     const prev = getSettings();
     const next = updateSettings(partial);
     setCatalogRemoteUrl(next.remoteCatalogUrl);
+    if (next.uiScale !== prev.uiScale || next.theme !== prev.theme) applyAppearance();
     if (partial.language && partial.language !== prev.language) {
       invalidateCatalog('index');
       sendToRenderer('catalog:onDirty');
