@@ -12,7 +12,7 @@
 |---|---|
 | Платформа | Windows x64 |
 | Стек | Electron · React · TypeScript · Vite |
-| Версия | 1.2.0 |
+| Версия | 1.2.5 |
 | Дистрибутив | Portable `.exe` (~70 МБ) |
 
 ---
@@ -51,7 +51,7 @@
 Соберите portable-сборку или возьмите готовый артефакт из [Releases](../../releases) (если опубликованы):
 
 ```text
-release/GetBox-1.2.0-portable.exe
+release/GetBox-1.2.5-portable.exe
 ```
 
 Runtime не упакован внутрь exe — он ставится при первом запуске в `%LOCALAPPDATA%`, поэтому файл остаётся относительно лёгким.
@@ -84,7 +84,7 @@ npm run electron:dev
 npm run dist
 ```
 
-Результат: `release/GetBox-1.2.0-portable.exe`.
+Результат: `release/GetBox-1.2.5-portable.exe`.
 
 ### Скрипты
 

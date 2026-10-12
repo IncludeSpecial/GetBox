@@ -1,6 +1,6 @@
 {
   "name": "getbox",
-  "version": "1.2.0",
+  "version": "1.2.5",
   "description": "GetBox — локальный магазин программ для Windows",
   "main": "dist-electron/main.js",
   "type": "module",
