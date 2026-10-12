@@ -1,0 +1,7 @@
+# Rendered output and captured frames — regenerate with the steps in README.md.
+shots/
+*.mp4
+*.wav
+still-*.png
+contact*.png
+spec.png

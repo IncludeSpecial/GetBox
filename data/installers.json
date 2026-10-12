@@ -1,0 +1,1088 @@
+{
+  "7zip": {
+    "wingetId": "7zip.7zip",
+    "version": "26.04",
+    "type": "exe",
+    "url": "https://www.7-zip.org/a/7z2604-x64.exe",
+    "sha256": "d54bf805f9f3704d1e8db2fa3498ae7ef2df0312b40b558e7c71c734430a665d",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "amazon-games": {
+    "wingetId": "Amazon.Games",
+    "version": "3.0.9700.3",
+    "type": "exe",
+    "url": "https://download.amazongames.com/AmazonGamesSetup.exe",
+    "sha256": "b5d74ab5a63cfbef2756e9c445b1e939e51a328f17af301b5d7b9a8e9b1d4141",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "anki": {
+    "wingetId": "Anki.Anki",
+    "version": "26.09.3",
+    "type": "wix",
+    "url": "https://github.com/ankitects/anki/releases/download/26.09.3/anki-26.09.3-win-x64.msi",
+    "sha256": "8a45823d1c31017cebb7d3af4493d69b6ae3c185345fcb2390ede4af01e0a950",
+    "silentArgs": "/quiet /norestart",
+    "scope": "user"
+  },
+  "anydesk": {
+    "wingetId": "AnyDesk.AnyDesk",
+    "version": "9.8.1",
+    "type": "exe",
+    "url": "https://download.anydesk.com/AnyDesk.exe",
+    "sha256": "dbcb74f0523a2e281c8e0f89cb47234ce46249ad67126dc4ea5af22d4b99af34",
+    "silentArgs": "--install \"C:\\Program Files (x86)\\AnyDesk\" --silent --update-auto --create-desktop-icon --create-shortcuts",
+    "args": "--update-auto --create-desktop-icon --create-shortcuts",
+    "scope": "machine"
+  },
+  "audacity": {
+    "wingetId": "Audacity.Audacity",
+    "version": "4.0.1.262721353",
+    "type": "wix",
+    "url": "https://github.com/audacity/audacity/releases/download/Audacity-4.0.1/audacity-win-4.0.1-x86_64.msi",
+    "sha256": "efb652bf04168f5d4893f28b7cefaaf5ef385d9251544540ac774e3bf54793a3",
+    "silentArgs": "/quiet /norestart"
+  },
+  "battlenet": {
+    "wingetId": "Blizzard.BattleNet",
+    "version": "1.19.3.3219",
+    "type": "exe",
+    "url": "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe",
+    "sha256": "de5d32d4ea5eed5a9e120027fb68b370976dbfecc8f2a8f91305977f0b87fcaf",
+    "silentArgs": "--lang=enUS",
+    "args": "--lang=enUS",
+    "scope": "machine"
+  },
+  "bitwarden": {
+    "wingetId": "Bitwarden.Bitwarden",
+    "version": "2026.9.1",
+    "type": "nullsoft",
+    "url": "https://github.com/bitwarden/clients/releases/download/desktop-v2026.9.1/Bitwarden-Installer-2026.9.1.exe",
+    "sha256": "49b10f0840e70bdd1701cc9a0b729813015a70d3d3b487682a4e4a93819a3263",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "bleachbit": {
+    "wingetId": "BleachBit.BleachBit",
+    "version": "6.0.4",
+    "type": "nullsoft",
+    "url": "https://download.bleachbit.org/BleachBit-6.0.4-setup.exe",
+    "sha256": "c4cd6bb1f4b163dc28b13cef2995423de69e6776f16387f54943dcc6e7267a6d",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "blender": {
+    "wingetId": "BlenderFoundation.Blender",
+    "version": "5.2.2",
+    "type": "wix",
+    "url": "https://download.blender.org/release/Blender5.2/blender-5.2.2-windows-x64.msi",
+    "sha256": "8dac2751ebe8e3867327eec52f1ef9b344c0a27499bb6221a301b4b35f2828d1",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "brave": {
+    "wingetId": "Brave.Brave",
+    "version": "155.1.97.56",
+    "type": "exe",
+    "url": "https://github.com/brave/brave-browser/releases/download/v1.97.56/BraveBrowserStandaloneSilentSetup.exe",
+    "sha256": "860fcd9b0daaa7d2647d5230b16aa7b7f1be0ca03db49944a925e24a2600a9a2",
+    "scope": "user"
+  },
+  "calibre": {
+    "wingetId": "calibre.calibre",
+    "version": "9.16.0",
+    "type": "wix",
+    "url": "https://download.calibre-ebook.com/9.16.0/calibre-64bit-9.16.0.msi",
+    "sha256": "99ba538ca701c7c3b234d19b2236349c3aff3b55244ab9016072f74e6294e40a",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "chrome": {
+    "wingetId": "Google.Chrome",
+    "version": "155.0.8059.40",
+    "type": "wix",
+    "url": "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi",
+    "sha256": "32ba438dea18f0fed1ec621bfb274a2669adec67be2aa91d96b3cc6c64779276",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "cmake": {
+    "wingetId": "Kitware.CMake",
+    "version": "4.4.4",
+    "type": "wix",
+    "url": "https://github.com/Kitware/CMake/releases/download/v4.4.4/cmake-4.4.4-windows-x86_64.msi",
+    "sha256": "f7aac962e8eea82c0a1c603bb11ee3514806a43a35147d5b1e9d69926ffd7d7e",
+    "silentArgs": "/quiet /norestart ADD_CMAKE_TO_PATH=System",
+    "args": "ADD_CMAKE_TO_PATH=System",
+    "scope": "machine"
+  },
+  "cpu-z": {
+    "wingetId": "CPUID.CPU-Z",
+    "version": "3.01",
+    "type": "inno",
+    "url": "https://download.cpuid.com/cpu-z/cpu-z_3.01-en.exe",
+    "sha256": "74ab9b1c24fb223d0a5c23e2e444b6cbba7d0c6882cc4bf389e3f88bfca37490",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "crystaldiskinfo": {
+    "wingetId": "CrystalDewWorld.CrystalDiskInfo",
+    "version": "9.9.3",
+    "type": "inno",
+    "url": "https://sourceforge.net/projects/crystaldiskinfo/files/9.9.3/CrystalDiskInfo9_9_3.exe/download",
+    "sha256": "aeb4f4ab81c71f9b41ce65de841162260ff64c1ec07a758a459cac925bd0fcf6",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "darktable": {
+    "wingetId": "darktable.darktable",
+    "version": "5.6.2",
+    "type": "inno",
+    "url": "https://github.com/darktable-org/darktable/releases/download/release-5.6.2/darktable-5.6.2-win64.exe",
+    "sha256": "7f7a1eabcd0a1b548dcfacac842c8203fc85a4175697fb09f90bb891c8931edd",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "dbeaver": {
+    "wingetId": "DBeaver.DBeaver.Community",
+    "version": "26.2.0",
+    "type": "nullsoft",
+    "url": "https://github.com/dbeaver/dbeaver/releases/download/26.2.0/dbeaver-ce-26.2.0-windows-x86_64.exe",
+    "sha256": "009e8a99be478261d09fdeb40ab5ef64bfe1f5faf79288cac670164719d921d2",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "discord": {
+    "wingetId": "Discord.Discord",
+    "version": "1.0.9261",
+    "type": "exe",
+    "url": "https://dl.discordapp.net/distro/app/stable/win/x64/1.0.9261/DiscordSetup.exe",
+    "sha256": "e6d2f3f781904b6f336a2aa22699d1c97cecab3784509804e870ac4cb69f2ac2",
+    "scope": "user"
+  },
+  "docker": {
+    "wingetId": "Docker.DockerDesktop",
+    "version": "4.94.0",
+    "type": "exe",
+    "url": "https://desktop.docker.com/win/main/amd64/241994/Docker%20Desktop%20Installer.exe",
+    "sha256": "a9814e31049d66156477a86614e83365669677733014ec72f74229623ff3890a",
+    "silentArgs": "install --quiet --accept-license --backend=wsl-2 --no-windows-containers",
+    "args": "--accept-license --backend=wsl-2 --no-windows-containers",
+    "scope": "machine"
+  },
+  "dotnet-sdk": {
+    "wingetId": "Microsoft.DotNet.SDK.8",
+    "version": "8.0.425",
+    "type": "burn",
+    "url": "https://download.microsoft.com/download/4df5e4e8-4c5f-4fa6-9730-c51e177fb61b/dc7c534c-bf24-48ca-943d-d849785c5d12/dotnet-sdk-8.0.425-win-x64.exe",
+    "sha256": "48c31649ed0c37a161704e68fc9f5f67be9eb01edbd8f92b54b4c2e374ef6dfb",
+    "silentArgs": "/quiet /norestart",
+    "args": "/norestart",
+    "scope": "machine"
+  },
+  "ea-app": {
+    "wingetId": "ElectronicArts.EADesktop",
+    "version": "13.805.11.6320",
+    "type": "burn",
+    "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller-13.805.11.6320-15991211.exe",
+    "sha256": "4b581cb5cf94ee0031661ef3cbc98d8f9a60d80030f111acc641a68c20cf958b",
+    "silentArgs": "/passive /norestart /norestart",
+    "args": "/norestart",
+    "scope": "machine"
+  },
+  "edge": {
+    "wingetId": "Microsoft.Edge",
+    "version": "155.0.4283.45",
+    "type": "msi",
+    "url": "https://download.microsoft.com/download/6c6e5c59-4d92-40ad-bb99-daa7e663985d/MicrosoftEdgeEnterpriseX64.msi",
+    "sha256": "46db09d14b85a0df8bca87fbe9c3224ccf54f97d776bedc2eebf4b0c2ccbf5b4",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "element": {
+    "wingetId": "Element.Element",
+    "version": "1.12.30",
+    "type": "exe",
+    "url": "https://packages.element.io/desktop/install/win32/x64/Element%20Setup%201.12.30.exe",
+    "sha256": "b9ac9617acfa667eb5470e67e5db744d3b595b35c285100a53ad17719f7cc6d3",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "epic": {
+    "wingetId": "EpicGames.EpicGamesLauncher",
+    "version": "1.3.210.0",
+    "type": "wix",
+    "url": "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Windows/EpicInstaller-20.3.3.msi?launcherfilename=EpicInstaller-20.3.3.msi",
+    "sha256": "d55d79710edfeaa107a62f2ea007bec1eeeac8b715a43c2ba3858eec7bc60337",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "everything": {
+    "wingetId": "voidtools.Everything",
+    "version": "1.4.1.1032",
+    "type": "wix",
+    "url": "https://www.voidtools.com/Everything-1.4.1.1032.x64.msi",
+    "sha256": "4e7a80885aab8566b750c56a2a2b3e7c3c1f4920bcc53777e07f5eeb9e1f7485",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "figma": {
+    "wingetId": "Figma.Figma",
+    "version": "126.10.7",
+    "type": "exe",
+    "url": "https://desktop.figma.com/win/build/Figma-126.10.7.exe",
+    "sha256": "97c47d41055813eb1dbebb7416e59c362088d1b7292565f620b7db2f96913271",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "filezilla": {
+    "provider": "chocolatey",
+    "packageId": "filezilla"
+  },
+  "firefox": {
+    "wingetId": "Mozilla.Firefox",
+    "version": "157.0.1",
+    "type": "nullsoft",
+    "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/157.0.1/win64/en-US/Firefox%20Setup%20157.0.1.exe",
+    "sha256": "71dc620e7749bb65be6df67b99261a303805a804f9c787b76b81c095cfa7d9ca",
+    "silentArgs": "/S /PreventRebootRequired=true",
+    "scope": "machine"
+  },
+  "foobar2000": {
+    "wingetId": "PeterPawlowski.foobar2000",
+    "version": "2.26.1",
+    "type": "nullsoft",
+    "url": "https://www.foobar2000.org/files/foobar2000-x64_v2.26.1.exe",
+    "sha256": "72fe15a88b085ee4e49d68114e2bb9655000c2e0fdf40dcc128bbef8bcaf3600",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "free-download-manager": {
+    "wingetId": "SoftDeluxe.FreeDownloadManager",
+    "version": "6.35.1.7021",
+    "type": "inno",
+    "url": "https://dn3.freedownloadmanager.org/6/latest/fdm_x64_setup.exe",
+    "sha256": "053c7917c490984fb93c8cc74f40ada7dc83f1653438520e96b42a4aff69a5d8",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "freecad": {
+    "wingetId": "FreeCAD.FreeCAD",
+    "version": "1.1.4",
+    "type": "nullsoft",
+    "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Windows-x86_64-py311-installer.exe",
+    "sha256": "845f7101d33faf257a82a0cadc5f4f3804441f46ee493eb32b92fcf9c7147a24",
+    "silentArgs": "/S /CurrentUser",
+    "args": "/CurrentUser",
+    "scope": "user"
+  },
+  "gimp": {
+    "wingetId": "GIMP.GIMP.3",
+    "version": "3.2.6.0",
+    "type": "inno",
+    "url": "https://download.gimp.org/gimp/v3.2/windows/gimp-3.2.6-setup.exe",
+    "sha256": "9337cccbc01d4098ee7a3dab215b3afbe6ece99c5287c92441d6f12cf541ebca",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "git": {
+    "wingetId": "Git.Git",
+    "version": "2.55.0.5",
+    "type": "inno",
+    "url": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/Git-2.55.0.5-64-bit.exe",
+    "sha256": "d065a4e23c3d9a6b5073d609b5be0830227ec3ca053c083ba385061ddfaf94c6",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "user"
+  },
+  "github-desktop": {
+    "wingetId": "GitHub.GitHubDesktop",
+    "version": "3.6.7",
+    "type": "exe",
+    "url": "https://desktop.githubusercontent.com/releases/3.6.7-dbc92f97/GitHubDesktopSetup-x64.exe",
+    "sha256": "2e38db8d986884474a1e45afddf554a7187f42124bd38a3d7ea165be7f77f90d",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "gog-galaxy": {
+    "wingetId": "GOG.Galaxy",
+    "version": "2.1.10.56",
+    "type": "inno",
+    "url": "https://content-system.gog.com/open_link/download?path=/open/galaxy/client/setup_galaxy_2.1.10.56.exe",
+    "sha256": "ec1ef3744a6ba365c022d5e114a482b74ff0496e00a91924ebdae401e2c9291b",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "golang": {
+    "wingetId": "GoLang.Go",
+    "version": "1.27.0",
+    "type": "wix",
+    "url": "https://go.dev/dl/go1.27.0.windows-amd64.msi",
+    "sha256": "728e9318c061b95082bcf167bab8b6c6e0d91a045f89f403b3285fa39f0c455b",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "google-drive": {
+    "wingetId": "Google.GoogleDrive",
+    "version": "132.0.0.0",
+    "type": "exe",
+    "url": "https://dl.google.com/release2/drive-file-stream/glebcd62hy755nfh23p5kqwm4i_132.0.0.0/setup.exe",
+    "sha256": "6ab7af8224736d4b6f0b06345f5bdc78a664c0a995973c0b1b38c3a0ad5cd853",
+    "silentArgs": "--silent --skip_launch_new --gsuite_shortcuts=false",
+    "scope": "machine"
+  },
+  "handbrake": {
+    "wingetId": "HandBrake.HandBrake",
+    "version": "1.11.2",
+    "type": "nullsoft",
+    "url": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2-x86_64-Win_GUI.exe",
+    "sha256": "6becb8e5a041941d5f2fd6fe83c66fc15b2b16190e2e79f5ad47eb4cd18df8cd",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "heroic": {
+    "wingetId": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "version": "2.22.3",
+    "type": "nullsoft",
+    "url": "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.3/Heroic-2.22.3-Setup-x64.exe",
+    "sha256": "3c74b3f1727a005d9d578880a97e0b94c8ce04c94c6e08f99e644b072878360b",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "hwmonitor": {
+    "wingetId": "CPUID.HWMonitor",
+    "version": "1.68",
+    "type": "inno",
+    "url": "https://download.cpuid.com/hwmonitor/hwmonitor_1.68.exe",
+    "sha256": "fae15460133a648caca1a63fd809ef0b042cf82daf73c239fa5ac7b062cb2b16",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "imageglass": {
+    "wingetId": "DuongDieuPhap.ImageGlass",
+    "version": "10.0.906.0",
+    "type": "msix",
+    "direct": false
+  },
+  "inkscape": {
+    "wingetId": "Inkscape.Inkscape",
+    "version": "1.4.4",
+    "type": "wix",
+    "url": "https://media.inkscape.org/dl/resources/file/inkscape-1.4.4_2026-05-05_dcaf3e7-x64.signed_xMx7DJV.msi",
+    "sha256": "2fa033e95113ae83d6430b2479e7e63e4266d0632a5b03f99ee3db9360e3b8b8",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "insomnia": {
+    "wingetId": "Insomnia.Insomnia",
+    "version": "13.3.1",
+    "type": "exe",
+    "url": "https://github.com/Kong/insomnia/releases/download/core@13.3.1/Insomnia.Core-13.3.1.exe",
+    "sha256": "ff4d012e135df13cce4fc9afeeb50e11cf6d6e616ad22587b246bf9bbeb51522",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "intellij-idea": {
+    "wingetId": "JetBrains.IntelliJIDEA.Community",
+    "version": "2025.2.6.2",
+    "type": "nullsoft",
+    "url": "https://download.jetbrains.com/idea/ideaIC-2025.2.6.2.exe",
+    "sha256": "8393c2c9ccbd8581d646f01f0b6f0e7f78e58ebbe5cd8cbd95f9e236518e9fe8",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "joplin": {
+    "wingetId": "Joplin.Joplin",
+    "version": "3.7.21",
+    "type": "nullsoft",
+    "url": "https://github.com/laurent22/joplin/releases/download/v3.7.21/Joplin-Setup-3.7.21.exe",
+    "sha256": "4222536c69360a30a566627b35c2e1cd8d38d0c79735ebde4e39edbcddd750cd",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "kdenlive": {
+    "wingetId": "KDE.Kdenlive",
+    "version": "26.08.1",
+    "type": "nullsoft",
+    "url": "https://download.kde.org/stable/kdenlive/26.08/windows/kdenlive-26.08.1.exe",
+    "sha256": "b436430eb7dd4b3d1da318a53a77798cdaf3543a9f790824df214588b07f5d1e",
+    "silentArgs": "/S /CurrentUser",
+    "args": "/CurrentUser",
+    "scope": "user"
+  },
+  "keepass": {
+    "wingetId": "DominikReichl.KeePass",
+    "version": "2.61.1",
+    "type": "inno",
+    "url": "https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.61.1/KeePass-2.61.1-Setup.exe/download",
+    "sha256": "9923a8b228fe3d8fbe46979991f45d7e0d63f649766596da191eb879b293d38d",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /ALLUSERS",
+    "args": "/ALLUSERS",
+    "scope": "machine"
+  },
+  "keepassxc": {
+    "wingetId": "KeePassXCTeam.KeePassXC",
+    "version": "2.7.12",
+    "type": "wix",
+    "url": "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.12/KeePassXC-2.7.12-Win64.msi",
+    "sha256": "feee096c1d5d0d7bb7b36b18174818f7bac889be7668c550ff0e5ef9206ea9a5",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "kodi": {
+    "wingetId": "XBMCFoundation.Kodi",
+    "version": "21.3.0.0",
+    "type": "nullsoft",
+    "url": "https://mirrors.kodi.tv/releases/windows/win64/kodi-21.3-Omega-x64.exe",
+    "sha256": "2c46c2bd60b38bb60eb0a5e3468bfd43e9235521eae2910b8c81455e46335c5c",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "krita": {
+    "wingetId": "KDE.Krita",
+    "version": "5.3.4.1",
+    "type": "nullsoft",
+    "url": "https://download.kde.org/stable/krita/5.3.4.1/krita-x64-5.3.4.1-setup.exe",
+    "sha256": "025523cf1751ff209faf7ecfe1cff851f2cdab64acb8c555b307b349ad56ce8f",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "libreoffice": {
+    "wingetId": "TheDocumentFoundation.LibreOffice",
+    "version": "26.8.1.1",
+    "type": "msi",
+    "url": "https://download.documentfoundation.org/libreoffice/stable/26.8.1/win/x86_64/LibreOffice_26.8.1_Win_x86-64.msi",
+    "sha256": "c6298b10cfa1748bcbedad94c62ce771e240e5021bfd6d7a967cd571b04b5312",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "logseq": {
+    "wingetId": "Logseq.Logseq",
+    "version": "2.0.2",
+    "type": "nullsoft",
+    "url": "https://github.com/logseq/logseq/releases/download/2.0.2/Logseq-win-x64-2.0.2-nsis.exe",
+    "sha256": "5d7f52fa676a65cb91b88a688ff2705de629dd60a0530dc6c9119e97b463d853",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "malwarebytes": {
+    "wingetId": "Malwarebytes.Malwarebytes",
+    "version": "5.7.2.358",
+    "type": "exe",
+    "url": "https://data-cdn.mbamupdates.com/web/mb5-setup-consumer/offline/mb5-setup-consumer-5.7.2.358-166.0.5763-1.0.115215.exe",
+    "sha256": "aee718183b29d045cf26e3bf3b9cff9f3c31ad4d379ecacba9cfaff4d26756e7",
+    "silentArgs": "/VERYSILENT /NORESTART",
+    "scope": "machine"
+  },
+  "minecraft-launcher": {
+    "wingetId": "Mojang.MinecraftLauncher",
+    "version": "2.0.0.0",
+    "type": "wix",
+    "url": "https://launcher.mojang.com/download/MinecraftInstaller.msi",
+    "sha256": "e7040addf5fbb1dac0d7e61d0793b1550526accaf80a315e36b636285bd9d90e",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "miniconda": {
+    "wingetId": "Anaconda.Miniconda3",
+    "version": "py314_26.7.1-1",
+    "type": "nullsoft",
+    "url": "https://repo.anaconda.com/miniconda/Miniconda3-py314_26.7.1-1-Windows-x86_64.exe",
+    "sha256": "27f1f8ae8c27bc22bbc383b84bf08c63a20a6e190f3975f3502625b1045330b2",
+    "silentArgs": "/S /InstallationType=JustMe",
+    "args": "/InstallationType=JustMe",
+    "scope": "user"
+  },
+  "mongodb-compass": {
+    "wingetId": "MongoDB.Compass.Full",
+    "version": "1.52.0.0",
+    "type": "wix",
+    "url": "https://github.com/mongodb-js/compass/releases/download/v1.52.0/mongodb-compass-1.52.0-win32-x64.msi",
+    "sha256": "74936797eb2bbff0756aa1f20276d95256355344a4af2c824c45c34ccf884344",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "moonlight": {
+    "wingetId": "MoonlightGameStreamingProject.Moonlight",
+    "version": "6.2.0.0",
+    "type": "burn",
+    "url": "https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.2.0/MoonlightSetup-6.2.0.exe",
+    "sha256": "ee2a1b56ec83010f4f8a275bb71892a7dc7a3bc874dfaebe706b74d5d10831bd",
+    "silentArgs": "/quiet /norestart /norestart",
+    "args": "/norestart",
+    "scope": "user"
+  },
+  "mpc-hc": {
+    "wingetId": "clsid2.mpc-hc",
+    "version": "2.8.3",
+    "type": "inno",
+    "url": "https://github.com/clsid2/mpc-hc/releases/download/2.8.3/MPC-HC.2.8.3.x64.exe",
+    "sha256": "a2f0e384a4222435ab37635e74d975f6518b81c31060ca95bc9bb7d2776e5dbc",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "neovim": {
+    "wingetId": "Neovim.Neovim",
+    "version": "0.12.6",
+    "type": "wix",
+    "url": "https://github.com/neovim/neovim/releases/download/v0.12.6/nvim-win64.msi",
+    "sha256": "72ec7df85655528952e086858ca6b3add8498f60977108ba8e7f3ede34a7cca5",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "nextcloud": {
+    "wingetId": "Nextcloud.NextcloudDesktop",
+    "version": "35.0.0",
+    "type": "wix",
+    "url": "https://github.com/nextcloud-releases/desktop/releases/download/v35.0.0/Nextcloud-35.0.0-x64.msi",
+    "sha256": "7df0f2fe42519e454e14d45a34c4d8d601e98434710087cb1d6d96f315206cd7",
+    "silentArgs": "/quiet /norestart Reboot=ReallySuppress",
+    "args": "Reboot=ReallySuppress",
+    "scope": "machine",
+    "successCodes": [
+      3010
+    ]
+  },
+  "nodejs": {
+    "wingetId": "OpenJS.NodeJS.LTS",
+    "version": "24.20.0",
+    "type": "wix",
+    "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-x64.msi",
+    "sha256": "28b69132c35ccc033bf8f2a67cd10c9d75ef5822593363309da448f2afff2d8a",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "notepadpp": {
+    "wingetId": "Notepad++.Notepad++",
+    "version": "8.9.8.1",
+    "type": "nullsoft",
+    "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.exe",
+    "sha256": "26f3bcced788fadbac4e7e577b430ea2ce6060cf3bcad993ef4612ecd7d743da",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "obs": {
+    "wingetId": "OBSProject.OBSStudio",
+    "version": "32.2.2",
+    "type": "nullsoft",
+    "url": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-x64-Installer.exe",
+    "sha256": "c3a0b880adbe64dc4bcb68f93016916ab5b55ae43fd227115287bf80257d92dc",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "obsidian": {
+    "wingetId": "Obsidian.Obsidian",
+    "version": "1.14.4",
+    "type": "nullsoft",
+    "url": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.4/Obsidian-1.14.4.exe",
+    "sha256": "28662520368d5956df7798076b8370ac730164a8863dcd4f678ced53f63faa00",
+    "silentArgs": "/S /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "ollama": {
+    "wingetId": "Ollama.Ollama",
+    "version": "0.40.3",
+    "type": "inno",
+    "url": "https://github.com/ollama/ollama/releases/download/v0.40.3/OllamaSetup.exe",
+    "sha256": "ab81db6c6f4f65547242d1b2912e854da660ab3bc1dbd5ae3483831cf7668c80",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "user"
+  },
+  "openvpn": {
+    "wingetId": "OpenVPNTechnologies.OpenVPNConnect",
+    "version": "3.9.0",
+    "type": "wix",
+    "url": "https://packages.openvpn.net/connect/v3/openvpn-connect-3.9.0.5008_signed.msi",
+    "sha256": "31347812dd37dbbb69bc47de842eb179827266e9dfb45e7f6ce10c5d71a5bad6",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "opera": {
+    "wingetId": "Opera.Opera",
+    "version": "137.0.6036.39",
+    "type": "exe",
+    "url": "https://get.geo.opera.com/pub/opera/desktop/137.0.6036.39/win/Opera_137.0.6036.39_Setup_x64.exe",
+    "sha256": "95bdd5acc7c5ba4a59d6baa32ef649d2cf4c30de35f86a29ab99c4ba1ab9daab",
+    "silentArgs": "/silent /allusers=0",
+    "args": "/allusers=0",
+    "scope": "user"
+  },
+  "parsec": {
+    "wingetId": "Parsec.Parsec",
+    "version": "150.104.1.0",
+    "type": "nullsoft",
+    "url": "https://builds.parsec.app/package/parsec-windows.exe",
+    "sha256": "b8a9cd519010666def0ef6e119eb42b33b5b811216f34e4f6c8e2e25ac290fbc",
+    "silentArgs": "/silent /norun /nocleanuser /currentuser",
+    "args": "/currentuser",
+    "scope": "user"
+  },
+  "pgadmin": {
+    "wingetId": "PostgreSQL.pgAdmin",
+    "version": "9.18",
+    "type": "inno",
+    "url": "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v9.18/windows/pgadmin4-9.18-x64.exe",
+    "sha256": "ca82b9a07007308a70a9af55192f5ca826c9ce839fe716cea465e2cfc4529245",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "pinta": {
+    "wingetId": "Pinta.Pinta",
+    "version": "3.0.5",
+    "type": "inno",
+    "url": "https://github.com/PintaProject/Pinta/releases/download/3.0.5/Pinta.exe",
+    "sha256": "74017975bbf12480994217d13e8a7bde05fc26ec3bb3bd39ee7f0de3c3c4cd46",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART"
+  },
+  "playnite": {
+    "wingetId": "Playnite.Playnite",
+    "version": "10.58",
+    "type": "inno",
+    "url": "https://github.com/JosefNemec/Playnite/releases/download/10.58/Playnite1058.exe",
+    "sha256": "acf8bf9c50b8dc8552cee43f348ae5c171ae5219fbad6a916ed3b01e3e9335d7",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /NORESTART",
+    "args": "/NORESTART",
+    "scope": "user"
+  },
+  "postgresql": {
+    "wingetId": "PostgreSQL.PostgreSQL.17",
+    "version": "17.11-5",
+    "type": "exe",
+    "url": "https://get.enterprisedb.com/postgresql/postgresql-17.11-5-windows-x64.exe",
+    "sha256": "612c7f5400a003aaffa0372cb273eed52278f93c680ab911eb9cb2229e329072",
+    "silentArgs": "--mode unattended --unattendedmodeui none",
+    "scope": "machine"
+  },
+  "postman": {
+    "wingetId": "Postman.Postman",
+    "version": "12.32.0",
+    "type": "exe",
+    "url": "https://dl.pstmn.io/download/version/12.32.0/windows_64",
+    "sha256": "eb56eebfdd0104a1c579cdeac22f99cd11049b5a7cf36c79f6d26a310d56def7",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "powershell": {
+    "wingetId": "Microsoft.PowerShell",
+    "version": "7.6.6.0",
+    "type": "wix",
+    "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/PowerShell-7.6.6-win-x64.msi",
+    "sha256": "958838ff55091e1c8705d89efed0cc7e8245a3a6ef6c0ccfae20015227108ad8",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "powertoys": {
+    "wingetId": "Microsoft.PowerToys",
+    "version": "0.101.2362.0",
+    "type": "burn",
+    "url": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe",
+    "sha256": "d56fa7130fa68afe553068c15a59a6b24c8dbcc9a0989a43ef0fc5a373230de3",
+    "silentArgs": "/quiet /norestart",
+    "scope": "user"
+  },
+  "prism-launcher": {
+    "wingetId": "PrismLauncher.PrismLauncher",
+    "version": "11.1.1",
+    "type": "nullsoft",
+    "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.1/PrismLauncher-Windows-MSVC-Setup-11.1.1.exe",
+    "sha256": "aaf1f371a41d530785b679e3a2e1141dceec98651fc35d56dc0842b2740280ae",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "putty": {
+    "wingetId": "PuTTY.PuTTY",
+    "version": "0.85.0.0",
+    "type": "wix",
+    "url": "https://the.earth.li/~sgtatham/putty/0.85/w64/putty-64bit-0.85-installer.msi",
+    "sha256": "2213ebacf962b709411d654a40087508a694756bc4e41c5a1c24ad86596b2511",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "pycharm": {
+    "wingetId": "JetBrains.PyCharm.Community",
+    "version": "2025.2.6.1",
+    "type": "nullsoft",
+    "url": "https://download.jetbrains.com/python/pycharm-community-2025.2.6.1.exe",
+    "sha256": "cd9baffec7dd2ab33494a6c3b11fc4f14318c3866343064fc625729e35c868da",
+    "silentArgs": "/S",
+    "scope": "user"
+  },
+  "python": {
+    "wingetId": "Python.Python.3.12",
+    "version": "3.12.10",
+    "type": "burn",
+    "url": "https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe",
+    "sha256": "67b5635e80ea51072b87941312d00ec8927c4db9ba18938f7ad2d27b328b95fb",
+    "silentArgs": "/quiet /norestart InstallAllUsers=0 PrependPath=1",
+    "args": "InstallAllUsers=0 PrependPath=1",
+    "scope": "user"
+  },
+  "qbittorrent": {
+    "wingetId": "qBittorrent.qBittorrent",
+    "version": "5.2.4",
+    "type": "nullsoft",
+    "url": "https://sourceforge.net/projects/qbittorrent/files/qbittorrent-win32/qbittorrent-5.2.4/qbittorrent_5.2.4_x64_setup.exe/download",
+    "sha256": "ef6efe581d80efeb0a77df281d93f93021fbdcc48e4d8f7b341dc864f53c30dd",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "roblox": {
+    "wingetId": "Roblox.Roblox",
+    "version": "0.726",
+    "type": "exe",
+    "url": "https://setup.rbxcdn.com/version-8884371d30284041-RobloxPlayerInstaller.exe",
+    "sha256": "22858fa38591e6f06b10adff0a994b624c8c45b1ff8cc9f349adcdaaf2cbef7b",
+    "silentArgs": "-install -silent"
+  },
+  "rockstar": {
+    "wingetId": "RockstarGames.Launcher",
+    "version": "1.0.109.3031",
+    "type": "exe",
+    "url": "https://gamedownloads.rockstargames.com/public/installer/Rockstar-Games-Launcher.exe",
+    "sha256": "321886457b7e4ab727a27671c17a815684a3943579eedf7e2248a3b9f0973746",
+    "silentArgs": "/s /f"
+  },
+  "rufus": {
+    "wingetId": "Rufus.Rufus",
+    "version": "4.15",
+    "type": "portable",
+    "direct": false
+  },
+  "rust": {
+    "wingetId": "Rustlang.Rust.MSVC",
+    "version": "1.99.0",
+    "type": "wix",
+    "url": "https://static.rust-lang.org/dist/rust-1.99.0-x86_64-pc-windows-msvc.msi",
+    "sha256": "0ccecc0d77722cf4ab3288ecdcf541530bec129b530f91618cbdd9e3a0dbe7fd",
+    "silentArgs": "/quiet /norestart"
+  },
+  "rustdesk": {
+    "provider": "chocolatey",
+    "packageId": "rustdesk"
+  },
+  "sharex": {
+    "wingetId": "ShareX.ShareX",
+    "version": "21.0.0",
+    "type": "inno",
+    "url": "https://github.com/ShareX/ShareX/releases/download/v21.0.0/ShareX-21.0.0-setup-x64.exe",
+    "sha256": "f213aca04d30e0e2dc7c43bc79acae8622be291cee6014a90962ed87ea5f10cc",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /NORUN",
+    "args": "/NORUN",
+    "scope": "user"
+  },
+  "shotcut": {
+    "wingetId": "Meltytech.Shotcut",
+    "version": "26.9.27",
+    "type": "inno",
+    "url": "https://github.com/mltframework/shotcut/releases/download/v26.9.27/shotcut-win64-26.9.27.exe",
+    "sha256": "77e1ee1f713d92bdbaff23266f416e33cde3d367f7ef518b1841ddc961d05af9",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "slack": {
+    "wingetId": "SlackTechnologies.Slack",
+    "version": "4.52.178",
+    "type": "exe",
+    "url": "https://downloads.slack-edge.com/desktop-releases/windows/x64/4.52.178/SlackSetup.exe",
+    "sha256": "edec34a6cd42a33da7556bac0ceb4046ae9e37ac0b1a4ae83a1b321c381ee062",
+    "silentArgs": "--silent",
+    "scope": "user"
+  },
+  "spotify": {
+    "wingetId": "Spotify.Spotify",
+    "version": "1.3.4.258.gc60b10b0946a",
+    "type": "exe",
+    "url": "https://download.scdn.co/SpotifyFullSetupX64.exe",
+    "sha256": "5d7cd1780218fde3de9888b2e7b95398de6d155228f8382961d6dbf14c2a20b0",
+    "silentArgs": "/silent /skip-app-launch",
+    "scope": "user"
+  },
+  "steam": {
+    "wingetId": "Valve.Steam",
+    "version": "2.10.91.91",
+    "type": "nullsoft",
+    "url": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
+    "sha256": "7d3654531c32d941b8cae81c4137fc542172bfa9635f169cb392f245a0a12bcb",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "sublime-text": {
+    "wingetId": "SublimeHQ.SublimeText.4",
+    "version": "4.0.0.421500",
+    "type": "inno",
+    "url": "https://download.sublimetext.com/sublime_text_build_4215_x64_setup.exe",
+    "sha256": "bafea3ffc2d151fbbf7269868d7eaaa20d7b884254ad5512c1548b6bebfa7cde",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "sumatra": {
+    "wingetId": "SumatraPDF.SumatraPDF",
+    "version": "3.6.1",
+    "type": "exe",
+    "url": "https://www.sumatrapdfreader.org/dl/rel/3.6.1/SumatraPDF-3.6.1-64-install.exe",
+    "sha256": "1eee71cccd2ea6e94d5bcea54ee2f759844da3e1a0ee2f6045035b1d17b94381",
+    "silentArgs": "-s -install -with-preview",
+    "args": "-install -with-preview",
+    "scope": "user"
+  },
+  "system-informer": {
+    "wingetId": "WinsiderSS.SystemInformer",
+    "version": "4.0.26241.138",
+    "type": "exe",
+    "url": "https://github.com/winsiderss/si-builds/releases/download/4.0.26241.138/systeminformer-build-release-setup.exe",
+    "sha256": "ceb46bc42cd9993a3a8e9e7002d1f1715e3d2a077d5226d72612e2b8578e51eb",
+    "silentArgs": "-install -silent",
+    "scope": "machine"
+  },
+  "tailscale": {
+    "wingetId": "Tailscale.Tailscale",
+    "version": "1.104.1",
+    "type": "burn",
+    "url": "https://pkgs.tailscale.com/stable/tailscale-setup-full-1.104.1.exe",
+    "sha256": "ada83c21ab64bd3658042c8bc6f0bb9846f29937eb37fa1291c6c841999f9cb1",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "teams": {
+    "wingetId": "Microsoft.Teams",
+    "version": "26198.304.4946.9672",
+    "type": "msix",
+    "direct": false
+  },
+  "teamspeak": {
+    "wingetId": "TeamSpeakSystems.TeamSpeakClient",
+    "version": "3.6.2",
+    "type": "nullsoft",
+    "url": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe",
+    "sha256": "eab9e0c1a7134643e5f7116b7e0e58faffb20d6db528f8b333d2c2b5d1ab68ae",
+    "silentArgs": "/S /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "teamviewer": {
+    "wingetId": "TeamViewer.TeamViewer",
+    "version": "15.82.6",
+    "type": "nullsoft",
+    "url": "https://download.teamviewer.com/download/version_15x/TeamViewer_Setup_x64_15.82.6.exe",
+    "sha256": "24625b7445d456a13880bf52bfb8ae3ffe8a1cd5ec6d12a8415a15552d79de7a",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "telegram": {
+    "wingetId": "Telegram.TelegramDesktop",
+    "version": "7.3.1",
+    "type": "inno",
+    "url": "https://github.com/telegramdesktop/tdesktop/releases/download/v7.3.1/td-setup-win-x64-7.3.1.exe",
+    "sha256": "d5534936dcb8913c250b9e0bc14ee438feaf9ce3b5e076ba771b4211645acc81",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "user"
+  },
+  "temurin-jdk": {
+    "wingetId": "EclipseAdoptium.Temurin.17.JDK",
+    "version": "17.0.20.101",
+    "type": "wix",
+    "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1+1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.20.1_1.msi",
+    "sha256": "a6013774c5e4a34951e11c1997d8b4641d2de7736d3eac839231f4266bd1116f",
+    "silentArgs": "/quiet /norestart ADDLOCAL=ALL",
+    "args": "ADDLOCAL=ALL",
+    "scope": "machine"
+  },
+  "thunderbird": {
+    "wingetId": "Mozilla.Thunderbird",
+    "version": "157.0.1",
+    "type": "nullsoft",
+    "url": "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/157.0.1/win64/en-US/Thunderbird%20Setup%20157.0.1.exe",
+    "sha256": "dec7acc0e246c9bce3ab23e02fcc55543ea96526bb0a13f5ca8d33a09e904f35",
+    "silentArgs": "/S /PreventRebootRequired=true",
+    "scope": "machine"
+  },
+  "treesize-free": {
+    "wingetId": "JAMSoftware.TreeSize.Free",
+    "version": "4.8.1.610",
+    "type": "inno",
+    "url": "https://downloads.jam-software.de/treesize_free/archive/v4.8.1.610/TreeSizeFreeSetup.exe",
+    "sha256": "d800f1765539194a088cd06b2b8a73c40c4a1001425f2a892f495a53db9da2de",
+    "silentArgs": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CurrentUser /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "ubisoft-connect": {
+    "wingetId": "Ubisoft.Connect",
+    "version": "174.1.0.13380",
+    "type": "nullsoft",
+    "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe",
+    "sha256": "3cba64c512523f58579f83c10c30d55004ef59a7f926a67903fe1fa5ddf2539a",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "veracrypt": {
+    "wingetId": "IDRIX.VeraCrypt",
+    "version": "1.26.29",
+    "type": "wix",
+    "url": "https://launchpad.net/veracrypt/trunk/1.26.29/+download/VeraCrypt_Setup_x64_1.26.29.msi",
+    "sha256": "5ba6426983123cfb92bc1f09bd888fdbc0f53f300d0d9c5da52ce3aee8d474f0",
+    "silentArgs": "/qn ACCEPTLICENSE=YES /norestart",
+    "args": "/norestart",
+    "scope": "machine"
+  },
+  "virtualbox": {
+    "wingetId": "Oracle.VirtualBox",
+    "version": "7.2.20",
+    "type": "exe",
+    "url": "https://download.virtualbox.org/virtualbox/7.2.20/VirtualBox-7.2.20-175154-Win.exe",
+    "sha256": "a81777d2b36380ce042a29e9c554cf032eb46a793f62e3cc82e7411e535c2c26",
+    "silentArgs": "--silent -msiparams REBOOT=ReallySuppress",
+    "args": "-msiparams REBOOT=ReallySuppress",
+    "scope": "machine",
+    "successCodes": [
+      3010
+    ]
+  },
+  "vivaldi": {
+    "wingetId": "Vivaldi.Vivaldi",
+    "version": "8.2.4133.84",
+    "type": "exe",
+    "url": "https://downloads.vivaldi.com/stable/Vivaldi.8.2.4133.84.x64.exe",
+    "sha256": "5da83090d30ab69243e68588ba79acd20c2276fa3e26976e32801c22ff42c89d",
+    "silentArgs": "--vivaldi-silent --do-not-launch-chrome",
+    "args": "--do-not-launch-chrome",
+    "scope": "user"
+  },
+  "vlc": {
+    "wingetId": "VideoLAN.VLC",
+    "version": "3.0.24",
+    "type": "nullsoft",
+    "url": "https://download.videolan.org/pub/videolan/vlc/3.0.24/win64/vlc-3.0.24-win64.exe",
+    "sha256": "d711e1e1fe52052748c39080c7dce63f6b7e4c315efedf1774a3f1957b782ff3",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "vs2022": {
+    "wingetId": "Microsoft.VisualStudio.2022.Community",
+    "version": "17.14.41",
+    "type": "exe",
+    "url": "https://download.visualstudio.microsoft.com/download/pr/bc92e2cb-33de-4a0c-995d-efa817f16b16/7041ccc4d8d52901e386b0d96d9f11394244fb2b09fc6aae2c573f16c20ccdcc/vs_Community.exe",
+    "sha256": "7041ccc4d8d52901e386b0d96d9f11394244fb2b09fc6aae2c573f16c20ccdcc",
+    "silentArgs": "--quiet --wait --campaign \"winget\"",
+    "args": "--wait --campaign \"winget\"",
+    "scope": "machine"
+  },
+  "vscode": {
+    "wingetId": "Microsoft.VisualStudioCode",
+    "version": "1.141.0",
+    "type": "inno",
+    "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/2a59476c9bfcb90b3ddc372c36762471b7dfad1c/VSCodeUserSetup-x64-1.141.0.exe",
+    "sha256": "e377a8e2e081a4b59dfd19514abdf4f35aa95aa697e217ad819a0fccff11c602",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /mergetasks=!runcode",
+    "args": "/mergetasks=!runcode",
+    "scope": "user"
+  },
+  "winmerge": {
+    "wingetId": "WinMerge.WinMerge",
+    "version": "2.16.58.2",
+    "type": "inno",
+    "url": "https://github.com/WinMerge/winmerge/releases/download/v2.16.58.2/WinMerge-2.16.58.2-x64-PerUser-Setup.exe",
+    "sha256": "6ac1e3c0028c39e49962dacd662ab553989d7e817a5cdf96ebbbc1fb345bcff4",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "user"
+  },
+  "winrar": {
+    "wingetId": "RARLab.WinRAR",
+    "version": "7.23.0",
+    "type": "exe",
+    "url": "https://www.rarlab.com/rar/winrar-x64-723.exe",
+    "sha256": "8ff0daf3ed564cc743c0e23ff2e253997ffc74460f9673f0b6dd037b2db4ce7b",
+    "silentArgs": "-s1",
+    "scope": "machine"
+  },
+  "winscp": {
+    "wingetId": "WinSCP.WinSCP",
+    "version": "6.5.7",
+    "type": "inno",
+    "url": "https://sourceforge.net/projects/winscp/files/WinSCP/6.5.7/WinSCP-6.5.7-Setup.exe/download",
+    "sha256": "65103dad94a907bf8b7b9b8db8174dfb60010237d9125db066f34d89817bcd99",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER",
+    "args": "/CURRENTUSER",
+    "scope": "user"
+  },
+  "wireguard": {
+    "wingetId": "WireGuard.WireGuard",
+    "version": "1.1.1",
+    "type": "wix",
+    "url": "https://download.wireguard.com/windows-client/wireguard-amd64-1.1.1.msi",
+    "sha256": "7bfed60ad61b785c914b38b61555a975488e1d3ec472dbfb2fcdf498fca75242",
+    "silentArgs": "/quiet /norestart DO_NOT_LAUNCH=1",
+    "args": "DO_NOT_LAUNCH=1",
+    "scope": "machine"
+  },
+  "wireshark": {
+    "wingetId": "WiresharkFoundation.Wireshark",
+    "version": "4.6.9",
+    "type": "nullsoft",
+    "url": "https://2.na.dl.wireshark.org/win64/all-versions/Wireshark-4.6.9-x64.exe",
+    "sha256": "bf9b5ce8a89f244c376a9b1a946276eaa06463dde3e33069a34d7f102f5878cf",
+    "silentArgs": "/S",
+    "scope": "machine"
+  },
+  "wiztree": {
+    "wingetId": "AntibodySoftware.WizTree",
+    "version": "4.33",
+    "type": "inno",
+    "url": "https://diskanalyzer.com/files/wiztree_4_33_setup.exe",
+    "sha256": "3c56dfc08f06c58b9a9133a137c8559e016749e1605cf81e1b1d6b1deead2ff1",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "xnviewmp": {
+    "wingetId": "XnSoft.XnViewMP",
+    "version": "1.12.1.0",
+    "type": "inno",
+    "url": "https://download.xnview.com/old_versions/XnView_MP/XnView_MP-1.12.1-win-x64.exe",
+    "sha256": "309bda96d2728c0de254257a50cdf3aa9956e3352c60b6f8a55d0c829ece1ee9",
+    "silentArgs": "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "scope": "machine"
+  },
+  "yandex-browser": {
+    "wingetId": "Yandex.Browser",
+    "version": "26.10.0.1796",
+    "type": "exe",
+    "url": "https://download.cdn.yandex.net/browser/int/26_10_0_1796_118428/en/Yandex.exe",
+    "sha256": "ba3c76e0b4283057b5bc7734e142666ed50ca711b5e135143513bfe495f1d251",
+    "silentArgs": "--silent --do-not-launch-browser",
+    "args": "--do-not-launch-browser",
+    "scope": "user",
+    "successCodes": [
+      1,
+      3
+    ]
+  },
+  "zoom": {
+    "wingetId": "Zoom.Zoom",
+    "version": "7.2.48556",
+    "type": "msi",
+    "url": "https://zoom.us/client/7.2.1.48556/ZoomInstallerFull.msi?archType=x64",
+    "sha256": "b0dac9fa5237d2e18144ca723644460e7cc26675e5d3db0f89fdfe47ad8c429b",
+    "silentArgs": "/quiet /norestart",
+    "scope": "machine"
+  },
+  "zotero": {
+    "wingetId": "DigitalScholar.Zotero",
+    "version": "10.0.6",
+    "type": "nullsoft",
+    "url": "https://download.zotero.org/client/release/10.0.6/Zotero-10.0.6_x64_setup.exe",
+    "sha256": "1cf48672c17c4be057d28b309875204f35b52b7d045d38bb7a1992828828b124",
+    "silentArgs": "/S",
+    "scope": "machine"
+  }
+}

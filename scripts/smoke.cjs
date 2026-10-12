@@ -4,7 +4,7 @@
 const { strict: assert } = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const crypto = require('node:crypto');
+const { createHash } = require('node:crypto');
 
 let passed = 0;
 let failed = 0;
@@ -104,14 +104,14 @@ const SEARCH_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 function writeSearchCache(dir, query, results) {
   fs.mkdirSync(dir, { recursive: true });
-  const hash = crypto.createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
+  const hash = createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
   const entry = { query, results, cachedAt: Date.now() };
   fs.writeFileSync(path.join(dir, `${hash}.json`), JSON.stringify(entry));
   return hash;
 }
 
 function readSearchCache(dir, query) {
-  const hash = crypto.createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
+  const hash = createHash('sha256').update(query.toLowerCase().trim()).digest('hex');
   const p = path.join(dir, `${hash}.json`);
   if (!fs.existsSync(p)) return null;
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
@@ -210,15 +210,15 @@ test('addMany emits once', () => {
 });
 
 console.log('\ncatalog:');
-test('catalog.json has curated hits with direct installUrl', () => {
+test('catalog.json is curation only, every app has an install source', () => {
   const catalog = loadCatalog();
   assert.ok(catalog.length >= 70, `Expected >= 70 entries, got ${catalog.length}`);
-  const firefox = catalog.find((c) => c.id === 'firefox');
-  assert.ok(firefox, 'firefox entry missing');
-  assert.equal(firefox.provider, 'catalog');
-  assert.ok(firefox.installUrl, 'firefox must have installUrl');
-  const allCatalog = catalog.every((c) => c.provider === 'catalog' && c.installUrl);
-  assert.ok(allCatalog, 'all catalog entries must be provider=catalog with installUrl');
+  const installers = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'installers.json'), 'utf-8'));
+  for (const c of catalog) {
+    assert.equal(c.provider, 'catalog', c.id);
+    assert.ok(!('installUrl' in c) && !('silentArgs' in c), `${c.id}: links belong in installers.json`);
+    assert.ok(installers[c.id], `${c.id}: missing from installers.json`);
+  }
 });
 test('game launchers cover the major stores', () => {
   const games = loadCatalog().filter((c) => c.category === 'games');
@@ -436,26 +436,44 @@ test('shouldTryAltProvider includes forbidden/not_found for winget fallback', ()
 test('catalog uses shouldTryAltProvider for winget fallback', () => {
   const src = fs.readFileSync(path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'), 'utf-8');
   assert.ok(src.includes('shouldTryAltProvider(err)'), 'install should use shouldTryAltProvider');
-  assert.ok(src.includes('resolveInstallFallback'), 'resolveInstallFallback missing');
+  assert.ok(src.includes('resolveInstallPlan'), 'resolveInstallPlan missing');
 });
 
-const { resolveInstallFallback } = loadTsModule(path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'), {
-  electron: electronStub,
+const { resolveInstallPlan, isSafeInstallerArgs } = loadTsModule(
+  path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'),
+  { electron: electronStub },
+);
+
+test('resolveInstallPlan: direct installer with winget as fallback', () => {
+  const direct = { wingetId: 'Mozilla.Firefox', version: '1', type: 'nullsoft', url: 'https://x/y.exe', sha256: 'ab' };
+  const plan = resolveInstallPlan('firefox', { firefox: direct }, {});
+  assert.equal(plan.direct, direct);
+  assert.deepEqual(plan.fallback, { provider: 'winget', packageId: 'Mozilla.Firefox' });
 });
 
-test('resolveInstallFallback prefers altProvider then winget-map', () => {
-  const alt = resolveInstallFallback({
-    id: 'discord',
-    altProvider: { provider: 'winget', packageId: 'Discord.Discord' },
+test('resolveInstallPlan: winget-only and hand-pinned providers', () => {
+  const plan = resolveInstallPlan('teams', { teams: { wingetId: 'Microsoft.Teams', version: '1', type: 'msix', direct: false } }, {});
+  assert.equal(plan.direct, undefined);
+  assert.deepEqual(plan.fallback, { provider: 'winget', packageId: 'Microsoft.Teams' });
+
+  const choco = resolveInstallPlan('filezilla', { filezilla: { provider: 'chocolatey', packageId: 'filezilla' } }, {});
+  assert.deepEqual(choco, { fallback: { provider: 'chocolatey', packageId: 'filezilla' } });
+});
+
+test('resolveInstallPlan: app not refreshed yet falls back to winget-map', () => {
+  assert.deepEqual(resolveInstallPlan('new-app', {}, { 'new-app': 'Vendor.App' }), {
+    fallback: { provider: 'winget', packageId: 'Vendor.App' },
   });
-  assert.deepEqual(alt, { provider: 'winget', packageId: 'Discord.Discord' });
+  assert.deepEqual(resolveInstallPlan('nothing', {}, {}), { fallback: undefined });
+});
 
-  const mapped = resolveInstallFallback({ id: 'putty' });
-  assert.equal(mapped?.provider, 'winget');
-  assert.ok(mapped?.packageId, 'putty should resolve via winget-map');
-
-  const skipped = resolveInstallFallback({ id: 'x', noWingetFallback: true });
-  assert.equal(skipped, null);
+test('isSafeInstallerArgs allows manifest quoting, refuses cmd metacharacters', () => {
+  assert.ok(isSafeInstallerArgs(''));
+  assert.ok(isSafeInstallerArgs('/SP- /VERYSILENT /mergetasks=!runcode'));
+  assert.ok(isSafeInstallerArgs('--install "C:\\Program Files (x86)\\AnyDesk" --silent'));
+  for (const bad of ['/S & calc', '/S | x', '/S > out', '%PATH%', '/S ^', '"unbalanced', '/S\ncalc']) {
+    assert.ok(!isSafeInstallerArgs(bad), bad);
+  }
 });
 
 test('queue exposes cancel / dismiss / retryJob APIs', () => {
@@ -520,6 +538,106 @@ test('clearDone removes done, cancelled, and failed', () => {
   q.clearDone();
   assert.equal(q.getJobs().length, 0);
 });
+
+// --- data/installers.json (generated by scripts/refresh-installers.cjs) ---
+{
+  const { isSafeInstallerArgs: safeArgs } = loadTsModule(
+    path.join(__dirname, '..', 'electron', 'providers', 'catalog.ts'),
+    { electron: electronStub },
+  );
+  const installers = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'installers.json'), 'utf-8'));
+
+  test('installers: direct entries are https + sha256 with safe switches', () => {
+    for (const [id, e] of Object.entries(installers)) {
+      if (!e.url) continue;
+      assert.ok(e.url.startsWith('https://'), `${id}: url must be https`);
+      assert.match(e.sha256, /^[0-9a-f]{64}$/, `${id}: sha256`);
+      assert.ok(['nullsoft', 'inno', 'burn', 'exe', 'msi', 'wix'].includes(e.type), `${id}: type ${e.type}`);
+      assert.ok(e.wingetId && e.version, `${id}: wingetId/version`);
+      for (const args of [e.silentArgs, e.args]) {
+        if (args) assert.ok(safeArgs(args), `${id}: unsafe switches ${args}`);
+      }
+    }
+  });
+
+  test('installers: every entry is direct, winget-only or another provider', () => {
+    for (const [id, e] of Object.entries(installers)) {
+      const kind = e.url ? 'direct' : e.direct === false ? 'winget' : e.provider ? 'provider' : null;
+      assert.ok(kind, `${id}: unrecognised entry`);
+      if (kind === 'provider') {
+        assert.ok(['winget', 'scoop', 'chocolatey'].includes(e.provider) && e.packageId, id);
+      }
+    }
+  });
+}
+
+// --- recommendations (src/recommend.ts + data/related.json) ---
+{
+  const { buildRecommender } = loadTsModule(path.join(__dirname, '..', 'src', 'recommend.ts'));
+  const related = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'related.json'), 'utf-8'));
+  const catalogIds = new Set(loadCatalog().map((c) => c.id));
+
+  test('related.json: groups reference catalog ids and have 2+ apps', () => {
+    for (const kind of ['stacks', 'alternatives']) {
+      const seen = new Set();
+      for (const g of related[kind]) {
+        assert.ok(!seen.has(g.id), `${kind}: duplicate ${g.id}`);
+        seen.add(g.id);
+        assert.ok(g.apps.length >= 2, `${kind}/${g.id}: needs 2+ apps`);
+        for (const id of g.apps) assert.ok(catalogIds.has(id), `${kind}/${g.id}: unknown app "${id}"`);
+      }
+    }
+  });
+
+  const app = (id, extra = {}) => ({
+    id, curatedId: id, provider: 'catalog', name: id, category: 'x', isInstalled: false, isFavorite: false, ...extra,
+  });
+  const rel = {
+    stacks: [{ id: 'dev', apps: ['vscode', 'git', 'nodejs'] }, { id: 'web', apps: ['vscode', 'postman'] }],
+    alternatives: [{ id: 'browser', apps: ['firefox', 'chrome'] }],
+  };
+
+  test('recommend: cold start falls back to editorial picks', () => {
+    const r = buildRecommender([app('a', { pickTag: 'Must-have' }), app('b', { recommended: true }), app('c')], rel);
+    assert.equal(r.personalized, false);
+    assert.deepEqual(r.forYou().map((x) => x.app.id), ['a', 'b']);
+    assert.equal(r.forYou()[0].reason.kind, 'editor');
+  });
+
+  test('recommend: installed app pulls in its stack-mates with a named reason', () => {
+    const apps = [app('vscode', { isInstalled: true, name: 'VS Code' }), app('git'), app('nodejs'), app('postman'), app('c', { recommended: true })];
+    const top = buildRecommender(apps, rel).forYou();
+    assert.ok(top.every((x) => x.app.id !== 'vscode'), 'installed apps are not recommended');
+    assert.deepEqual(top.slice(0, 3).map((x) => x.app.id).sort(), ['git', 'nodejs', 'postman']);
+    assert.deepEqual(top[0].reason, { kind: 'pairs', withName: 'VS Code' });
+  });
+
+  test('recommend: owning an alternative demotes the rest', () => {
+    const apps = [app('firefox', { isInstalled: true }), app('chrome', { pickTag: 'Popular', category: 'browsers' }), app('vlc', { recommended: true })];
+    const ids = buildRecommender(apps, rel).forYou().map((x) => x.app.id);
+    assert.ok(ids.indexOf('vlc') < ids.indexOf('chrome'), ids.join(','));
+  });
+
+  test('recommend: starred but not installed comes first', () => {
+    const apps = [app('x', { isFavorite: true }), app('y', { pickTag: 'Top' })];
+    const top = buildRecommender(apps, rel).forYou()[0];
+    assert.equal(top.app.id, 'x');
+    assert.equal(top.reason.kind, 'favorite');
+  });
+
+  test('recommend: pairsWith skips alternatives, alternativesTo lists them', () => {
+    const r = buildRecommender([app('vscode'), app('git'), app('nodejs'), app('postman'), app('firefox'), app('chrome')], rel);
+    assert.deepEqual(r.pairsWith(app('vscode')).map((a) => a.id), ['git', 'nodejs', 'postman']);
+    assert.deepEqual(r.alternativesTo(app('firefox')).map((a) => a.id), ['chrome']);
+  });
+
+  test('recommend: profiles count as stacks (by package id)', () => {
+    const apps = [app('steam', { isInstalled: true, id: 'steam-pkg' }), app('discord', { id: 'discord-pkg' })];
+    const profiles = [{ id: 'p', name: 'p', description: '', packages: [{ provider: 'catalog', packageId: 'steam-pkg' }, { provider: 'catalog', packageId: 'discord-pkg' }] }];
+    const top = buildRecommender(apps, { stacks: [], alternatives: [] }, profiles).forYou();
+    assert.equal(top[0]?.app.curatedId, 'discord');
+  });
+}
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed > 0 ? 1 : 0);

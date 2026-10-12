@@ -593,6 +593,8 @@ button, input, select {
 .packages-header { margin-bottom: 16px; }
 .packages-header .page-title { margin-bottom: 6px; }
 
+.page-hint { margin: -8px 0 14px; max-width: 70ch; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+
 .packages-hint {
   margin-bottom: 10px;
   max-width: 70ch;
@@ -873,6 +875,15 @@ button, input, select {
   text-transform: uppercase;
 }
 
+.capsule-reason {
+  padding: 0 9px 8px;
+  overflow: hidden;
+  color: var(--accent-hover);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .capsule-cta {
   flex-shrink: 0;
   padding: 4px 9px;
@@ -976,6 +987,8 @@ button, input, select {
 }
 
 .shelf-count { color: var(--text-muted); font-size: 11px; }
+
+.shelf-hint { margin: -4px 0 9px; color: var(--text-muted); font-size: 12px; }
 .shelf-spacer { flex: 1; }
 
 .shelf-arrow {
@@ -1119,6 +1132,43 @@ button, input, select {
   color: var(--text-secondary);
   font-size: 10.5px;
 }
+
+.modal-related { padding: 16px 24px 0; }
+
+.modal-related-title {
+  margin-bottom: 7px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.modal-related-list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.related-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 200px;
+  padding: 4px 9px 4px 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.related-chip:hover { border-color: var(--accent-line); background: var(--accent-dim); color: var(--text-primary); }
+.related-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.related-chip .app-cover-img,
+.related-chip .app-monogram { flex: none; }
+
+.related-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.related-chip-badge { color: var(--ok); font-size: 10px; }
 
 .modal-actions {
   display: flex;
@@ -1374,6 +1424,7 @@ button, input, select {
 /* ---------- Covers ---------- */
 
 .app-cover-img { object-fit: contain; display: block; }
+.app-cover-img--xs { width: 20px; height: 20px; }
 .app-cover-img--sm { width: 28px; height: 28px; }
 .app-cover-img--md { width: 52px; height: 52px; }
 .app-cover-img--lg { width: 76px; height: 76px; }

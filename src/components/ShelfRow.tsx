@@ -17,9 +17,12 @@ interface ShelfRowProps {
   onOpen: (app: MergedApp) => void;
   onToggleFavorite: (app: MergedApp) => void;
   onSeeAll?: () => void;
+  /** Why each app is shown, keyed by packageKey. */
+  reasons?: Map<string, string>;
+  hint?: string;
 }
 
-export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, onSeeAll }: ShelfRowProps) {
+export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRetry, onCancel, onOpen, onToggleFavorite, onSeeAll, reasons, hint }: ShelfRowProps) {
   const { t } = useI18n();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -77,12 +80,14 @@ export function ShelfRow({ title, apps, categories, activeJobs, onInstall, onRet
           </button>
         )}
       </div>
+      {hint && <p className="shelf-hint">{hint}</p>}
       <div className="shelf-viewport" ref={viewportRef} onScroll={syncArrows}>
         {apps.slice(0, 16).map((app) => (
           <CapsuleCard
             key={`${app.provider}:${app.id}`}
             app={app}
             categoryLabel={app.category ? categoryLabel(t, app.category, categories[app.category]) : undefined}
+            reason={reasons?.get(packageKey(app.provider, app.id))}
             job={activeJobs?.get(packageKey(app.provider, app.id))}
             onInstall={onInstall}
             onRetry={onRetry}

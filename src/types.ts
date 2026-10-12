@@ -42,6 +42,7 @@ export type InstallErrorCode =
   | 'timeout'
   | 'http'
   | 'installer'
+  | 'untrusted'
   | 'unknown';
 
 export interface QueueJob {

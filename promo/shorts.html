@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox Shorts</title>
+<style>
+  :root { --bg: #0b1219; --bg2: #111b25; --accent: #66c0f4; --accent2: #a5d8ff; --green: #7cb928; --text: #dfe7ee; --muted: #93a3b3; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #0a1118 0%, #0f1a24 55%, #0b1219 100%); }
+  #world { position: absolute; inset: 0; }
+  .glow { position: absolute; width: 1100px; height: 1100px; border-radius: 50%; filter: blur(140px); opacity: .4; }
+  .glow.a { background: #1f6fa3; } .glow.b { background: #44731a; }
+  .rays { position: absolute; left: 50%; top: 50%; width: 3200px; height: 3200px; margin: -1600px 0 0 -1600px; opacity: 0;
+    background: repeating-conic-gradient(from 0deg, rgba(102,192,244,.10) 0deg 6deg, transparent 6deg 18deg); border-radius: 50%; }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+
+  /* Type */
+  .k { font-size: 34px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); }
+  .big { font-size: 118px; font-weight: 850; line-height: 1.02; letter-spacing: -.02em; }
+  .mid { font-size: 82px; font-weight: 800; line-height: 1.06; letter-spacing: -.01em; }
+  .txt { position: absolute; left: 60px; right: 60px; text-align: center; }
+  .w { display: inline-block; }
+  .green { color: var(--green); } .blue { color: var(--accent); }
+  .hand { color: #ffb84d; }
+
+  /* Hook: fake installer dialogs */
+  .dlg { position: absolute; width: 640px; border-radius: 10px; overflow: hidden; background: #f3f3f3; color: #1b1b1b;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.2); opacity: 0; font-family: 'DejaVu Sans', sans-serif; }
+  .dlg .bar { height: 54px; background: #fff; display: flex; align-items: center; padding: 0 20px; font-size: 22px; gap: 12px; border-bottom: 1px solid #ddd; }
+  .dlg .bar i { margin-left: auto; font-style: normal; color: #888; }
+  .dlg .body { padding: 28px 30px 26px; font-size: 26px; line-height: 1.35; }
+  .dlg .btns { display: flex; justify-content: flex-end; gap: 14px; padding: 0 30px 26px; }
+  .dlg .b { padding: 12px 30px; font-size: 24px; border-radius: 6px; border: 1px solid #b9b9b9; background: #fdfdfd; }
+  .dlg .b.p { background: #0067c0; color: #fff; border-color: #0067c0; font-weight: 700; }
+
+  /* Logo slam */
+  .logo { position: absolute; left: 50%; width: 360px; height: 360px; margin-left: -180px; filter: drop-shadow(0 40px 80px rgba(102,192,244,.45)); }
+  .brand { font-size: 190px; font-weight: 900; letter-spacing: -.01em; }
+  .brand span { color: var(--accent); }
+
+  /* Screenshot viewer */
+  .view { position: absolute; left: 70px; width: 940px; border-radius: 28px; overflow: hidden; background: #0a1118;
+    box-shadow: 0 60px 140px rgba(0,0,0,.7), 0 0 0 2px rgba(255,255,255,.08); }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
+  .cam img { width: 1440px; height: 900px; display: block; }
+  .counter { font-size: 300px; font-weight: 900; line-height: .9; color: var(--accent); text-shadow: 0 30px 90px rgba(102,192,244,.4); font-variant-numeric: tabular-nums; }
+
+  /* Click demo */
+  .cursor { position: absolute; width: 70px; height: 70px; left: 0; top: 0; filter: drop-shadow(0 6px 12px rgba(0,0,0,.6)); }
+  .ripple { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 6px solid var(--green); opacity: 0; }
+  .prog { position: absolute; border-radius: 3px; overflow: hidden; background: #1a2735; opacity: 0; }
+  .prog .fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #96da33, #5f9a1b); }
+  .prog .lbl { position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #10200a; }
+  .done { position: absolute; padding: 26px 48px; border-radius: 22px; font-size: 64px; font-weight: 850; background: var(--green); color: #0d1a05;
+    box-shadow: 0 30px 80px rgba(124,185,40,.45); opacity: 0; white-space: nowrap; }
+
+  /* Icon storm */
+  .icon { position: absolute; width: 150px; height: 150px; border-radius: 34px; background: rgba(26,39,53,.92); display: grid; place-items: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.07); opacity: 0; }
+  .icon img { width: 96px; height: 96px; object-fit: contain; }
+  .word { position: absolute; left: 0; right: 0; text-align: center; font-size: 150px; font-weight: 900; letter-spacing: -.02em; opacity: 0;
+    text-shadow: 0 20px 70px rgba(0,0,0,.8); }
+
+  /* Recommendation chip */
+  .chip { position: absolute; left: 50%; padding: 24px 40px; border-radius: 18px; font-size: 46px; font-weight: 750; white-space: nowrap;
+    background: rgba(17,27,37,.95); border: 3px solid var(--accent); color: var(--accent2); box-shadow: 0 0 60px rgba(102,192,244,.45); opacity: 0; }
+
+  /* Trust badges */
+  .badge { position: absolute; left: 90px; right: 90px; height: 210px; border-radius: 30px; background: rgba(26,39,53,.94);
+    border: 2px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 36px; padding: 0 44px; opacity: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .badge .ic { width: 120px; height: 120px; border-radius: 28px; display: grid; place-items: center; font-size: 68px; font-weight: 900; flex: none; }
+  .badge .t { font-size: 58px; font-weight: 850; line-height: 1.05; }
+  .badge .d { font-size: 32px; color: var(--muted); margin-top: 8px; }
+
+  .cta { position: absolute; left: 50%; padding: 34px 70px; border-radius: 22px; font-size: 62px; font-weight: 850; color: #10200a; white-space: nowrap;
+    background: linear-gradient(180deg, #a2e63e, #5f9a1b); box-shadow: 0 30px 90px rgba(124,185,40,.45); }
+  .progressbar { position: absolute; left: 0; top: 0; height: 10px; background: linear-gradient(90deg, var(--accent), var(--green)); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div class="glow a" id="glowA"></div>
+    <div class="glow b" id="glowB"></div>
+    <div class="rays" id="rays"></div>
+
+    <!-- 1. Hook -->
+    <div class="scene" id="s-hook">
+      <div class="txt k" id="hookK" style="top:230px">Знакомо?</div>
+      <div class="txt mid" id="hookT" style="top:300px">Ставишь программы<br>вот <span class="hand">так</span>?</div>
+      <div id="dialogs"></div>
+    </div>
+
+    <!-- 2. Drop -->
+    <div class="scene" id="s-drop">
+      <img class="logo" id="dropLogo" src="../data/logo.svg" alt="" style="top:520px">
+      <div class="txt brand" id="dropBrand" style="top:930px">Get<span>Box</span></div>
+      <div class="txt mid" id="dropSub" style="top:1170px; font-size:60px; color:var(--muted)">Все программы — в одном месте</div>
+    </div>
+
+    <!-- 3. Catalog -->
+    <div class="scene" id="s-cat">
+      <div class="txt" style="top:210px"><span class="counter" id="count">0</span></div>
+      <div class="txt mid" id="catT" style="top:500px">программ<br><span class="blue">в один клик</span></div>
+      <div class="view" id="catView" style="top:760px;height:860px"><div class="cam" id="catCam"><img src="shots/home.png" alt=""></div></div>
+    </div>
+
+    <!-- 4. Click -->
+    <div class="scene" id="s-click">
+      <div class="txt big" id="clickT1" style="top:220px">1 клик.</div>
+      <div class="txt mid" id="clickT2" style="top:370px">Без «Далее».<br><span class="green">Без мастеров.</span></div>
+      <div class="view" id="clickView" style="top:660px;height:960px"><div class="cam" id="clickCam"><img src="shots/home-scrolled.png" alt="">
+        <div class="prog" id="clickProg"><div class="fill" id="clickFill"></div></div>
+        <div class="ripple" id="ripple"></div>
+      </div>
+        <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.6 1.6L9 21z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="done" id="done" style="left:50%;top:1450px">✓ Установлено</div>
+    </div>
+
+    <!-- 5. Icon storm -->
+    <div class="scene" id="s-storm">
+      <div id="icons"></div>
+      <div class="word" id="word" style="top:850px"></div>
+    </div>
+
+    <!-- 6. Recommendations -->
+    <div class="scene" id="s-rec">
+      <div class="txt k" id="recK" style="top:230px">Рекомендации</div>
+      <div class="txt mid" id="recT" style="top:300px">Знает, что тебе<br><span class="green">пригодится</span></div>
+      <div class="view" id="recView" style="top:620px;height:820px"><div class="cam" id="recCam"><img src="shots/home-scrolled.png" alt=""></div></div>
+      <div class="chip" id="chip" style="top:1490px">Вместе с Visual Studio Code</div>
+    </div>
+
+    <!-- 7. Trust -->
+    <div class="scene" id="s-trust">
+      <div class="txt mid" id="trustT" style="top:230px">Без репаков<br>и <span class="blue">сомнительных зеркал</span></div>
+      <div class="badge" id="b1" style="top:560px"><div class="ic" style="background:#1d4f74">W</div><div><div class="t">Официальные источники</div><div class="d">Манифесты winget</div></div></div>
+      <div class="badge" id="b2" style="top:810px"><div class="ic" style="background:#3f6a12">#</div><div><div class="t">Проверка SHA256</div><div class="d">Чужой файл не запустится</div></div></div>
+      <div class="badge" id="b3" style="top:1060px"><div class="ic" style="background:#5a3d8a">↻</div><div><div class="t">Запасной путь</div><div class="d">winget · Scoop · Chocolatey</div></div></div>
+    </div>
+
+    <!-- 8. Outro -->
+    <div class="scene" id="s-outro">
+      <img class="logo" id="outLogo" src="../data/logo.svg" alt="" style="top:380px;width:300px;height:300px;margin-left:-150px">
+      <div class="txt brand" id="outBrand" style="top:700px">Get<span>Box</span></div>
+      <div class="txt mid" id="outSub" style="top:930px;font-size:58px;color:var(--muted)">Бесплатно · Windows 10/11<br>Один .exe — и готово</div>
+      <div class="cta" id="cta" style="top:1180px">Ссылка в описании</div>
+    </div>
+  </div>
+  <div class="flash" id="flash"></div>
+  <div class="progressbar" id="pbar"></div>
+</div>
+
+<script>
+  const BPM = 128, B = 60 / BPM, BAR = 4 * B, DURATION = 16 * BAR; // 30 s
+  window.FORMAT = { width: 1080, height: 1920, fps: 60, duration: DURATION };
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const lerp = (a, b, x) => a + (b - a) * x;
+  const outCubic = (x) => 1 - Math.pow(1 - x, 3);
+  const outQuint = (x) => 1 - Math.pow(1 - x, 5);
+  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const outBack = (x, c = 2.2) => 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
+  // deterministic pseudo-random for shake
+  const noise = (x) => { const s = Math.sin(x * 127.1) * 43758.5453; return (s - Math.floor(s)) * 2 - 1; };
+
+  /** Scene window [a, b) with a fast whip: in from below, out upward with motion blur. */
+  function scene(id, t, a, b, w = 0.16) {
+    const el = $(id);
+    const visible = t >= a - 0.001 && t < b + w;
+    el.style.visibility = visible ? 'visible' : 'hidden';
+    if (!visible) return -1;
+    const inK = outQuint(seg(t, a, a + w)), outK = seg(t, b, b + w);
+    const y = (1 - inK) * 260 - outK * 420;
+    const blur = (1 - inK) * 18 + outK * 26;
+    el.style.transform = `translateY(${y}px)`;
+    el.style.filter = blur > 0.3 ? `blur(${blur}px)` : 'none';
+    el.style.opacity = Math.min(1, inK * 1.4) * (1 - outK);
+    return t - a;
+  }
+  /** Pop: scale from 0 with overshoot, plus fade. */
+  function pop(el, lt, at, dur = 0.35, extra = '') {
+    const x = seg(lt, at, at + dur);
+    el.style.opacity = clamp(x * 3);
+    el.style.transform = `${extra} scale(${x === 0 ? 0 : outBack(x)})`;
+  }
+  /** Slam: scale down from big with a hit. */
+  function slam(el, lt, at, dur = 0.22, from = 2.4, extra = '') {
+    const x = outQuint(seg(lt, at, at + dur));
+    el.style.opacity = clamp(seg(lt, at, at + dur * 0.4));
+    el.style.transform = `${extra} scale(${lerp(from, 1, x)})`;
+  }
+  function rise(el, lt, at, dur = 0.3, dist = 80) {
+    const x = outQuint(seg(lt, at, at + dur));
+    el.style.opacity = x;
+    el.style.transform = `translateY(${(1 - x) * dist}px)`;
+  }
+  /** Fill a vw×vh viewer with a rect (fractions of the 1440×900 screenshot), never showing past its edges. */
+  function frame(cam, vw, vh, r) {
+    const s = Math.max(vw / (r.w * 1440), vh / (r.h * 900), vw / 1440, vh / 900);
+    const cx = (r.x + r.w / 2) * 1440 * s, cy = (r.y + r.h / 2) * 900 * s;
+    const tx = clamp(vw / 2 - cx, vw - 1440 * s, 0), ty = clamp(vh / 2 - cy, vh - 900 * s, 0);
+    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    return s;
+  }
+  const mixRect = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
+  const beatPulse = (t) => Math.exp(-((t % B + B) % B) * 9);
+
+  // ---------- build dynamic elements ----------
+  const DIALOGS = [
+    ['Setup Wizard', 'Добро пожаловать в мастер установки.', 'Далее >'],
+    ['Лицензия', 'Примите условия соглашения (47 стр.)', 'Принимаю'],
+    ['Компоненты', 'Установить ещё и тулбар для браузера?', 'Далее >'],
+    ['Папка', 'C:\\Program Files (x86)\\Vendor\\App', 'Далее >'],
+    ['Ярлыки', 'Создать 6 ярлыков на рабочем столе?', 'Далее >'],
+    ['Почти готово', 'Перезагрузите компьютер сейчас?', 'Позже'],
+    ['Setup Wizard', 'Найдено обновление установщика…', 'Далее >'],
+  ];
+  const DLG_POS = [[110, 640, -5], [330, 760, 4], [90, 900, -2], [350, 1020, 6], [140, 1150, -6], [300, 1280, 3], [200, 1420, -3]];
+  $('dialogs').innerHTML = DIALOGS.map(([title, body, btn], i) =>
+    `<div class="dlg" id="dlg${i}" style="left:${DLG_POS[i][0]}px;top:${DLG_POS[i][1]}px">
+       <div class="bar">⚙ ${title}<i>✕</i></div><div class="body">${body}</div>
+       <div class="btns"><span class="b">Отмена</span><span class="b p">${btn}</span></div></div>`).join('');
+
+  const ICONS = ['firefox', 'steam', 'vscode', 'discord', 'spotify', 'obs-studio', 'google-chrome', 'telegram', 'git', 'blender', 'vlc', 'python',
+    'docker', '7zip', 'gimp', 'epic-games', 'nodejs', 'bitwarden', 'obsidian', 'zoom', 'krita', 'brave', 'slack', 'postman'];
+  const EXT = { 'everything': 'png' };
+  // 4 columns × 6 rows around the centre, the middle band left free for words
+  const ICON_POS = ICONS.map((_, i) => {
+    const col = i % 4, row = Math.floor(i / 4);
+    const x = 90 + col * 240 + (row % 2 ? 60 : 0);
+    const y = [250, 440, 630, 1210, 1400, 1590][row];
+    return [x, y];
+  });
+  $('icons').innerHTML = ICONS.map((n, i) =>
+    `<div class="icon" id="ic${i}" style="left:${ICON_POS[i][0]}px;top:${ICON_POS[i][1]}px"><img src="../data/icons/${n}.${EXT[n] ?? 'svg'}" alt=""></div>`).join('');
+  const WORDS = [['Браузеры', ''], ['Игры', 'green'], ['Код', 'blue'], ['Музыка', ''], ['Видео', 'green'], ['Графика', 'blue'], ['VPN', ''], ['118 программ', 'green']];
+
+  // Screenshot rects (fractions of 1440×900)
+  const R = {
+    // viewer aspect ≈ 1.1, so w ≈ 0.69·h keeps the crop undistorted
+    hero: { x: 0.2, y: 0.12, w: 0.5, h: 0.72 },
+    heroR: { x: 0.42, y: 0.18, w: 0.5, h: 0.72 },
+    forYou: { x: 0.22, y: 0.42, w: 0.36, h: 0.52 },
+    start: { x: 0.2, y: 0.08, w: 0.4, h: 0.62 },
+    nodeCard: { x: 0.28, y: 0.16, w: 0.17, h: 0.26 },
+    shelfL: { x: 0.16, y: 0.1, w: 0.3, h: 0.42 },
+    shelfR: { x: 0.66, y: 0.1, w: 0.3, h: 0.42 },
+  };
+  // "Установить" button on the Node.js card in home-scrolled.png
+  const BTN = { x: 0.3685, y: 0.328, w: 0.057, h: 0.0224 };
+
+  window.render = function (t) {
+    const drop = t >= 2 * BAR && t < 14 * BAR;
+    const pulse = drop ? beatPulse(t) : 0;
+
+    // background life
+    $('glowA').style.transform = `translate(${-300 + Math.sin(t * 0.6) * 220}px, ${-200 + Math.cos(t * 0.45) * 260}px) scale(${1 + pulse * 0.08})`;
+    $('glowB').style.transform = `translate(${500 + Math.cos(t * 0.5) * 220}px, ${1100 + Math.sin(t * 0.4) * 240}px) scale(${1 + pulse * 0.08})`;
+    $('rays').style.opacity = drop ? 0.55 + pulse * 0.45 : 0;
+    $('rays').style.transform = `rotate(${t * 14}deg)`;
+    $('world').style.transform = `scale(${1 + pulse * 0.012})`;
+    $('pbar').style.width = `${(t / DURATION) * 100}%`;
+
+    // flashes on hard hits
+    const hits = [2 * BAR, 5 * BAR, 9 * BAR, 14 * BAR];
+    const flash = Math.max(...hits.map((h) => (t >= h ? Math.exp(-(t - h) * 14) : 0)));
+    $('flash').style.opacity = flash * 0.85;
+
+    // 1. Hook — bars 1–2: one dialog per beat
+    let lt = scene('s-hook', t, 0, 2 * BAR);
+    if (lt >= 0) {
+      rise($('hookK'), lt, 0.05, 0.3, 40);
+      rise($('hookT'), lt, 0.15, 0.35, 60);
+      DIALOGS.forEach((_, i) => {
+        const at = (i + 1) * B;
+        const el = $(`dlg${i}`);
+        const x = seg(lt, at, at + 0.22);
+        const shake = lt > at ? Math.exp(-(lt - at) * 10) * 10 : 0;
+        el.style.opacity = clamp(x * 4);
+        el.style.transform = `rotate(${DLG_POS[i][2] + noise(lt * 30 + i) * shake * 0.3}deg) scale(${x === 0 ? 0 : outBack(x, 2.6)})`;
+      });
+    }
+
+    // 2. Drop — bar 3
+    lt = scene('s-drop', t, 2 * BAR, 3 * BAR);
+    if (lt >= 0) {
+      const sh = Math.exp(-lt * 7) * 26;
+      const shake = `translate(${noise(lt * 50) * sh}px, ${noise(lt * 50 + 9) * sh}px)`;
+      slam($('dropLogo'), lt, 0, 0.25, 3.2, shake);
+      slam($('dropBrand'), lt, B, 0.2, 1.8);
+      rise($('dropSub'), lt, 2 * B, 0.3, 50);
+    }
+
+    // 3. Catalog — bars 4–5
+    lt = scene('s-cat', t, 3 * BAR, 5 * BAR);
+    if (lt >= 0) {
+      const n = Math.round(118 * outCubic(seg(lt, 0.1, 1.3)));
+      $('count').textContent = n;
+      $('count').style.display = 'inline-block';
+      $('count').style.transform = `scale(${1 + beatPulse(t) * 0.06})`;
+      rise($('catT'), lt, 0.3, 0.3, 50);
+      const k1 = inOut(seg(lt, 0.4, 1.8)), k2 = inOut(seg(lt, 1.9, 3.4));
+      const r = k2 > 0 ? mixRect(R.heroR, R.forYou, k2) : mixRect(R.hero, R.heroR, k1);
+      frame($('catCam'), 940, 860, r);
+      rise($('catView'), lt, 0, 0.35, 160);
+    }
+
+    // 4. Click — bars 6–7
+    lt = scene('s-click', t, 5 * BAR, 7 * BAR);
+    if (lt >= 0) {
+      slam($('clickT1'), lt, 0, 0.2, 1.8);
+      rise($('clickT2'), lt, 4 * B, 0.3, 50);
+      rise($('clickView'), lt, 0, 0.3, 160);
+      const zoom = inOut(seg(lt, 0.15, 0.9));
+      const rect = mixRect(R.start, R.nodeCard, zoom);
+      const s = frame($('clickCam'), 940, 960, rect);
+      // button position in viewer px
+      const cam = $('clickCam').style.transform.match(/translate\(([-\d.]+)px, ([-\d.]+)px\)/);
+      const tx = +cam[1], ty = +cam[2];
+      const bx = tx + (BTN.x + BTN.w / 2) * 1440 * s, by = ty + (BTN.y + BTN.h / 2) * 900 * s;
+      // cursor glides in, clicks on beat 3
+      const clickAt = 3 * B;
+      const c = inOut(seg(lt, 0.9, clickAt - 0.05));
+      const cx = lerp(980, bx - 6, c), cy = lerp(1000, by - 4, c);
+      const press = lt > clickAt ? Math.exp(-(lt - clickAt) * 12) : 0;
+      $('cursor').style.transform = `translate(${cx}px, ${cy}px) scale(${1 - press * 0.2})`;
+      $('cursor').style.opacity = 1 - seg(lt, 6 * B, 6.5 * B);
+      // ripple + progress overlay drawn in screenshot space
+      const rp = seg(lt, clickAt, clickAt + 0.45);
+      const rip = $('ripple');
+      rip.style.left = `${(BTN.x + BTN.w / 2) * 1440}px`; rip.style.top = `${(BTN.y + BTN.h / 2) * 900}px`;
+      rip.style.opacity = rp > 0 ? 1 - rp : 0; rip.style.transform = `scale(${1 + rp * 2.5})`;
+      const prog = $('clickProg');
+      Object.assign(prog.style, { left: `${BTN.x * 1440}px`, top: `${BTN.y * 900}px`, width: `${BTN.w * 1440}px`, height: `${BTN.h * 900}px` });
+      prog.style.opacity = lt > clickAt ? 1 : 0;
+      $('clickFill').style.width = `${outCubic(seg(lt, clickAt + 0.05, clickAt + 4 * B)) * 100}%`;
+      pop($('done'), lt, clickAt + 4 * B, 0.3, 'translateX(-50%)');
+    }
+
+    // 5. Icon storm — bars 8–9: icons on 8ths, a word per beat
+    lt = scene('s-storm', t, 7 * BAR, 9 * BAR);
+    if (lt >= 0) {
+      ICONS.forEach((_, i) => {
+        const at = i * (B / 2) * 0.62;
+        const el = $(`ic${i}`);
+        const x = seg(lt, at, at + 0.3);
+        const bob = Math.sin(lt * 3 + i) * 10;
+        el.style.opacity = clamp(x * 3);
+        el.style.transform = `translateY(${bob}px) rotate(${(1 - x) * 40 * (i % 2 ? 1 : -1)}deg) scale(${x === 0 ? 0 : outBack(x) * (1 + beatPulse(t) * 0.07)})`;
+      });
+      const wi = clamp(Math.floor(lt / B), 0, WORDS.length - 1);
+      const w = $('word');
+      w.textContent = WORDS[wi][0];
+      w.className = `word ${WORDS[wi][1]}`;
+      const wl = lt - wi * B;
+      w.style.opacity = 1;
+      w.style.transform = `scale(${lerp(1.5, 1, outQuint(clamp(wl / 0.12)))})`;
+      if (wi === WORDS.length - 1) w.style.fontSize = '120px'; else w.style.fontSize = '';
+    }
+
+    // 6. Recommendations — bars 10–11
+    lt = scene('s-rec', t, 9 * BAR, 11 * BAR);
+    if (lt >= 0) {
+      rise($('recK'), lt, 0, 0.3, 30);
+      rise($('recT'), lt, 0.1, 0.3, 50);
+      rise($('recView'), lt, 0, 0.3, 160);
+      frame($('recCam'), 940, 820, mixRect(R.shelfL, R.shelfR, inOut(seg(lt, 0.4, 3.4))));
+      pop($('chip'), lt, 4 * B, 0.35, 'translateX(-50%)');
+    }
+
+    // 7. Trust — bars 12–13: a badge on beats 1, 3, 5
+    lt = scene('s-trust', t, 11 * BAR, 13 * BAR);
+    if (lt >= 0) {
+      rise($('trustT'), lt, 0, 0.3, 50);
+      ['b1', 'b2', 'b3'].forEach((id, i) => {
+        const at = (1 + i * 2) * B;
+        const x = outQuint(seg(lt, at, at + 0.22));
+        const el = $(id);
+        el.style.opacity = clamp(x * 2);
+        el.style.transform = `translateX(${(1 - x) * (i % 2 ? 900 : -900)}px) rotate(${(1 - x) * (i % 2 ? 6 : -6)}deg)`;
+      });
+    }
+
+    // 8. Outro — bars 14–16
+    lt = scene('s-outro', t, 13 * BAR, DURATION + 1);
+    if (lt >= 0) {
+      const sh = Math.exp(-lt * 7) * 18;
+      slam($('outLogo'), lt, 0, 0.25, 2.6, `translate(${noise(lt * 50) * sh}px, ${noise(lt * 50 + 4) * sh}px)`);
+      slam($('outBrand'), lt, B, 0.2, 1.7);
+      rise($('outSub'), lt, 2 * B, 0.3, 50);
+      const breathe = 1 + Math.sin(Math.max(0, lt - 4 * B) * 6) * 0.035 * seg(lt, 4 * B, 5 * B);
+      const c = seg(lt, 3 * B, 3 * B + 0.35);
+      $('cta').style.opacity = clamp(c * 3);
+      $('cta').style.transform = `translateX(-50%) scale(${c === 0 ? 0 : outBack(c) * breathe})`;
+    }
+  };
+  window.DURATION = DURATION;
+  render(Number(new URLSearchParams(location.search).get('t') ?? 0));
+</script>
+</body>
+</html>

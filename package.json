@@ -1,21 +1,22 @@
 {
   "name": "getbox",
-  "version": "1.2.0",
+  "version": "1.2.5",
   "description": "GetBox — локальный магазин программ для Windows",
   "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/render-app-icon.cjs && node scripts/fetch-icons.cjs && node -e \"const fs=require('fs');const d='data/bootstrap';fs.mkdirSync(d,{recursive:true});fs.copyFileSync('electron/bootstrap/scoop-zip-install.ps1',d+'/scoop-zip-install.ps1');fs.copyFileSync('electron/bootstrap/scoop-zip-install.ps1','dist-electron/scoop-zip-install.ps1');\" && tsc -p tsconfig.node.json && vite build",
+    "build": "node scripts/render-app-icon.cjs && node scripts/fetch-icons.cjs && node -e \"const fs=require('fs');const d='data/bootstrap';fs.mkdirSync(d,{recursive:true});fs.mkdirSync('dist-electron',{recursive:true});fs.copyFileSync('electron/bootstrap/scoop-zip-install.ps1',d+'/scoop-zip-install.ps1');fs.copyFileSync('electron/bootstrap/scoop-zip-install.ps1','dist-electron/scoop-zip-install.ps1');\" && tsc -p tsconfig.node.json && vite build",
     "electron:dev": "vite",
     "dist": "npm run build && electron-builder --win portable",
     "index": "electron . --index-rebuild",
     "prewarm": "electron . --prewarm-meta",
     "test": "node scripts/verify-catalog.cjs && node scripts/smoke.cjs && node scripts/test-download.cjs && node scripts/test-resilience.cjs && node scripts/generate-winget-map.cjs --verify && node scripts/test-app-full.cjs",
     "verify:catalog": "node scripts/verify-catalog.cjs",
+    "catalog:installers": "node --no-warnings scripts/refresh-installers.cjs",
     "winget:map": "node scripts/generate-winget-map.cjs",
     "winget:map:verify": "node scripts/generate-winget-map.cjs --verify",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint ."
   },
   "build": {
     "appId": "com.getbox.app",
@@ -52,6 +53,7 @@
     "electron-store": "^10.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
@@ -60,9 +62,13 @@
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
     "eslint": "^9.16.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "js-yaml": "^4.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.7.2",
+    "typescript-eslint": "^8.71.1",
     "vite": "^6.0.3",
     "vite-plugin-electron": "^0.28.8",
     "vite-plugin-electron-renderer": "^0.14.6"

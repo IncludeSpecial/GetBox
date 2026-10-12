@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MergedApp, ProfileEntry, QueueJob, SearchResult, ViewMode, AppSettings } from './types';
 import { packageKey } from './types';
 import { I18nProvider } from './i18n/I18nContext';
 import { translations, type Locale } from './i18n/translations';
-import { categoryLabel, profileLabel } from './i18n/helpers';
+import { categoryLabel, profileLabel, reasonLabel } from './i18n/helpers';
+import { buildRecommender, type RelatedData } from './recommend';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { HeroBanner } from './components/HeroBanner';
@@ -32,6 +33,7 @@ export default function App() {
   const [apps, setApps] = useState<MergedApp[]>([]);
   const [categories, setCategories] = useState<Record<string, string>>({});
   const [profiles, setProfiles] = useState<ProfileEntry[]>([]);
+  const [related, setRelated] = useState<RelatedData>({ stacks: [], alternatives: [] });
   const [providers, setProviders] = useState<Array<{ id: string; displayName: string; ok: boolean; version?: string; message?: string }>>([]);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,11 +83,13 @@ export default function App() {
         apps: MergedApp[];
         categories: Record<string, string>;
         profiles: ProfileEntry[];
+        related?: RelatedData;
         error?: string;
       };
       setApps(data.apps ?? []);
       setCategories(data.categories ?? {});
       setProfiles(data.profiles ?? []);
+      setRelated(data.related ?? { stacks: [], alternatives: [] });
       if (data.error) addToast(`${tRef.current.nav.catalog}: ${data.error}`, 'error');
     } catch (err) {
       addToast(err instanceof Error ? err.message : tRef.current.toast.catalogError, 'error');
@@ -273,6 +277,8 @@ export default function App() {
   useEffect(() => {
     if (loading || storeApps.length === 0) return;
     enrichVisible(storeApps.slice(0, 40));
+    // storeApps is a fresh array every render; its length is the change worth reacting to.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, storeApps.length, enrichVisible]);
 
   const handleInstall = useCallback(async (app: MergedApp) => {
@@ -420,6 +426,13 @@ export default function App() {
     await loadCatalog();
   }, [settings, loadCatalog]);
 
+  const recommender = useMemo(() => buildRecommender(apps, related, profiles), [apps, related, profiles]);
+  const recommendations = useMemo(() => recommender.forYou(60), [recommender]);
+  const reasonByKey = useMemo(
+    () => new Map(recommendations.map((r) => [packageKey(r.app.provider, r.app.id), reasonLabel(t, r.reason, categories)])),
+    [recommendations, t, categories],
+  );
+
   const getFilteredApps = (): MergedApp[] => {
     switch (view) {
       case 'catalog':
@@ -434,7 +447,7 @@ export default function App() {
         return [...list].sort((a, b) => a.name.localeCompare(b.name));
       }
       case 'recommended':
-        return storeApps.filter((a) => a.recommended || a.pickTag);
+        return recommendations.map((r) => r.app);
       case 'favorites':
         return apps.filter((a) => a.isFavorite);
       case 'installed':
@@ -451,6 +464,8 @@ export default function App() {
   };
 
   const filteredApps = getFilteredApps();
+  const forYouTitle = recommender.personalized ? t.recommend.forYou : t.recommend.startHere;
+  const forYouHint = recommender.personalized ? t.recommend.forYouHint : t.recommend.startHereHint;
   const heroPool = storeApps.filter((a) => a.pickTag || a.recommended).slice(0, 5);
   const featured = heroPool.find((a) => a.id === featuredId) ?? heroPool[0] ?? storeApps[0];
   const activeQueueJobs = queueJobs.filter((j) => j.status === 'pending' || j.status === 'running');
@@ -542,6 +557,20 @@ export default function App() {
                   ) : (
                     <EmptyState view="home" />
                   )}
+                  <ShelfRow
+                    title={forYouTitle}
+                    hint={forYouHint}
+                    apps={recommendations.slice(0, 12).map((r) => r.app)}
+                    reasons={reasonByKey}
+                    categories={categories}
+                    activeJobs={activeJobs}
+                    onInstall={handleInstall}
+                    onRetry={handleRetryJob}
+                    onCancel={handleCancelJob}
+                    onOpen={setSelectedApp}
+                    onToggleFavorite={handleToggleFavorite}
+                    onSeeAll={() => handleNavigate('recommended')}
+                  />
                   {profiles.length > 0 && (
                     <section className="profiles-section">
                       <h3 className="section-title">{t.hero.profiles}</h3>
@@ -704,7 +733,12 @@ export default function App() {
                       )}
                     </div>
                   )}
-                  {view === 'recommended' && <h2 className="page-title">{t.nav.recommended}</h2>}
+                  {view === 'recommended' && (
+                    <>
+                      <h2 className="page-title">{forYouTitle}</h2>
+                      <p className="page-hint">{forYouHint}</p>
+                    </>
+                  )}
                   {view === 'favorites' && <h2 className="page-title">{t.nav.favorites}</h2>}
                   {view === 'installed' && <h2 className="page-title">{t.nav.installed}</h2>}
                   {view === 'search' && <h2 className="page-title">{t.search.results}</h2>}
@@ -728,6 +762,7 @@ export default function App() {
                       onOpen={setSelectedApp}
                       onToggleFavorite={handleToggleFavorite}
                       onVisibleChange={enrichVisible}
+                      reasons={view === 'recommended' ? reasonByKey : undefined}
                     />
                   )}
                 </>
@@ -758,6 +793,9 @@ export default function App() {
           onRetry={handleRetryJob}
           onCancel={handleCancelJob}
           onToggleFavorite={handleToggleFavorite}
+          pairs={recommender.pairsWith(selectedApp)}
+          alternatives={recommender.alternativesTo(selectedApp)}
+          onOpen={setSelectedApp}
         />
       )}
 

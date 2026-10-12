@@ -34,7 +34,7 @@ const packageId = process.argv[2] || 'discord';
 
 (async () => {
   console.log(`\nLive install probe: ${packageId}\n`);
-  const { CatalogProvider, initProviders } = loadTsModule(
+  const { CatalogProvider } = loadTsModule(
     path.join(ROOT, 'electron', 'providers', 'catalog.ts'),
     { electron: electronStub },
   );
@@ -47,8 +47,10 @@ const packageId = process.argv[2] || 'discord';
     process.exit(1);
   }
   console.log('  name:', item.name);
-  console.log('  urls:', 1 + (item.installUrlFallbacks?.length || 0));
-  console.log('  altProvider:', item.altProvider ? `${item.altProvider.provider}:${item.altProvider.packageId}` : 'none');
+  const { resolveInstallPlan } = loadTsModule(path.join(ROOT, 'electron', 'providers', 'catalog.ts'), { electron: electronStub });
+  const plan = resolveInstallPlan(item.id);
+  console.log('  direct:', plan.direct ? `${plan.direct.type} ${plan.direct.version} ${plan.direct.url}` : 'none');
+  console.log('  fallback:', plan.fallback ? `${plan.fallback.provider}:${plan.fallback.packageId}` : 'none');
   console.log('  starting install (may take minutes; uses real network + winget)…\n');
 
   const t0 = Date.now();
@@ -65,7 +67,6 @@ const packageId = process.argv[2] || 'discord';
   console.log('  errorCode:', result.errorCode);
   console.log('  message:', result.message);
   if (result.detail) console.log('  detail:', result.detail.slice(0, 300));
-  console.log('\nCheck .cursor/debug-7931cb.log for install trace.\n');
   process.exit(result.ok ? 0 : 1);
 })().catch((err) => {
   console.error(err);

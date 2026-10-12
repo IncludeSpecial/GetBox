@@ -9,7 +9,7 @@ import type {
   PackageProvider,
   ProviderStatus,
 } from './types.js';
-import { getRuntimePaths, testScoop, runCmd, loadRuntimeState } from '../bootstrap/runtime.js';
+import { getRuntimePaths, testScoop, loadRuntimeState } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
 import { classifyError } from './install-errors.js';
 import { getAppDataDir } from '../paths.js';

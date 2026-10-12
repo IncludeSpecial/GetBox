@@ -2,11 +2,11 @@ import { monogramColor, monogramLetter } from './Icons';
 
 interface AppMonogramProps {
   name: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-const sizes = { sm: 36, md: 56, lg: 80 };
+const sizes = { xs: 20, sm: 36, md: 56, lg: 80 };
 
 export function AppMonogram({ name, size = 'md', className = '' }: AppMonogramProps) {
   const px = sizes[size];
@@ -21,7 +21,7 @@ export function AppMonogram({ name, size = 'md', className = '' }: AppMonogramPr
   );
 }
 
-export function AppCover({ name, iconUrl, size = 'md' }: { name: string; iconUrl?: string; size?: 'sm' | 'md' | 'lg' }) {
+export function AppCover({ name, iconUrl, size = 'md' }: { name: string; iconUrl?: string; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
   if (iconUrl) {
     return <img src={iconUrl} alt={name} className={`app-cover-img app-cover-img--${size}`} loading="lazy" />;
   }

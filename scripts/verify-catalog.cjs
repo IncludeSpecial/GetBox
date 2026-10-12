@@ -18,7 +18,9 @@ const ICONS = path.join(DATA, 'icons');
 const CHECK_LINKS = !process.argv.includes('--no-links');
 const CONCURRENCY = 8;
 
-const REQUIRED = ['id', 'name', 'description', 'category', 'packageId', 'provider', 'installUrl'];
+const REQUIRED = ['id', 'name', 'description', 'category', 'packageId', 'provider'];
+/** Install fields moved to installers.json, generated from winget manifests. */
+const LINK_FIELDS = ['installUrl', 'installUrlFallbacks', 'silentArgs', 'altProvider', 'noWingetFallback'];
 const ICON_EXTENSIONS = ['.svg', '.png', '.ico', '.jpg'];
 const NETWORK_ERRORS = ['ENOTFOUND', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNRESET', 'EAI_AGAIN', 'TIMEOUT', 'EPROTO'];
 /** Statuses that say "not now" rather than "gone". */
@@ -105,8 +107,8 @@ function verifyStructure(catalog, categories, picks, profiles) {
     if (!Array.isArray(entry.features) || entry.features.length === 0) {
       errors.push(`${label}: "features" must be a non-empty array`);
     }
-    if (!entry.silentArgs) {
-      warnings.push(`${label}: no silentArgs, install will show the vendor UI`);
+    for (const field of LINK_FIELDS) {
+      if (field in entry) errors.push(`${label}: "${field}" belongs in installers.json (npm run catalog:installers)`);
     }
     if (entry.provider !== 'catalog') {
       errors.push(`${label}: provider must be "catalog", got "${entry.provider}"`);
@@ -122,40 +124,6 @@ function verifyStructure(catalog, categories, picks, profiles) {
     if (entry.packageId) {
       if (seenPackageIds.has(entry.packageId)) errors.push(`duplicate packageId "${entry.packageId}"`);
       seenPackageIds.add(entry.packageId);
-    }
-
-    if (entry.installUrlFallbacks !== undefined) {
-      if (!Array.isArray(entry.installUrlFallbacks)) {
-        errors.push(`${label}: installUrlFallbacks must be an array`);
-      } else {
-        for (const fb of entry.installUrlFallbacks) {
-          if (typeof fb !== 'string' || !fb.trim()) {
-            errors.push(`${label}: installUrlFallbacks contains invalid URL`);
-          }
-        }
-      }
-    }
-
-    if (entry.noWingetFallback !== undefined && typeof entry.noWingetFallback !== 'boolean') {
-      errors.push(`${label}: noWingetFallback must be a boolean`);
-    }
-
-    if (entry.altProvider !== undefined) {
-      const ap = entry.altProvider;
-      if (!ap || typeof ap !== 'object') {
-        errors.push(`${label}: altProvider must be an object`);
-      } else {
-        if (!['winget', 'scoop'].includes(ap.provider)) {
-          errors.push(`${label}: altProvider.provider must be winget or scoop, got "${ap.provider}"`);
-        }
-        if (!ap.packageId || String(ap.packageId).trim() === '') {
-          errors.push(`${label}: altProvider.packageId is required`);
-        }
-      }
-    }
-
-    if (entry.recommended && !entry.installUrlFallbacks?.length && !entry.altProvider) {
-      warnings.push(`${label}: recommended app has no installUrlFallbacks or altProvider`);
     }
 
     const slug = entry.logoSlug || entry.id;
@@ -199,7 +167,23 @@ function verifyStructure(catalog, categories, picks, profiles) {
   }
 }
 
-function verifyWingetMap(catalog) {
+function verifyInstallers(catalog, installers) {
+  for (const entry of catalog) {
+    const inst = installers[entry.id];
+    if (!inst) {
+      errors.push(`${entry.id}: missing from installers.json — run npm run catalog:installers`);
+      continue;
+    }
+    if (inst.url && !inst.silentArgs) {
+      warnings.push(`${entry.id}: ${inst.type} installer has no silent switches, the vendor UI will show`);
+    }
+  }
+  for (const id of Object.keys(installers)) {
+    if (!catalog.some((e) => e.id === id)) warnings.push(`installers.json: orphan key "${id}"`);
+  }
+}
+
+function verifyWingetMap(catalog, installers) {
   let wingetMap;
   try {
     wingetMap = readJson('winget-map.json');
@@ -226,9 +210,8 @@ function verifyWingetMap(catalog) {
   }
 
   for (const entry of catalog) {
-    if (entry.noWingetFallback) continue;
-    if (wingetMap[entry.id] || entry.altProvider?.provider === 'winget') continue;
-    errors.push(`${entry.id}: no winget-map entry and no noWingetFallback`);
+    if (wingetMap[entry.id] || installers[entry.id]?.provider) continue;
+    errors.push(`${entry.id}: no winget-map entry and no hand-pinned provider in installers.json`);
   }
 }
 
@@ -237,11 +220,13 @@ function verifyWingetMap(catalog) {
   let categories;
   let picks;
   let profiles;
+  let installers;
   try {
     catalog = readJson('catalog.json');
     categories = readJson('categories.json');
     picks = readJson('picks.json');
     profiles = readJson('profiles.json');
+    installers = readJson('installers.json');
   } catch (err) {
     console.error('Failed to read catalog data:', err.message);
     process.exit(1);
@@ -254,7 +239,8 @@ function verifyWingetMap(catalog) {
 
   console.log(`Catalog: ${catalog.length} apps, ${Object.keys(categories).length} categories\n`);
   verifyStructure(catalog, categories, picks, profiles);
-  verifyWingetMap(catalog);
+  verifyInstallers(catalog, installers);
+  verifyWingetMap(catalog, installers);
 
   const byCategory = {};
   for (const entry of catalog) byCategory[entry.category] = (byCategory[entry.category] || 0) + 1;
@@ -265,12 +251,10 @@ function verifyWingetMap(catalog) {
   if (CHECK_LINKS) {
     const linkTargets = [];
     for (const entry of catalog) {
-      if (entry.installUrl) linkTargets.push({ entry, url: entry.installUrl, kind: 'primary' });
-      for (const fb of entry.installUrlFallbacks || []) {
-        linkTargets.push({ entry, url: fb, kind: 'fallback' });
-      }
+      const url = installers[entry.id]?.url;
+      if (url) linkTargets.push({ entry, url, kind: 'primary' });
     }
-    console.log(`\nChecking ${linkTargets.length} install links (${catalog.filter((e) => e.installUrl).length} apps)…`);
+    console.log(`\nChecking ${linkTargets.length} installer links from installers.json…`);
     const results = await mapLimit(linkTargets, CONCURRENCY, async ({ entry, url, kind }) => {
       const res = await checkUrl(url);
       if (!res.ok) console.log(`  x ${entry.id.padEnd(18)} [${kind}] ${res.status}`);
@@ -283,7 +267,7 @@ function verifyWingetMap(catalog) {
       if (res.ok) {
         ok++;
         if (kind === 'primary' && res.length && res.length < 20000) {
-          warnings.push(`${entry.id}: installUrl is only ${res.length} bytes, may be an error page`);
+          warnings.push(`${entry.id}: installer is only ${res.length} bytes, may be an error page`);
         }
         continue;
       }
@@ -292,11 +276,8 @@ function verifyWingetMap(catalog) {
         warnings.push(`${entry.id}: could not verify ${kind} (${res.status}) — ${url}`);
         continue;
       }
-      if (kind === 'fallback') {
-        warnings.push(`${entry.id}: fallback URL returned ${res.status} — ${url}`);
-        continue;
-      }
-      errors.push(`${entry.id}: installUrl returned ${res.status} — ${url}`);
+      // The app falls back to winget, so a dead pinned link is stale data, not a broken install.
+      warnings.push(`${entry.id}: installer link returned ${res.status}, refresh installers.json — ${url}`);
     }
     console.log(`  ${ok} OK, ${unverified} unverifiable, ${linkTargets.length - ok - unverified} broken`);
   }

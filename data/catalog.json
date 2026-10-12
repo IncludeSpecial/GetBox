@@ -9,12 +9,6 @@
     "provider": "catalog",
     "wikiTitle": "Mozilla_Firefox",
     "logoSlug": "firefox",
-    "installUrl": "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=ru",
-    "installUrlFallbacks": [
-      "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Mozilla.Firefox" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -26,10 +20,7 @@
     "packageId": "googlechrome",
     "provider": "catalog",
     "wikiTitle": "Google_Chrome",
-    "logoSlug": "google-chrome",
-    "installUrl": "https://dl.google.com/chrome/install/latest/chrome_installer.exe",
-    "altProvider": { "provider": "winget", "packageId": "Google.Chrome" },
-    "silentArgs": "/silent /install"
+    "logoSlug": "google-chrome"
   },
   {
     "id": "edge",
@@ -40,9 +31,7 @@
     "packageId": "microsoft-edge",
     "provider": "catalog",
     "wikiTitle": "Microsoft_Edge",
-    "logoSlug": "microsoft-edge",
-    "installUrl": "https://go.microsoft.com/fwlink/?linkid=2093437",
-    "silentArgs": "/silent /install"
+    "logoSlug": "microsoft-edge"
   },
   {
     "id": "brave",
@@ -53,9 +42,7 @@
     "packageId": "brave",
     "provider": "catalog",
     "wikiTitle": "Brave_(web_browser)",
-    "logoSlug": "brave",
-    "installUrl": "https://laptop-updates.brave.com/latest/winx64",
-    "silentArgs": "/silent /install"
+    "logoSlug": "brave"
   },
   {
     "id": "opera",
@@ -66,9 +53,7 @@
     "packageId": "opera",
     "provider": "catalog",
     "wikiTitle": "Opera_(web_browser)",
-    "logoSlug": "opera",
-    "installUrl": "https://download.opera.com/download/get/?partner=www&opsys=Windows",
-    "silentArgs": "/silent /install"
+    "logoSlug": "opera"
   },
   {
     "id": "vivaldi",
@@ -79,9 +64,7 @@
     "packageId": "vivaldi",
     "provider": "catalog",
     "wikiTitle": "Vivaldi_(web_browser)",
-    "logoSlug": "vivaldi",
-    "installUrl": "https://downloads.vivaldi.com/stable/Vivaldi.7.0.3495.29.x64.exe",
-    "silentArgs": "--vivaldi-silent --do-not-launch-chrome"
+    "logoSlug": "vivaldi"
   },
   {
     "id": "steam",
@@ -93,12 +76,6 @@
     "provider": "catalog",
     "wikiTitle": "Steam_(service)",
     "logoSlug": "steam",
-    "installUrl": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
-    "installUrlFallbacks": [
-      "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Valve.Steam" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -111,9 +88,6 @@
     "provider": "catalog",
     "wikiTitle": "Epic_Games_Store",
     "logoSlug": "epic-games",
-    "installUrl": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi",
-    "altProvider": { "provider": "winget", "packageId": "EpicGames.EpicGamesLauncher" },
-    "silentArgs": "/quiet /norestart",
     "recommended": true
   },
   {
@@ -127,9 +101,6 @@
     "wikiTitle": "GOG.com",
     "logoSlug": "gog-galaxy",
     "simpleSlug": "gogdotcom",
-    "installUrl": "https://webinstallers.gog.com/download/GOG_Galaxy_2.0.exe",
-    "altProvider": { "provider": "winget", "packageId": "GOG.Galaxy" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -142,9 +113,7 @@
     "provider": "catalog",
     "wikiTitle": "Battle.net",
     "logoSlug": "battlenet",
-    "simpleSlug": "battledotnet",
-    "installUrl": "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe",
-    "silentArgs": "--installpath-silent"
+    "simpleSlug": "battledotnet"
   },
   {
     "id": "ubisoft-connect",
@@ -156,9 +125,7 @@
     "provider": "catalog",
     "wikiTitle": "Ubisoft_Connect",
     "logoSlug": "ubisoft-connect",
-    "simpleSlug": "ubisoft",
-    "installUrl": "https://ubistatic3-a.akamaihd.net/orbit/launcher_installer/UbisoftConnectInstaller.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "ubisoft"
   },
   {
     "id": "ea-app",
@@ -170,9 +137,7 @@
     "provider": "catalog",
     "wikiTitle": "EA_app",
     "logoSlug": "electronic-arts",
-    "simpleSlug": "ea",
-    "installUrl": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe",
-    "silentArgs": "/quiet"
+    "simpleSlug": "ea"
   },
   {
     "id": "rockstar",
@@ -184,9 +149,7 @@
     "provider": "catalog",
     "wikiTitle": "Rockstar_Games_Launcher",
     "logoSlug": "rockstar-games",
-    "simpleSlug": "rockstargames",
-    "installUrl": "https://gamedownloads.rockstargames.com/public/installer/Rockstar-Games-Launcher.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "rockstargames"
   },
   {
     "id": "playnite",
@@ -198,9 +161,7 @@
     "provider": "catalog",
     "wikiTitle": "Playnite",
     "logoSlug": "playnite",
-    "iconUrl": "https://playnite.link/applogo.png",
-    "installUrl": "https://playnite.link/download/PlayniteInstaller.exe",
-    "silentArgs": "/SILENT /NORESTART"
+    "iconUrl": "https://playnite.link/applogo.png"
   },
   {
     "id": "heroic",
@@ -211,9 +172,7 @@
     "packageId": "heroic",
     "provider": "catalog",
     "logoSlug": "heroic",
-    "iconUrl": "https://raw.githubusercontent.com/Heroic-Games-Launcher/HeroicGamesLauncher/main/public/icon.png",
-    "installUrl": "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.0/Heroic-2.22.0-Setup-x64.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://raw.githubusercontent.com/Heroic-Games-Launcher/HeroicGamesLauncher/main/public/icon.png"
   },
 
   {
@@ -226,9 +185,6 @@
     "provider": "catalog",
     "wikiTitle": "Visual_Studio_Code",
     "logoSlug": "vscode",
-    "installUrl": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
-    "altProvider": { "provider": "winget", "packageId": "Microsoft.VisualStudioCode" },
-    "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
   {
@@ -241,9 +197,6 @@
     "provider": "catalog",
     "wikiTitle": "Git",
     "logoSlug": "git",
-    "installUrl": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.3/Git-2.55.0.3-64-bit.exe",
-    "altProvider": { "provider": "winget", "packageId": "Git.Git" },
-    "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
   {
@@ -256,9 +209,6 @@
     "provider": "catalog",
     "wikiTitle": "Node.js",
     "logoSlug": "nodejs",
-    "installUrl": "https://nodejs.org/dist/v22.11.0/node-v22.11.0-x64.msi",
-    "altProvider": { "provider": "winget", "packageId": "OpenJS.NodeJS.LTS" },
-    "silentArgs": "/quiet",
     "recommended": true
   },
   {
@@ -270,9 +220,7 @@
     "packageId": "python",
     "provider": "catalog",
     "wikiTitle": "Python_(programming_language)",
-    "logoSlug": "python",
-    "installUrl": "https://www.python.org/ftp/python/3.12.7/python-3.12.7-amd64.exe",
-    "silentArgs": "/quiet InstallAllUsers=0 PrependPath=1"
+    "logoSlug": "python"
   },
   {
     "id": "notepadpp",
@@ -284,9 +232,7 @@
     "provider": "catalog",
     "wikiTitle": "Notepad++",
     "logoSlug": "notepad-plus-plus",
-    "simpleSlug": "notepadplusplus",
-    "installUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.7/npp.8.9.7.Installer.x64.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "notepadplusplus"
   },
   {
     "id": "docker",
@@ -297,9 +243,7 @@
     "packageId": "docker",
     "provider": "catalog",
     "wikiTitle": "Docker_(software)",
-    "logoSlug": "docker",
-    "installUrl": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
-    "silentArgs": "install --quiet"
+    "logoSlug": "docker"
   },
   {
     "id": "postman",
@@ -310,9 +254,7 @@
     "packageId": "postman",
     "provider": "catalog",
     "wikiTitle": "Postman_(software)",
-    "logoSlug": "postman",
-    "installUrl": "https://dl.pstmn.io/download/latest/win64",
-    "silentArgs": "/S"
+    "logoSlug": "postman"
   },
   {
     "id": "golang",
@@ -323,9 +265,7 @@
     "packageId": "go",
     "provider": "catalog",
     "wikiTitle": "Go_(programming_language)",
-    "logoSlug": "go",
-    "installUrl": "https://go.dev/dl/go1.23.4.windows-amd64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "go"
   },
   {
     "id": "rust",
@@ -336,9 +276,7 @@
     "packageId": "rustup",
     "provider": "catalog",
     "wikiTitle": "Rust_(programming_language)",
-    "logoSlug": "rust",
-    "installUrl": "https://win.rustup.rs/x86_64",
-    "silentArgs": "-y"
+    "logoSlug": "rust"
   },
   {
     "id": "temurin-jdk",
@@ -349,9 +287,7 @@
     "packageId": "temurin-21",
     "provider": "catalog",
     "wikiTitle": "OpenJDK",
-    "logoSlug": "java",
-    "installUrl": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12%2B8/OpenJDK21U-jdk_x64_windows_hotspot_21.0.12_8.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "java"
   },
   {
     "id": "intellij-idea",
@@ -363,9 +299,7 @@
     "provider": "catalog",
     "wikiTitle": "IntelliJ_IDEA",
     "logoSlug": "intellij",
-    "simpleSlug": "intellijidea",
-    "installUrl": "https://download.jetbrains.com/idea/ideaIC-2024.3.1.1.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "intellijidea"
   },
   {
     "id": "pycharm",
@@ -377,9 +311,7 @@
     "provider": "catalog",
     "wikiTitle": "PyCharm",
     "logoSlug": "pycharm",
-    "simpleSlug": "pycharm",
-    "installUrl": "https://download.jetbrains.com/python/pycharm-community-2024.3.1.1.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "pycharm"
   },
   {
     "id": "sublime-text",
@@ -391,9 +323,7 @@
     "provider": "catalog",
     "wikiTitle": "Sublime_Text",
     "logoSlug": "sublime-text",
-    "simpleSlug": "sublimetext",
-    "installUrl": "https://download.sublimetext.com/sublime_text_build_4192_x64_setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "simpleSlug": "sublimetext"
   },
   {
     "id": "neovim",
@@ -404,9 +334,7 @@
     "packageId": "neovim",
     "provider": "catalog",
     "wikiTitle": "Vim_(text_editor)",
-    "logoSlug": "neovim",
-    "installUrl": "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-win64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "neovim"
   },
   {
     "id": "dbeaver",
@@ -418,9 +346,7 @@
     "provider": "catalog",
     "wikiTitle": "DBeaver",
     "logoSlug": "dbeaver",
-    "simpleSlug": "dbeaver",
-    "installUrl": "https://dbeaver.io/files/dbeaver-ce-latest-x86_64-setup.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "dbeaver"
   },
   {
     "id": "wireshark",
@@ -432,9 +358,7 @@
     "provider": "catalog",
     "wikiTitle": "Wireshark",
     "logoSlug": "wireshark",
-    "simpleSlug": "wireshark",
-    "installUrl": "https://www.wireshark.org/download/win64/Wireshark-latest-x64.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "wireshark"
   },
   {
     "id": "virtualbox",
@@ -445,9 +369,7 @@
     "packageId": "virtualbox",
     "provider": "catalog",
     "wikiTitle": "VirtualBox",
-    "logoSlug": "virtualbox",
-    "installUrl": "https://download.virtualbox.org/virtualbox/7.2.14/VirtualBox-7.2.14-174565-Win.exe",
-    "silentArgs": "/silent"
+    "logoSlug": "virtualbox"
   },
 
   {
@@ -460,13 +382,6 @@
     "provider": "catalog",
     "wikiTitle": "Discord",
     "logoSlug": "discord",
-    "installUrl": "https://discord.com/api/download?platform=win",
-    "installUrlFallbacks": [
-      "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64",
-      "https://discordapp.com/api/download?platform=win"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Discord.Discord" },
-    "silentArgs": "-s",
     "recommended": true
   },
   {
@@ -479,12 +394,6 @@
     "provider": "catalog",
     "wikiTitle": "Telegram_(software)",
     "logoSlug": "telegram",
-    "installUrl": "https://telegram.org/dl/desktop/win64",
-    "installUrlFallbacks": [
-      "https://updates.tdesktop.com/tsetup/x64/tsetup-x64.latest.exe"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Telegram.TelegramDesktop" },
-    "silentArgs": "/VERYSILENT /NORESTART",
     "recommended": true
   },
   {
@@ -496,10 +405,7 @@
     "packageId": "slack",
     "provider": "catalog",
     "wikiTitle": "Slack_(software)",
-    "logoSlug": "slack",
-    "installUrl": "https://downloads.slack-edge.com/desktop-releases/windows/x64/4.42.115/SlackSetup.exe",
-    "altProvider": { "provider": "winget", "packageId": "SlackTechnologies.Slack" },
-    "silentArgs": "/silent"
+    "logoSlug": "slack"
   },
   {
     "id": "teams",
@@ -510,9 +416,7 @@
     "packageId": "teams",
     "provider": "catalog",
     "wikiTitle": "Microsoft_Teams",
-    "logoSlug": "microsoft-teams",
-    "installUrl": "https://go.microsoft.com/fwlink/?linkid=2196106",
-    "silentArgs": "/silent"
+    "logoSlug": "microsoft-teams"
   },
   {
     "id": "zoom",
@@ -523,13 +427,7 @@
     "packageId": "zoom",
     "provider": "catalog",
     "wikiTitle": "Zoom_(software)",
-    "logoSlug": "zoom",
-    "installUrl": "https://zoom.us/client/latest/ZoomInstallerFull.exe",
-    "installUrlFallbacks": [
-      "https://zoom.us/client/latest/ZoomInstaller.exe"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Zoom.Zoom" },
-    "silentArgs": "/silent"
+    "logoSlug": "zoom"
   },
 
   {
@@ -543,12 +441,6 @@
     "wikiTitle": "VLC_media_player",
     "logoSlug": "vlc",
     "simpleSlug": "vlcmediaplayer",
-    "installUrl": "https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe",
-    "installUrlFallbacks": [
-      "https://mirror.accum.se/mirror/videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "VideoLAN.VLC" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -560,13 +452,7 @@
     "packageId": "spotify",
     "provider": "catalog",
     "wikiTitle": "Spotify",
-    "logoSlug": "spotify",
-    "installUrl": "https://download.scdn.co/SpotifySetup.exe",
-    "installUrlFallbacks": [
-      "https://www.spotify.com/download/win/"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Spotify.Spotify" },
-    "silentArgs": "/silent"
+    "logoSlug": "spotify"
   },
   {
     "id": "obs",
@@ -579,9 +465,6 @@
     "wikiTitle": "Open_Broadcaster_Software",
     "logoSlug": "obs-studio",
     "simpleSlug": "obsstudio",
-    "installUrl": "https://github.com/obsproject/obs-studio/releases/download/32.2.1/OBS-Studio-32.2.1-Windows-x64-Installer.exe",
-    "altProvider": { "provider": "winget", "packageId": "OBSProject.OBSStudio" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -593,9 +476,7 @@
     "packageId": "audacity",
     "provider": "catalog",
     "wikiTitle": "Audacity_(audio_editor)",
-    "logoSlug": "audacity",
-    "installUrl": "https://github.com/audacity/audacity/releases/download/Audacity-3.7.8/audacity-win-3.7.8-64bit.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "logoSlug": "audacity"
   },
   {
     "id": "handbrake",
@@ -606,9 +487,7 @@
     "packageId": "handbrake",
     "provider": "catalog",
     "wikiTitle": "HandBrake",
-    "logoSlug": "handbrake",
-    "installUrl": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2-x86_64-Win_GUI.exe",
-    "silentArgs": "/S"
+    "logoSlug": "handbrake"
   },
   {
     "id": "kodi",
@@ -619,9 +498,7 @@
     "packageId": "kodi",
     "provider": "catalog",
     "wikiTitle": "Kodi_(software)",
-    "logoSlug": "kodi",
-    "installUrl": "https://mirrors.kodi.tv/releases/windows/win64/kodi-21.2-Omega-x64.exe",
-    "silentArgs": "/S"
+    "logoSlug": "kodi"
   },
   {
     "id": "foobar2000",
@@ -633,9 +510,7 @@
     "provider": "catalog",
     "wikiTitle": "Foobar2000",
     "logoSlug": "foobar2000",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=foobar2000.org&sz=256",
-    "installUrl": "https://www.foobar2000.org/files/foobar2000-x64_v2.24.1.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=foobar2000.org&sz=256"
   },
 
   {
@@ -647,9 +522,7 @@
     "packageId": "gimp",
     "provider": "catalog",
     "wikiTitle": "GIMP",
-    "logoSlug": "gimp",
-    "installUrl": "https://download.gimp.org/mirror/pub/gimp/v2.10/windows/gimp-2.10.38-setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART /ALLUSERS=0"
+    "logoSlug": "gimp"
   },
   {
     "id": "krita",
@@ -661,9 +534,7 @@
     "provider": "catalog",
     "wikiTitle": "Krita",
     "logoSlug": "krita",
-    "simpleSlug": "krita",
-    "installUrl": "https://download.kde.org/stable/krita/5.2.9/krita-x64-5.2.9-setup.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "krita"
   },
   {
     "id": "blender",
@@ -674,9 +545,7 @@
     "packageId": "blender",
     "provider": "catalog",
     "wikiTitle": "Blender_(software)",
-    "logoSlug": "blender",
-    "installUrl": "https://mirrors.dotsrc.org/blender/release/Blender4.3/blender-4.3.2-windows-x64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "blender"
   },
   {
     "id": "inkscape",
@@ -688,10 +557,7 @@
     "provider": "catalog",
     "wikiTitle": "Inkscape",
     "logoSlug": "inkscape",
-    "simpleSlug": "inkscape",
-    "installUrl": "https://inkscape.org/gallery/item/53678/inkscape-1.4.msi",
-    "altProvider": { "provider": "winget", "packageId": "Inkscape.Inkscape" },
-    "silentArgs": "/quiet"
+    "simpleSlug": "inkscape"
   },
   {
     "id": "figma",
@@ -702,9 +568,7 @@
     "packageId": "figma",
     "provider": "catalog",
     "wikiTitle": "Figma",
-    "logoSlug": "figma",
-    "installUrl": "https://desktop.figma.com/win/FigmaSetup.exe",
-    "silentArgs": "/S"
+    "logoSlug": "figma"
   },
   {
     "id": "sharex",
@@ -716,9 +580,7 @@
     "provider": "catalog",
     "wikiTitle": "ShareX",
     "logoSlug": "sharex",
-    "simpleSlug": "sharex",
-    "installUrl": "https://github.com/ShareX/ShareX/releases/download/v21.0.0/ShareX-21.0.0-setup-x64.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "simpleSlug": "sharex"
   },
 
   {
@@ -731,9 +593,6 @@
     "provider": "catalog",
     "wikiTitle": "7-Zip",
     "logoSlug": "7zip",
-    "installUrl": "https://www.7-zip.org/a/7z2501-x64.exe",
-    "altProvider": { "provider": "winget", "packageId": "7zip.7zip" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -746,9 +605,7 @@
     "provider": "catalog",
     "wikiTitle": "WinRAR",
     "logoSlug": "winrar",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=win-rar.com&sz=256",
-    "installUrl": "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=win-rar.com&sz=256"
   },
   {
     "id": "everything",
@@ -761,9 +618,6 @@
     "wikiTitle": "Everything_(software)",
     "logoSlug": "everything",
     "iconUrl": "https://www.google.com/s2/favicons?domain=voidtools.com&sz=256",
-    "installUrl": "https://www.voidtools.com/Everything-1.4.1.1024.x64-Setup.exe",
-    "altProvider": { "provider": "winget", "packageId": "voidtools.Everything" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -775,10 +629,7 @@
     "packageId": "qbittorrent",
     "provider": "catalog",
     "wikiTitle": "QBitTorrent",
-    "logoSlug": "qbittorrent",
-    "installUrl": "https://sourceforge.net/projects/qbittorrent/files/qbittorrent-win32/qbittorrent-5.0.3/qbittorrent_5.0.3_x64_setup.exe/download",
-    "altProvider": { "provider": "winget", "packageId": "qBittorrent.qBittorrent" },
-    "silentArgs": "/S"
+    "logoSlug": "qbittorrent"
   },
   {
     "id": "putty",
@@ -789,9 +640,7 @@
     "packageId": "putty",
     "provider": "catalog",
     "wikiTitle": "PuTTY",
-    "logoSlug": "putty",
-    "installUrl": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.84-installer.msi",
-    "silentArgs": "/quiet /norestart"
+    "logoSlug": "putty"
   },
   {
     "id": "winscp",
@@ -803,9 +652,7 @@
     "provider": "catalog",
     "wikiTitle": "WinSCP",
     "logoSlug": "winscp",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=winscp.net&sz=256",
-    "installUrl": "https://winscp.net/download/WinSCP-6.3.6-Setup.exe",
-    "silentArgs": "/SILENT /NORESTART"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=winscp.net&sz=256"
   },
   {
     "id": "filezilla",
@@ -816,13 +663,7 @@
     "packageId": "filezilla",
     "provider": "catalog",
     "wikiTitle": "FileZilla",
-    "logoSlug": "filezilla",
-    "installUrl": "https://dl2.cdn.filezilla-project.org/client/FileZilla_3.68.1_win64-setup.exe",
-    "installUrlFallbacks": [
-      "https://dl1.cdn.filezilla-project.org/client/FileZilla_3.68.1_win64-setup.exe"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "TimKosse.FileZilla.Client" },
-    "silentArgs": "/S"
+    "logoSlug": "filezilla"
   },
   {
     "id": "anydesk",
@@ -833,9 +674,7 @@
     "packageId": "anydesk",
     "provider": "catalog",
     "wikiTitle": "AnyDesk",
-    "logoSlug": "anydesk",
-    "installUrl": "https://download.anydesk.com/AnyDesk.exe",
-    "silentArgs": "--install --silent"
+    "logoSlug": "anydesk"
   },
   {
     "id": "teamviewer",
@@ -847,13 +686,7 @@
     "provider": "catalog",
     "wikiTitle": "TeamViewer",
     "logoSlug": "teamviewer",
-    "simpleSlug": "teamviewer",
-    "installUrl": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe",
-    "installUrlFallbacks": [
-      "https://download.teamviewer.com/full"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "TeamViewer.TeamViewer" },
-    "silentArgs": "/S"
+    "simpleSlug": "teamviewer"
   },
   {
     "id": "parsec",
@@ -865,9 +698,7 @@
     "provider": "catalog",
     "wikiTitle": "Parsec_(software)",
     "logoSlug": "parsec",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=parsec.app&sz=256",
-    "installUrl": "https://builds.parsec.app/package/parsec-windows.exe",
-    "silentArgs": "/silent"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=parsec.app&sz=256"
   },
   {
     "id": "moonlight",
@@ -878,9 +709,7 @@
     "packageId": "moonlight",
     "provider": "catalog",
     "logoSlug": "moonlight",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=moonlight-stream.org&sz=256",
-    "installUrl": "https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/MoonlightSetup-6.1.0.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=moonlight-stream.org&sz=256"
   },
 
   {
@@ -893,9 +722,7 @@
     "provider": "catalog",
     "wikiTitle": "CPU-Z",
     "logoSlug": "cpu-z",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256",
-    "installUrl": "https://download.cpuid.com/cpu-z/cpu-z_2.13-en.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256"
   },
   {
     "id": "hwmonitor",
@@ -906,9 +733,7 @@
     "packageId": "hwmonitor",
     "provider": "catalog",
     "logoSlug": "hwmonitor",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256",
-    "installUrl": "https://download.cpuid.com/hwmonitor/hwmonitor_1.56.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=cpuid.com&sz=256"
   },
   {
     "id": "crystaldiskinfo",
@@ -920,9 +745,7 @@
     "provider": "catalog",
     "wikiTitle": "CrystalDiskInfo",
     "logoSlug": "crystaldiskinfo",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=crystalmark.info&sz=256",
-    "installUrl": "https://sourceforge.net/projects/crystaldiskinfo/files/latest/download",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=crystalmark.info&sz=256"
   },
   {
     "id": "powertoys",
@@ -935,9 +758,6 @@
     "wikiTitle": "Microsoft_PowerToys",
     "logoSlug": "powertoys",
     "iconUrl": "https://raw.githubusercontent.com/microsoft/PowerToys/main/src/settings-ui/Settings.UI/Assets/Settings/icon.ico",
-    "installUrl": "https://github.com/microsoft/PowerToys/releases/download/v0.100.2/PowerToysUserSetup-0.100.2-x64.exe",
-    "altProvider": { "provider": "winget", "packageId": "Microsoft.PowerToys" },
-    "silentArgs": "/silent",
     "recommended": true
   },
   {
@@ -950,9 +770,7 @@
     "provider": "catalog",
     "wikiTitle": "Rufus_(software)",
     "logoSlug": "rufus",
-    "iconUrl": "https://rufus.ie/pics/rufus-128.png",
-    "installUrl": "https://github.com/pbatard/rufus/releases/download/v4.15/rufus-4.15.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://rufus.ie/pics/rufus-128.png"
   },
   {
     "id": "treesize-free",
@@ -963,9 +781,7 @@
     "packageId": "treesize-free",
     "provider": "catalog",
     "logoSlug": "treesize",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=jam-software.com&sz=256",
-    "installUrl": "https://downloads.jam-software.de/treesize_free/TreeSizeFreeSetup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=jam-software.com&sz=256"
   },
 
   {
@@ -977,10 +793,7 @@
     "packageId": "keepass",
     "provider": "catalog",
     "wikiTitle": "KeePass",
-    "logoSlug": "keepass",
-    "installUrl": "https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.57/KeePass-2.57-Setup.exe/download",
-    "altProvider": { "provider": "winget", "packageId": "DominikReichl.KeePass" },
-    "silentArgs": "/VERYSILENT"
+    "logoSlug": "keepass"
   },
   {
     "id": "bitwarden",
@@ -992,9 +805,6 @@
     "provider": "catalog",
     "wikiTitle": "Bitwarden",
     "logoSlug": "bitwarden",
-    "installUrl": "https://vault.bitwarden.com/download/?app=desktop&platform=windows&variant=exe",
-    "altProvider": { "provider": "winget", "packageId": "Bitwarden.Bitwarden" },
-    "silentArgs": "/S",
     "recommended": true
   },
   {
@@ -1006,9 +816,7 @@
     "packageId": "veracrypt",
     "provider": "catalog",
     "wikiTitle": "VeraCrypt",
-    "logoSlug": "vera-crypt",
-    "installUrl": "https://launchpad.net/veracrypt/trunk/1.26.20/+download/VeraCrypt%20Setup%201.26.20.exe",
-    "silentArgs": "/S"
+    "logoSlug": "vera-crypt"
   },
   {
     "id": "malwarebytes",
@@ -1020,10 +828,7 @@
     "provider": "catalog",
     "wikiTitle": "Malwarebytes_(software)",
     "logoSlug": "malwarebytes",
-    "simpleSlug": "malwarebytes",
-    "installUrl": "https://downloads.malwarebytes.com/file/mb-windows",
-    "altProvider": { "provider": "winget", "packageId": "Malwarebytes.Malwarebytes" },
-    "silentArgs": "/silent"
+    "simpleSlug": "malwarebytes"
   },
   {
     "id": "keepassxc",
@@ -1034,9 +839,7 @@
     "packageId": "keepassxc",
     "provider": "catalog",
     "wikiTitle": "KeePassXC",
-    "logoSlug": "keepassxc",
-    "installUrl": "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.9/KeePassXC-2.7.9-Win64.msi",
-    "silentArgs": "/quiet /norestart"
+    "logoSlug": "keepassxc"
   },
   {
     "id": "wireguard",
@@ -1047,10 +850,7 @@
     "packageId": "wireguard",
     "provider": "catalog",
     "wikiTitle": "WireGuard",
-    "logoSlug": "wireguard",
-    "installUrl": "https://download.wireguard.com/windows-client/wireguard-installer.exe",
-    "altProvider": { "provider": "winget", "packageId": "WireGuard.WireGuard" },
-    "silentArgs": "/S"
+    "logoSlug": "wireguard"
   },
   {
     "id": "tailscale",
@@ -1061,9 +861,7 @@
     "packageId": "tailscale",
     "provider": "catalog",
     "wikiTitle": "Tailscale",
-    "logoSlug": "tailscale",
-    "installUrl": "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "tailscale"
   },
 
   {
@@ -1076,9 +874,6 @@
     "provider": "catalog",
     "wikiTitle": "LibreOffice",
     "logoSlug": "libreoffice",
-    "installUrl": "https://download.documentfoundation.org/libreoffice/stable/26.2.5/win/x86_64/LibreOffice_26.2.5_Win_x86-64.msi",
-    "altProvider": { "provider": "winget", "packageId": "TheDocumentFoundation.LibreOffice" },
-    "silentArgs": "/quiet /norestart",
     "recommended": true
   },
   {
@@ -1090,13 +885,7 @@
     "packageId": "thunderbird",
     "provider": "catalog",
     "wikiTitle": "Mozilla_Thunderbird",
-    "logoSlug": "thunderbird",
-    "installUrl": "https://download.mozilla.org/?product=thunderbird-latest&os=win64&lang=ru",
-    "installUrlFallbacks": [
-      "https://download.mozilla.org/?product=thunderbird-latest&os=win64&lang=en-US"
-    ],
-    "altProvider": { "provider": "winget", "packageId": "Mozilla.Thunderbird" },
-    "silentArgs": "/S"
+    "logoSlug": "thunderbird"
   },
   {
     "id": "obsidian",
@@ -1107,10 +896,7 @@
     "packageId": "obsidian",
     "provider": "catalog",
     "wikiTitle": "Obsidian_(software)",
-    "logoSlug": "obsidian",
-    "installUrl": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.4/Obsidian-1.13.4.exe",
-    "altProvider": { "provider": "winget", "packageId": "Obsidian.Obsidian" },
-    "silentArgs": "/S"
+    "logoSlug": "obsidian"
   },
   {
     "id": "sumatra",
@@ -1122,9 +908,7 @@
     "provider": "catalog",
     "wikiTitle": "Sumatra_PDF",
     "logoSlug": "sumatrapdf",
-    "iconUrl": "https://www.google.com/s2/favicons?domain=sumatrapdfreader.org&sz=256",
-    "installUrl": "https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64-install.exe",
-    "silentArgs": "/S"
+    "iconUrl": "https://www.google.com/s2/favicons?domain=sumatrapdfreader.org&sz=256"
   },
   {
     "id": "calibre",
@@ -1135,10 +919,7 @@
     "packageId": "calibre",
     "provider": "catalog",
     "wikiTitle": "Calibre_(software)",
-    "logoSlug": "calibre",
-    "installUrl": "https://download.calibre-ebook.com/7.23.0/calibre-64bit-7.23.0.msi",
-    "altProvider": { "provider": "winget", "packageId": "calibre.calibre" },
-    "silentArgs": "/quiet"
+    "logoSlug": "calibre"
   },
 
   {
@@ -1151,9 +932,7 @@
     "provider": "catalog",
     "wikiTitle": "Amazon_Games",
     "logoSlug": "amazon-games",
-    "simpleSlug": "amazongames",
-    "installUrl": "https://download.amazongames.com/AmazonGamesSetup.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "amazongames"
   },
   {
     "id": "minecraft-launcher",
@@ -1164,9 +943,7 @@
     "packageId": "minecraft-launcher",
     "provider": "catalog",
     "wikiTitle": "Minecraft",
-    "logoSlug": "minecraft",
-    "installUrl": "https://launcher.mojang.com/download/MinecraftInstaller.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "minecraft"
   },
   {
     "id": "prism-launcher",
@@ -1177,9 +954,7 @@
     "packageId": "prism-launcher",
     "provider": "catalog",
     "logoSlug": "prism-launcher",
-    "homepage": "https://prismlauncher.org/",
-    "installUrl": "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.0.3/PrismLauncher-Windows-MSVC-Setup-11.0.3.exe",
-    "silentArgs": "/S"
+    "homepage": "https://prismlauncher.org/"
   },
   {
     "id": "roblox",
@@ -1190,9 +965,7 @@
     "packageId": "roblox",
     "provider": "catalog",
     "wikiTitle": "Roblox",
-    "logoSlug": "roblox",
-    "installUrl": "https://www.roblox.com/download/client",
-    "silentArgs": "/S"
+    "logoSlug": "roblox"
   },
 
   {
@@ -1205,9 +978,7 @@
     "provider": "catalog",
     "wikiTitle": "Yandex_Browser",
     "logoSlug": "yandex-browser",
-    "homepage": "https://browser.yandex.ru/",
-    "installUrl": "https://browser.yandex.ru/download?banerid=8300&partner_id=exp_ya_common",
-    "silentArgs": "/silent"
+    "homepage": "https://browser.yandex.ru/"
   },
 
   {
@@ -1219,9 +990,7 @@
     "packageId": "element",
     "provider": "catalog",
     "wikiTitle": "Element_(software)",
-    "logoSlug": "element",
-    "installUrl": "https://packages.element.io/desktop/install/win32/x64/Element%20Setup.exe",
-    "silentArgs": "/S"
+    "logoSlug": "element"
   },
   {
     "id": "teamspeak",
@@ -1232,9 +1001,7 @@
     "packageId": "teamspeak",
     "provider": "catalog",
     "wikiTitle": "TeamSpeak",
-    "logoSlug": "teamspeak",
-    "installUrl": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe",
-    "silentArgs": "/S"
+    "logoSlug": "teamspeak"
   },
 
   {
@@ -1247,9 +1014,7 @@
     "provider": "catalog",
     "wikiTitle": "Media_Player_Classic",
     "logoSlug": "mpc-hc",
-    "homepage": "https://mpc-hc.org/",
-    "installUrl": "https://github.com/clsid2/mpc-hc/releases/download/2.7.4/MPC-HC.2.7.4.x64.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "homepage": "https://mpc-hc.org/"
   },
   {
     "id": "kdenlive",
@@ -1261,9 +1026,7 @@
     "provider": "catalog",
     "wikiTitle": "Kdenlive",
     "logoSlug": "kdenlive",
-    "simpleSlug": "kdenlive",
-    "installUrl": "https://download.kde.org/stable/kdenlive/25.08/windows/kdenlive-25.08.0.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "kdenlive"
   },
   {
     "id": "shotcut",
@@ -1275,9 +1038,7 @@
     "provider": "catalog",
     "wikiTitle": "Shotcut",
     "logoSlug": "shotcut",
-    "simpleSlug": "shotcut",
-    "installUrl": "https://github.com/mltframework/shotcut/releases/download/v26.6.25/shotcut-win64-26.6.25.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "shotcut"
   },
 
   {
@@ -1290,9 +1051,7 @@
     "provider": "catalog",
     "wikiTitle": "Darktable",
     "logoSlug": "darktable",
-    "homepage": "https://www.darktable.org/",
-    "installUrl": "https://github.com/darktable-org/darktable/releases/download/release-5.6.0/darktable-5.6.0-win64.exe",
-    "silentArgs": "/S"
+    "homepage": "https://www.darktable.org/"
   },
   {
     "id": "pinta",
@@ -1304,9 +1063,7 @@
     "provider": "catalog",
     "wikiTitle": "Pinta_(software)",
     "logoSlug": "pinta",
-    "homepage": "https://www.pinta-project.com/",
-    "installUrl": "https://github.com/PintaProject/Pinta/releases/download/3.1.2/Pinta-x86_64.exe",
-    "silentArgs": "/S"
+    "homepage": "https://www.pinta-project.com/"
   },
   {
     "id": "xnviewmp",
@@ -1318,9 +1075,7 @@
     "provider": "catalog",
     "wikiTitle": "XnView",
     "logoSlug": "xnview",
-    "homepage": "https://www.xnview.com/",
-    "installUrl": "https://download.xnview.com/XnViewMP-win-x64.exe",
-    "silentArgs": "/S"
+    "homepage": "https://www.xnview.com/"
   },
   {
     "id": "imageglass",
@@ -1332,9 +1087,7 @@
     "provider": "catalog",
     "wikiTitle": "ImageGlass",
     "logoSlug": "imageglass",
-    "homepage": "https://imageglass.org/",
-    "installUrl": "https://github.com/d2phap/ImageGlass/releases/download/9.6.0.801/ImageGlass_9.6.0.801_x64.msi",
-    "silentArgs": "/quiet /norestart"
+    "homepage": "https://imageglass.org/"
   },
   {
     "id": "freecad",
@@ -1346,9 +1099,7 @@
     "provider": "catalog",
     "wikiTitle": "FreeCAD",
     "logoSlug": "freecad",
-    "simpleSlug": "freecad",
-    "installUrl": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.3/FreeCAD_1.1.3-Windows-x86_64-py311-installer.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "freecad"
   },
 
   {
@@ -1361,9 +1112,7 @@
     "provider": "catalog",
     "wikiTitle": "Microsoft_Visual_Studio",
     "logoSlug": "visual-studio",
-    "simpleSlug": "visualstudio",
-    "installUrl": "https://aka.ms/vs/17/release/vs_community.exe",
-    "silentArgs": "--quiet --norestart --wait"
+    "simpleSlug": "visualstudio"
   },
   {
     "id": "dotnet-sdk",
@@ -1375,9 +1124,7 @@
     "provider": "catalog",
     "wikiTitle": ".NET",
     "logoSlug": "dotnet",
-    "simpleSlug": "dotnet",
-    "installUrl": "https://aka.ms/dotnet/8.0/dotnet-sdk-win-x64.exe",
-    "silentArgs": "/install /quiet /norestart"
+    "simpleSlug": "dotnet"
   },
   {
     "id": "powershell",
@@ -1389,9 +1136,7 @@
     "provider": "catalog",
     "wikiTitle": "PowerShell",
     "logoSlug": "powershell",
-    "simpleSlug": "powershell",
-    "installUrl": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.4/PowerShell-7.6.4-win-x64.msi",
-    "silentArgs": "/quiet"
+    "simpleSlug": "powershell"
   },
   {
     "id": "github-desktop",
@@ -1403,9 +1148,7 @@
     "provider": "catalog",
     "wikiTitle": "GitHub_Desktop",
     "logoSlug": "github-desktop",
-    "simpleSlug": "github",
-    "installUrl": "https://central.github.com/deployments/desktop/desktop/latest/win32",
-    "silentArgs": "--silent"
+    "simpleSlug": "github"
   },
   {
     "id": "insomnia",
@@ -1416,9 +1159,7 @@
     "packageId": "insomnia",
     "provider": "catalog",
     "logoSlug": "insomnia",
-    "simpleSlug": "insomnia",
-    "installUrl": "https://github.com/Kong/insomnia/releases/download/core%4013.1.0/Insomnia.Core-13.1.0.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "insomnia"
   },
   {
     "id": "winmerge",
@@ -1430,9 +1171,7 @@
     "provider": "catalog",
     "wikiTitle": "WinMerge",
     "logoSlug": "winmerge",
-    "homepage": "https://winmerge.org/",
-    "installUrl": "https://github.com/WinMerge/winmerge/releases/download/v2.16.58/WinMerge-2.16.58-x64-Setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "homepage": "https://winmerge.org/"
   },
   {
     "id": "cmake",
@@ -1444,9 +1183,7 @@
     "provider": "catalog",
     "wikiTitle": "CMake",
     "logoSlug": "cmake",
-    "simpleSlug": "cmake",
-    "installUrl": "https://github.com/Kitware/CMake/releases/download/v4.4.2/cmake-4.4.2-windows-x86_64.msi",
-    "silentArgs": "/quiet"
+    "simpleSlug": "cmake"
   },
   {
     "id": "miniconda",
@@ -1458,9 +1195,7 @@
     "provider": "catalog",
     "wikiTitle": "Anaconda_(Python_distribution)",
     "logoSlug": "miniconda",
-    "simpleSlug": "anaconda",
-    "installUrl": "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe",
-    "silentArgs": "/S /InstallationType=JustMe /AddToPath=1"
+    "simpleSlug": "anaconda"
   },
   {
     "id": "postgresql",
@@ -1471,9 +1206,7 @@
     "packageId": "postgresql",
     "provider": "catalog",
     "wikiTitle": "PostgreSQL",
-    "logoSlug": "postgresql",
-    "installUrl": "https://get.enterprisedb.com/postgresql/postgresql-16.6-1-windows-x64.exe",
-    "silentArgs": "--mode unattended"
+    "logoSlug": "postgresql"
   },
   {
     "id": "pgadmin",
@@ -1484,9 +1217,7 @@
     "packageId": "pgadmin4",
     "provider": "catalog",
     "wikiTitle": "PgAdmin",
-    "logoSlug": "pgadmin",
-    "installUrl": "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v8.14/windows/pgadmin4-8.14-x64.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "logoSlug": "pgadmin"
   },
   {
     "id": "mongodb-compass",
@@ -1498,9 +1229,7 @@
     "provider": "catalog",
     "wikiTitle": "MongoDB",
     "logoSlug": "mongodb-compass",
-    "simpleSlug": "mongodb",
-    "installUrl": "https://downloads.mongodb.com/compass/mongodb-compass-1.44.6-win32-x64.exe",
-    "silentArgs": "/S"
+    "simpleSlug": "mongodb"
   },
   {
     "id": "ollama",
@@ -1511,9 +1240,7 @@
     "packageId": "ollama",
     "provider": "catalog",
     "logoSlug": "ollama",
-    "homepage": "https://ollama.com/",
-    "installUrl": "https://ollama.com/download/OllamaSetup.exe",
-    "silentArgs": "/SILENT"
+    "homepage": "https://ollama.com/"
   },
 
   {
@@ -1526,9 +1253,7 @@
     "provider": "catalog",
     "wikiTitle": "Zotero",
     "logoSlug": "zotero",
-    "simpleSlug": "zotero",
-    "installUrl": "https://www.zotero.org/download/client/dl?channel=release&platform=win-x64",
-    "silentArgs": "/S"
+    "simpleSlug": "zotero"
   },
   {
     "id": "joplin",
@@ -1539,9 +1264,7 @@
     "packageId": "joplin",
     "provider": "catalog",
     "wikiTitle": "Joplin_(software)",
-    "logoSlug": "joplin",
-    "installUrl": "https://github.com/laurent22/joplin/releases/download/v3.6.15/Joplin-Setup-3.6.15.exe",
-    "silentArgs": "/S"
+    "logoSlug": "joplin"
   },
   {
     "id": "logseq",
@@ -1551,9 +1274,7 @@
     "category": "office",
     "packageId": "logseq",
     "provider": "catalog",
-    "logoSlug": "logseq",
-    "installUrl": "https://github.com/logseq/logseq/releases/download/2.0.1/Logseq-win-x64-2.0.1-nsis.exe",
-    "silentArgs": "/S"
+    "logoSlug": "logseq"
   },
   {
     "id": "anki",
@@ -1565,9 +1286,7 @@
     "provider": "catalog",
     "wikiTitle": "Anki_(software)",
     "logoSlug": "anki",
-    "homepage": "https://apps.ankiweb.net/",
-    "installUrl": "https://github.com/ankitects/anki/releases/download/26.05/anki-26.05-win-x64.msi",
-    "silentArgs": "/quiet"
+    "homepage": "https://apps.ankiweb.net/"
   },
 
   {
@@ -1579,9 +1298,7 @@
     "packageId": "system-informer",
     "provider": "catalog",
     "logoSlug": "system-informer",
-    "homepage": "https://systeminformer.sourceforge.io/",
-    "installUrl": "https://github.com/winsiderss/systeminformer/releases/download/v3.2.25011.2103/systeminformer-3.2.25011-release-setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "homepage": "https://systeminformer.sourceforge.io/"
   },
   {
     "id": "wiztree",
@@ -1592,9 +1309,7 @@
     "packageId": "wiztree",
     "provider": "catalog",
     "logoSlug": "wiztree",
-    "homepage": "https://diskanalyzer.com/",
-    "installUrl": "https://diskanalyzer.com/files/wiztree_4_30_setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "homepage": "https://diskanalyzer.com/"
   },
   {
     "id": "bleachbit",
@@ -1606,9 +1321,7 @@
     "provider": "catalog",
     "wikiTitle": "BleachBit",
     "logoSlug": "bleachbit",
-    "homepage": "https://www.bleachbit.org/",
-    "installUrl": "https://download.bleachbit.org/BleachBit-4.6.2-setup.exe",
-    "silentArgs": "/S"
+    "homepage": "https://www.bleachbit.org/"
   },
 
   {
@@ -1621,9 +1334,7 @@
     "provider": "catalog",
     "wikiTitle": "Google_Drive",
     "logoSlug": "google-drive",
-    "simpleSlug": "googledrive",
-    "installUrl": "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe",
-    "silentArgs": "--silent"
+    "simpleSlug": "googledrive"
   },
   {
     "id": "nextcloud",
@@ -1634,9 +1345,7 @@
     "packageId": "nextcloud",
     "provider": "catalog",
     "wikiTitle": "Nextcloud",
-    "logoSlug": "nextcloud",
-    "installUrl": "https://github.com/nextcloud-releases/desktop/releases/download/v34.0.0/Nextcloud-34.0.0-x64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "nextcloud"
   },
   {
     "id": "free-download-manager",
@@ -1648,9 +1357,7 @@
     "provider": "catalog",
     "wikiTitle": "Free_Download_Manager",
     "logoSlug": "free-download-manager",
-    "homepage": "https://www.freedownloadmanager.org/",
-    "installUrl": "https://dn3.freedownloadmanager.org/6/latest/fdm_x64_setup.exe",
-    "silentArgs": "/VERYSILENT /NORESTART"
+    "homepage": "https://www.freedownloadmanager.org/"
   },
   {
     "id": "rustdesk",
@@ -1661,9 +1368,7 @@
     "packageId": "rustdesk",
     "provider": "catalog",
     "wikiTitle": "RustDesk",
-    "logoSlug": "rustdesk",
-    "installUrl": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe",
-    "silentArgs": "--silent-install"
+    "logoSlug": "rustdesk"
   },
 
   {
@@ -1675,8 +1380,6 @@
     "packageId": "openvpn",
     "provider": "catalog",
     "wikiTitle": "OpenVPN",
-    "logoSlug": "openvpn",
-    "installUrl": "https://swupdate.openvpn.net/community/releases/OpenVPN-2.6.12-I001-amd64.msi",
-    "silentArgs": "/quiet"
+    "logoSlug": "openvpn"
   }
 ]

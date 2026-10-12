@@ -9,8 +9,6 @@ export interface Package {
   version?: string;
   category?: string;
   sourceUrl?: string;
-  installUrl?: string;
-  silentArgs?: string;
   wikiTitle?: string;
   logoSlug?: string;
   simpleSlug?: string;
@@ -89,18 +87,12 @@ export interface CuratedEntry {
   /** Vendor site; its favicon is the icon of last resort. */
   homepage?: string;
   recommended?: boolean;
-  installUrl?: string;
-  /** Extra direct download mirrors tried after installUrl fails. */
-  installUrlFallbacks?: string[];
-  /**
-   * When every catalog download URL fails (CDN reset / geo-block), install via
-   * another provider instead of leaving the user stuck.
-   * Legacy per-app override; winget-map.json covers the rest of the catalog.
-   */
-  altProvider?: { provider: string; packageId: string };
-  /** Skip winget fallback (no package in winget store). */
-  noWingetFallback?: boolean;
-  silentArgs?: string;
+}
+
+/** data/related.json — catalog ids that go together or replace each other. */
+export interface RelatedData {
+  stacks: Array<{ id: string; apps: string[] }>;
+  alternatives: Array<{ id: string; apps: string[] }>;
 }
 
 export interface PickEntry {

@@ -1,4 +1,5 @@
 import type { MergedApp } from '../types';
+import type { RecommendationReason } from '../recommend';
 import type { TranslationKey } from './translations';
 
 export function categoryLabel(t: TranslationKey, id: string, fallback?: string): string {
@@ -14,6 +15,26 @@ export function profileLabel(
 ): string {
   const profiles = t.profiles as Record<string, { name: string; description: string }>;
   return profiles[id]?.[field] ?? fallback;
+}
+
+/** One line under a recommended app saying why it is there. */
+export function reasonLabel(
+  t: TranslationKey,
+  reason: RecommendationReason,
+  categories: Record<string, string>,
+): string {
+  switch (reason.kind) {
+    case 'favorite':
+      return t.recommend.favorite;
+    case 'pairs':
+      return t.recommend.pairs.replace('{name}', reason.withName);
+    case 'category':
+      return t.recommend.category.replace('{category}', categoryLabel(t, reason.category, categories[reason.category]));
+    case 'editor':
+      return reason.tag ?? t.recommend.editor;
+    default:
+      return t.recommend.popular;
+  }
 }
 
 export function localeLabel(t: TranslationKey, locale: 'ru' | 'en'): string {

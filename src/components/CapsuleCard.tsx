@@ -7,6 +7,8 @@ import { IconStar, IconStarFilled } from './Icons';
 interface CapsuleCardProps {
   app: MergedApp;
   categoryLabel?: string;
+  /** Why the app is recommended; one line under the card body. */
+  reason?: string;
   job?: QueueJob;
   onInstall: (app: MergedApp) => void;
   onRetry?: (app: MergedApp) => void;
@@ -15,7 +17,7 @@ interface CapsuleCardProps {
   onToggleFavorite: (app: MergedApp) => void;
 }
 
-function CapsuleCardInner({ app, categoryLabel, job, onInstall, onRetry, onCancel, onOpen, onToggleFavorite }: CapsuleCardProps) {
+function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry, onCancel, onOpen, onToggleFavorite }: CapsuleCardProps) {
   const { t } = useI18n();
   const busy = job?.status === 'running' || job?.status === 'pending';
   const failed = job?.status === 'failed';
@@ -90,6 +92,7 @@ function CapsuleCardInner({ app, categoryLabel, job, onInstall, onRetry, onCance
           </button>
         )}
       </div>
+      {reason && <div className="capsule-reason" title={reason}>{reason}</div>}
     </article>
   );
 }

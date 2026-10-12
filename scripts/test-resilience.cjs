@@ -1,6 +1,7 @@
 /**
- * Resilience audit: every catalog app must have winget install fallback
- * (altProvider, winget-map entry, or explicit noWingetFallback).
+ * Resilience audit: every catalog app must have a package-manager route —
+ * a winget Id (winget-map / installers.json) or a hand-pinned provider —
+ * so a dead direct download never leaves the user stuck.
  *
  * Run: node scripts/test-resilience.cjs [--winget]
  */
@@ -11,6 +12,7 @@ const { spawnSync } = require('node:child_process');
 const ROOT = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf-8'));
 const wingetMap = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'winget-map.json'), 'utf-8'));
+const installers = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'installers.json'), 'utf-8'));
 const CHECK_WINGET = process.argv.includes('--winget');
 
 let passed = 0;
@@ -47,15 +49,12 @@ function wingetIdExists(id) {
   return r.status === 0;
 }
 
-function hasInstallFallback(entry) {
-  if (entry.noWingetFallback) return false;
-  if (entry.altProvider?.provider === 'winget' && entry.altProvider.packageId) return true;
-  return Boolean(wingetMap[entry.id]);
+function resolveWingetId(entry) {
+  return installers[entry.id]?.wingetId ?? wingetMap[entry.id];
 }
 
-function resolveWingetId(entry) {
-  if (entry.altProvider?.provider === 'winget') return entry.altProvider.packageId;
-  return wingetMap[entry.id];
+function hasInstallFallback(entry) {
+  return Boolean(resolveWingetId(entry) || installers[entry.id]?.provider);
 }
 
 console.log('\nresilience audit:');
@@ -65,34 +64,16 @@ test('every recommended app has install fallback', () => {
   if (missing.length) throw new Error(`missing install fallback: ${missing.join(', ')}`);
 });
 
-test('catalog ids are covered by winget-map or noWingetFallback', () => {
-  const missing = catalog
-    .filter((e) => !e.noWingetFallback && !wingetMap[e.id] && e.altProvider?.provider !== 'winget')
-    .map((e) => e.id);
-  if (missing.length) throw new Error(`uncovered catalog ids: ${missing.join(', ')}`);
+test('installers.json winget Ids agree with winget-map', () => {
+  const drift = catalog
+    .filter((e) => installers[e.id]?.wingetId && wingetMap[e.id] && installers[e.id].wingetId.toLowerCase() !== wingetMap[e.id].toLowerCase())
+    .map((e) => `${e.id} (${wingetMap[e.id]} vs ${installers[e.id].wingetId})`);
+  if (drift.length) throw new Error(`drift: ${drift.join(', ')}`);
 });
 
-test('every altProvider has winget or scoop + packageId', () => {
-  for (const entry of catalog) {
-    if (!entry.altProvider) continue;
-    const { provider, packageId } = entry.altProvider;
-    if (!['winget', 'scoop'].includes(provider)) {
-      throw new Error(`${entry.id}: invalid altProvider.provider "${provider}"`);
-    }
-    if (!packageId || !String(packageId).trim()) {
-      throw new Error(`${entry.id}: empty altProvider.packageId`);
-    }
-  }
-});
-
-const withFallback = catalog.filter((e) => hasInstallFallback(e));
-const withMap = catalog.filter((e) => wingetMap[e.id]);
-const withAlt = catalog.filter((e) => e.altProvider);
-const withFallbacks = catalog.filter((e) => e.installUrlFallbacks?.length);
-console.log(`\n  coverage: ${withFallback.length}/${catalog.length} apps with winget fallback`);
-console.log(`  coverage: ${withMap.length}/${catalog.length} apps in winget-map.json`);
-console.log(`  coverage: ${withAlt.length}/${catalog.length} apps with legacy altProvider`);
-console.log(`  coverage: ${withFallbacks.length}/${catalog.length} apps with URL fallbacks`);
+const values = catalog.map((e) => installers[e.id] ?? {});
+console.log(`\n  coverage: ${catalog.filter(hasInstallFallback).length}/${catalog.length} apps with a package-manager route`);
+console.log(`  coverage: ${values.filter((v) => v.url).length}/${catalog.length} apps with a verified direct installer`);
 
 if (CHECK_WINGET && wingetAvailable()) {
   console.log('\n  validating winget IDs…');

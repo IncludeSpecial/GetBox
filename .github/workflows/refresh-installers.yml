@@ -1,0 +1,36 @@
+name: Refresh installers
+
+# Pull the latest installer URLs and hashes from the winget manifests and
+# propose them as a PR, so pinned downloads do not go stale between releases.
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run catalog:installers
+      - run: node scripts/smoke.cjs
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/refresh-installers
+          commit-message: Refresh installers.json from winget manifests
+          title: Refresh installers.json from winget manifests
+          body: |
+            Weekly `npm run catalog:installers`: latest installer URLs, SHA256 and switches
+            from cdn.winget.microsoft.com. Review version jumps and changed install types.
+          delete-branch: true
