@@ -14,6 +14,7 @@ const DATA = path.join(ROOT, 'data');
 const CATALOG_PATH = path.join(DATA, 'catalog.json');
 const OVERRIDES_PATH = path.join(DATA, 'winget-overrides.json');
 const MAP_PATH = path.join(DATA, 'winget-map.json');
+const INSTALLERS_PATH = path.join(DATA, 'installers.json');
 
 const VERIFY = process.argv.includes('--verify');
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -107,17 +108,14 @@ function pickBestMatch(entry, results) {
   return results[0]?.id ?? null;
 }
 
-function seedFromCatalog(catalog) {
-  const map = {};
-  for (const entry of catalog) {
-    if (entry.altProvider?.provider === 'winget' && entry.altProvider.packageId) {
-      map[entry.id] = entry.altProvider.packageId;
-    }
-  }
-  return map;
+/** Apps hand-pinned to another package manager in installers.json need no winget Id. */
+function pinnedElsewhere() {
+  const installers = readJson(INSTALLERS_PATH, {});
+  return new Set(Object.keys(installers).filter((id) => installers[id].provider));
 }
 
 function validateMapStructure(catalog, map) {
+  const pinned = pinnedElsewhere();
   let errors = 0;
   const orphans = Object.keys(map).filter((id) => !catalog.some((e) => e.id === id));
   for (const id of orphans) {
@@ -125,9 +123,9 @@ function validateMapStructure(catalog, map) {
   }
 
   for (const entry of catalog) {
-    if (entry.noWingetFallback) continue;
+    if (pinned.has(entry.id)) continue;
     if (map[entry.id]) continue;
-    console.error(`  x ${entry.id}: missing winget-map entry and no noWingetFallback`);
+    console.error(`  x ${entry.id}: missing winget-map entry and not pinned to another provider in installers.json`);
     errors++;
   }
 
@@ -139,18 +137,18 @@ function validateMapStructure(catalog, map) {
   }
 
   const withFallback = catalog.filter(
-    (e) => !e.noWingetFallback && (map[e.id] || e.altProvider?.provider === 'winget'),
+    (e) => !pinned.has(e.id) && map[e.id],
   );
   console.log(`\n  coverage: ${withFallback.length}/${catalog.length} apps with winget fallback`);
-  console.log(`  noWingetFallback: ${catalog.filter((e) => e.noWingetFallback).length}`);
+  console.log(`  pinned to another provider: ${pinned.size}`);
   return errors;
 }
 
 function buildMap(catalog, overrides, useWinget) {
-  const map = seedFromCatalog(catalog);
-  Object.assign(map, overrides);
+  const pinned = pinnedElsewhere();
+  const map = { ...overrides };
 
-  const pending = catalog.filter((e) => !e.noWingetFallback && !map[e.id]);
+  const pending = catalog.filter((e) => !pinned.has(e.id) && !map[e.id]);
   if (pending.length && useWinget) {
     console.log(`\n  searching winget for ${pending.length} unmapped apps…`);
     for (const entry of pending) {
@@ -193,7 +191,7 @@ function main() {
   console.log(`winget-map: ${catalog.length} catalog apps`);
 
   if (VERIFY) {
-    const map = { ...existing, ...seedFromCatalog(catalog), ...overrides };
+    const map = { ...existing, ...overrides };
     const errors = validateMapStructure(catalog, map);
     if (errors) {
       console.error(`\n${errors} error(s)\n`);
@@ -209,7 +207,7 @@ function main() {
   const map = buildMap(catalog, overrides, useWinget);
   const errors = validateMapStructure(catalog, map);
   if (errors) {
-    console.error(`\n${errors} structural error(s) — fix overrides or mark noWingetFallback in catalog\n`);
+    console.error(`\n${errors} structural error(s) — fix winget-overrides.json or pin a provider in installers.json\n`);
     process.exit(1);
   }
 

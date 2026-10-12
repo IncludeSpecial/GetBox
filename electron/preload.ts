@@ -36,7 +36,12 @@ export interface MetaProgress {
 }
 
 export interface GetBoxAPI {
-  getCatalog: () => Promise<{ apps: MergedApp[]; categories: Record<string, string>; profiles: ProfileEntry[] }>;
+  getCatalog: () => Promise<{
+    apps: MergedApp[];
+    categories: Record<string, string>;
+    profiles: ProfileEntry[];
+    related: RelatedData;
+  }>;
   onCatalogDirty: (cb: () => void) => () => void;
   search: (query: string) => Promise<SearchResult>;
   enrichMeta: (items: Array<{ slug: string; wikiTitle?: string; logoSlug?: string }>) => Promise<unknown[]>;
@@ -86,6 +91,11 @@ export interface PackageMetaUpdate {
   id: string;
   description?: string;
   iconUrl?: string;
+}
+
+interface RelatedData {
+  stacks: Array<{ id: string; apps: string[] }>;
+  alternatives: Array<{ id: string; apps: string[] }>;
 }
 
 interface ProfileEntry {

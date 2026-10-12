@@ -4,7 +4,6 @@ import type { InstallProgress, QueueJob } from '../providers/types.js';
 import { getProvider } from '../providers/registry.js';
 import { getSettings } from '../store/settings.js';
 import { classifyError, isCancelledError } from '../providers/install-errors.js';
-import { debugLog } from '../debug-log.js';
 
 const PROGRESS_EMIT_MS = 250;
 
@@ -207,15 +206,6 @@ export class InstallQueue extends EventEmitter {
       }
     }
 
-    // #region agent log
-    debugLog('install-queue.ts:processNext', 'job finished', {
-      jobId: next.id,
-      packageId: next.packageId,
-      provider: next.provider,
-      status: next.status,
-      errorCode: next.errorCode,
-    }, 'H5');
-    // #endregion
 
     this.finishJob(next.id);
   }

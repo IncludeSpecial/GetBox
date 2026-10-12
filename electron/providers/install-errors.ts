@@ -111,7 +111,7 @@ export function isRetryableDownloadError(err: unknown): boolean {
   return code === 'timeout' || code === 'network' || code === 'http';
 }
 
-/** Whether catalog.install should attempt altProvider (winget/scoop) after direct download fails. */
+/** Whether catalog.install should hand over to the package manager after the direct download fails. */
 export function shouldTryAltProvider(err: unknown): boolean {
   if (isCancelledError(err)) return false;
   if (err instanceof InstallError) {

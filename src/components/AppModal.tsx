@@ -13,9 +13,43 @@ interface AppModalProps {
   onRetry?: (app: MergedApp) => void;
   onCancel?: (jobId: string) => void;
   onToggleFavorite: (app: MergedApp) => void;
+  /** Apps from the same stacks; shown as chips that open their own card. */
+  pairs?: MergedApp[];
+  alternatives?: MergedApp[];
+  onOpen?: (app: MergedApp) => void;
 }
 
-export function AppModal({ app, job, onClose, onInstall, onRetry, onCancel, onToggleFavorite }: AppModalProps) {
+function RelatedChips({ title, apps, onOpen }: { title: string; apps: MergedApp[]; onOpen?: (app: MergedApp) => void }) {
+  const { t } = useI18n();
+  if (apps.length === 0) return null;
+  return (
+    <section className="modal-related">
+      <h4 className="modal-related-title">{title}</h4>
+      <div className="modal-related-list">
+        {apps.map((a) => (
+          <button key={a.id} type="button" className="related-chip" onClick={() => onOpen?.(a)} title={a.name}>
+            <AppCover name={a.name} iconUrl={a.iconUrl} size="xs" />
+            <span className="related-chip-name">{a.name}</span>
+            {a.isInstalled && <span className="related-chip-badge">{t.app.installedBadge}</span>}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function AppModal({
+  app,
+  job,
+  onClose,
+  onInstall,
+  onRetry,
+  onCancel,
+  onToggleFavorite,
+  pairs = [],
+  alternatives = [],
+  onOpen,
+}: AppModalProps) {
   const { t } = useI18n();
   const desc = appDescription(app, t);
 
@@ -45,6 +79,8 @@ export function AppModal({ app, job, onClose, onInstall, onRetry, onCancel, onTo
             ))}
           </div>
         )}
+        <RelatedChips title={t.recommend.pairsWith} apps={pairs} onOpen={onOpen} />
+        <RelatedChips title={t.recommend.alternatives} apps={alternatives} onOpen={onOpen} />
         <div className="modal-actions">
           <InstallButton app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />
           <button className="btn btn-accent" onClick={() => onToggleFavorite(app)}>

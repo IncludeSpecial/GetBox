@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { MergedApp, Package, PickEntry, ProfileEntry } from '../providers/types.js';
+import type { MergedApp, Package, PickEntry, ProfileEntry, RelatedData } from '../providers/types.js';
 import { packageKey, softIsInstalled } from '../providers/types.js';
 import { loadCuratedCatalog } from '../providers/catalog.js';
 import { peekScoopInstalledCache } from '../providers/scoop.js';
@@ -108,6 +108,16 @@ function loadProfiles(): ProfileEntry[] {
   }
 }
 
+const EMPTY_RELATED: RelatedData = { stacks: [], alternatives: [] };
+
+function loadRelated(): RelatedData {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(getDataDir(), 'related.json'), 'utf-8')) as RelatedData;
+  } catch {
+    return EMPTY_RELATED;
+  }
+}
+
 function loadCategories(): Record<string, string> {
   try {
     return JSON.parse(fs.readFileSync(path.join(getDataDir(), 'categories.json'), 'utf-8')) as Record<string, string>;
@@ -171,7 +181,12 @@ function mergeApps(): MergedApp[] {
   return [...appsMap.values()];
 }
 
-export function getCatalog(): { apps: MergedApp[]; categories: Record<string, string>; profiles: ProfileEntry[] } {
+export function getCatalog(): {
+  apps: MergedApp[];
+  categories: Record<string, string>;
+  profiles: ProfileEntry[];
+  related: RelatedData;
+} {
   if (!cache || cache.invalidated.size > 0) {
     const apps = mergeApps();
     cache = {
@@ -185,6 +200,7 @@ export function getCatalog(): { apps: MergedApp[]; categories: Record<string, st
     apps: cache.apps,
     categories: loadCategories(),
     profiles: loadProfiles(),
+    related: loadRelated(),
   };
 }
 
