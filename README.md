@@ -112,6 +112,8 @@ npm run dist
 
 Добавили программу: допишите её в `catalog.json` и `winget-overrides.json`, затем `npm run winget:map` и `npm run catalog:installers`.
 
+Раз в неделю workflow `refresh-installers.yml` запускает этот скрипт и открывает PR с новыми версиями. Чтобы он мог создавать PR, в настройках репозитория включите *Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*.
+
 ### Рекомендации
 
 `src/recommend.ts` ранжирует программы каталога по тому, что у пользователя установлено и в избранном:

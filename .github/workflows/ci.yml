@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Tests and the renderer build do not need the Electron binary.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - name: Typecheck
+        run: npx tsc -p tsconfig.node.json --noEmit && npx tsc -p tsconfig.json --noEmit
+      - name: Catalog
+        run: node scripts/verify-catalog.cjs --no-links && node scripts/generate-winget-map.cjs --verify
+      - name: Tests
+        run: |
+          node scripts/smoke.cjs
+          node scripts/test-download.cjs
+          node scripts/test-resilience.cjs
+          node scripts/test-app-full.cjs
+      - name: Build main + renderer
+        run: mkdir -p dist-electron && npx tsc -p tsconfig.node.json && npx vite build
