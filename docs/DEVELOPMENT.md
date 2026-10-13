@@ -68,6 +68,7 @@ npm run dist
 2. После слияния в `main` поставьте тег `git tag vX.Y.Z && git push origin vX.Y.Z` — или запустите workflow **Release** вручную на вкладке *Actions*: тег `v<версия из package.json>` создастся сам.
 3. Workflow `release.yml` на `windows-latest` прогонит проверки, соберёт `GetBox-X.Y.Z-portable.exe`, посчитает `GetBox-X.Y.Z-portable.exe.sha256` и опубликует релиз «GetBox X.Y.Z» с разделом из `CHANGELOG.md`.
 4. Добавьте карточки для экрана «Что нового» в `data/whats-new.json` (ключ — версия), иначе после обновления экран не покажется.
+5. Сайт [getbox.ne-nas.ru](https://getbox.ne-nas.ru/) подхватит релиз сам: последний шаг workflow просит [GetBoxLanding](https://github.com/IncludeSpecial/GetBoxLanding) пересобраться (нужен секрет `LANDING_DISPATCH_TOKEN`), без секрета сайт обновится в течение часа.
 
 Самообновление берёт только релизы с ассетом `GetBox-*-portable.exe` и скачивает его, лишь если есть `.sha256` (или `digest` ассета от GitHub). Пре-релизы получают пользователи канала «Бета». Не удаляйте `.sha256` из релизов: без него клиенты не обновятся.
 

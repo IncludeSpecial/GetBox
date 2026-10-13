@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import logoUrl from '../../data/logo.svg';
+// 18 px: the simplified mark stays crisp where the full one turns to mush.
+import logoUrl from '../../data/logo-small.svg';
 import { IconClose, IconMaximize, IconMinimize, IconRestore } from './Icons';
 
 function waitForApi(): Promise<typeof window.getbox> {
