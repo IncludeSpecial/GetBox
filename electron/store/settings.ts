@@ -12,6 +12,9 @@ const DEFAULTS: AppSettings = {
   listView: 'cards',
   autoCheckUpdates: true,
   autoInstallUpdates: false,
+  autoUpdateApp: true,
+  appUpdateChannel: 'stable',
+  lastSeenVersion: undefined,
 };
 
 export const UI_SCALE_MIN = 0.9;
@@ -41,6 +44,9 @@ function sanitize(s: AppSettings): AppSettings {
     uiScale,
     autoCheckUpdates: typeof s.autoCheckUpdates === 'boolean' ? s.autoCheckUpdates : DEFAULTS.autoCheckUpdates,
     autoInstallUpdates: typeof s.autoInstallUpdates === 'boolean' ? s.autoInstallUpdates : DEFAULTS.autoInstallUpdates,
+    autoUpdateApp: typeof s.autoUpdateApp === 'boolean' ? s.autoUpdateApp : DEFAULTS.autoUpdateApp,
+    appUpdateChannel: s.appUpdateChannel === 'beta' ? 'beta' : 'stable',
+    lastSeenVersion: typeof s.lastSeenVersion === 'string' && /^\d+\.\d+\.\d+/.test(s.lastSeenVersion) ? s.lastSeenVersion : undefined,
   };
 }
 

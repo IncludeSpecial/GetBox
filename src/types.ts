@@ -109,6 +109,23 @@ export interface AppSettings {
   listView: ListView;
   autoCheckUpdates: boolean;
   autoInstallUpdates: boolean;
+  autoUpdateApp: boolean;
+  appUpdateChannel: 'stable' | 'beta';
+  lastSeenVersion?: string;
+}
+
+export interface SelfUpdateState {
+  status: 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error';
+  current: string;
+  latest?: string;
+  notes?: string;
+  releaseUrl?: string;
+  checkedAt?: number;
+  progress?: number;
+  downloadedPath?: string;
+  canApply: boolean;
+  applyOnQuit?: boolean;
+  error?: string;
 }
 
 export type ThemeId = 'classic' | 'light' | 'oled' | 'contrast' | 'mica';

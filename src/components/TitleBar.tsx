@@ -45,6 +45,8 @@ export function TitleBar() {
         <span className="titlebar-name">GetBox</span>
       </div>
       <div className="titlebar-drag" aria-hidden />
+      {/* App portals the GetBox update button here, inside its i18n provider. */}
+      <div className="titlebar-slot" id="titlebar-slot" />
       <div className="titlebar-controls">
         <button
           type="button"
