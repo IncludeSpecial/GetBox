@@ -1,4 +1,16 @@
 {
+  "1.3.1": [
+    { "icon": "palette", "title": "Новый значок", "text": "GetBox сменил логотип: он чётко виден в панели задач — и на тёмной, и на светлой.",
+      "titleEn": "New icon", "textEn": "GetBox has a new logo that stays crisp in the taskbar, light or dark." },
+    { "icon": "refresh", "title": "Обновления программ", "text": "Всё, что можно обновить, — на одной вкладке. История и откат в один клик.", "action": "updates", "actionLabel": "Открыть обновления",
+      "titleEn": "Program updates", "textEn": "Everything that can be updated in one tab, with history and one-click rollback.", "actionLabelEn": "Open updates" },
+    { "icon": "palette", "title": "Пять тем и свой акцент", "text": "Светлая, OLED, высокий контраст, Windows 11, свой цвет и масштаб.", "action": "settings", "actionLabel": "Выбрать тему",
+      "titleEn": "Five themes and your accent", "textEn": "Light, OLED, high contrast, Windows 11, your own colour and scale.", "actionLabelEn": "Pick a theme" },
+    { "icon": "grid", "title": "Четыре вида списка", "text": "Карточки, список с описанием, таблица и плитки — переключатель над любым списком.", "action": "catalog", "actionLabel": "Попробовать",
+      "titleEn": "Four list views", "textEn": "Cards, a detailed list, a table and tiles — switch above any list.", "actionLabelEn": "Try it" },
+    { "icon": "shield", "title": "GetBox обновляется сам", "text": "Новая версия скачивается в фоне и проверяется по SHA256 — кнопка появится в заголовке окна.",
+      "titleEn": "GetBox updates itself", "textEn": "New versions download in the background and are checked by SHA256 — a button appears in the title bar." }
+  ],
   "1.3.0": [
     { "icon": "refresh", "title": "Обновления программ", "text": "Всё, что можно обновить, — на одной вкладке. История и откат в один клик.", "action": "updates", "actionLabel": "Открыть обновления",
       "titleEn": "Program updates", "textEn": "Everything that can be updated in one tab, with history and one-click rollback.", "actionLabelEn": "Open updates" },
