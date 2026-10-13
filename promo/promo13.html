@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox 1.3 promo</title>
+<style>
+  :root { --ink: #eef3f7; --sub: #93a3b3; --accent: #66c0f4; --green: #7cb928; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; background: #05090d; }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'DejaVu Sans Mono', monospace; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0;
+    background: radial-gradient(1200px 800px at 50% 70%, #11273a 0%, #060b10 70%); }
+  .glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .35; pointer-events: none; }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .abs { position: absolute; }
+  .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+
+  /* Title zone above the window; nothing is ever written over the interface. */
+  #head { position: absolute; left: 0; right: 0; top: 34px; height: 140px; text-align: center; }
+  #kicker { font: 700 24px 'DejaVu Sans Mono', monospace; letter-spacing: .16em; color: var(--accent); }
+  #title { margin-top: 12px; font-size: 62px; font-weight: 800; letter-spacing: -.02em; }
+
+  #win { position: absolute; left: 260px; top: 190px; width: 1400px; height: 875px; border-radius: 14px; overflow: hidden; background: #0b1219;
+    box-shadow: 0 50px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.1); }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; opacity: 0; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
+  .hl-box { position: absolute; border-radius: 8px; opacity: 0; pointer-events: none; z-index: 5;
+    box-shadow: 0 0 0 3px var(--accent), 0 0 0 9999px rgba(3, 7, 11, .5); }
+  .hl-tag { position: absolute; left: 0; top: 0; padding: 10px 18px; border-radius: 8px; background: var(--accent); color: #06131d; z-index: 6;
+    font-size: 24px; font-weight: 700; white-space: nowrap; opacity: 0; box-shadow: 0 12px 30px rgba(0,0,0,.4); }
+  .ripple { position: absolute; border-radius: 50%; border: 5px solid rgba(159,214,90,.95); opacity: 0; z-index: 7; }
+
+  .tile { padding: 34px; border-radius: 18px; background: rgba(17,27,37,.9); border: 1px solid rgba(255,255,255,.08);
+    display: flex; flex-direction: column; gap: 12px; }
+  .tile b { font-size: 34px; }
+  .tile span { font-size: 24px; color: var(--sub); }
+  .icon { width: 64px; height: 64px; border-radius: 16px; background: rgba(102,192,244,.14); display: grid; place-items: center; }
+  .icon svg { stroke: var(--accent); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.75); color: #ffd400;
+    font: 600 34px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="glow" style="left:360px;top:300px;width:1200px;height:800px;background:#1f6fa3"></div>
+
+  <!-- Intro -->
+  <div class="scene center" id="intro">
+    <img id="logo0" src="../data/logo.png" alt="" style="width:220px;height:220px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
+    <div id="name0" style="margin-top:34px;font-size:120px;font-weight:900;letter-spacing:.12em">GETBOX</div>
+    <div id="ver0" class="mono" style="margin-top:12px;padding:8px 30px;border-radius:30px;background:rgba(102,192,244,.16);color:#a5d8ff;font-size:44px">1.3</div>
+  </div>
+
+  <!-- The product: one window that stays put, titles above it -->
+  <div class="scene" id="product">
+    <div id="head"><div id="kicker"></div><div id="title"></div></div>
+    <div id="win">
+      <div id="layers"></div>
+      <div class="ripple" id="ripple"></div>
+      <div class="hl-box" id="hlBox"></div>
+      <div class="hl-tag" id="hlTag"></div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="scene" id="summary">
+    <div class="abs center" style="left:0;right:0;top:120px">
+      <div class="mono" id="sk" style="font-size:24px;font-weight:700;letter-spacing:.16em;color:var(--accent)">GETBOX 1.3</div>
+      <div id="st" style="margin-top:14px;font-size:66px;font-weight:800;letter-spacing:-.02em">Всё в одном приложении</div>
+    </div>
+    <div class="abs" id="tiles" style="left:160px;right:160px;top:400px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px"></div>
+  </div>
+
+  <!-- End card -->
+  <div class="scene center" id="end">
+    <img id="logo9" src="../data/logo.png" alt="" style="width:190px;height:190px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
+    <div id="name9" style="margin-top:28px;display:flex;align-items:baseline;gap:26px"><span style="font-size:112px;font-weight:900;letter-spacing:.1em">GETBOX</span><span class="mono" style="font-size:60px;color:var(--accent)">1.3</span></div>
+    <div id="sub9" style="margin-top:12px;font-size:38px;color:#b7c4d0">Магазин программ для Windows 10 и 11</div>
+    <div id="cta9" style="margin-top:40px;padding:22px 56px;border-radius:10px;background:linear-gradient(180deg,#7cb928,#4c7a15);color:#fff;font-size:40px;font-weight:800">Скачать бесплатно</div>
+    <div id="url9" class="mono" style="margin-top:26px;font-size:30px;color:var(--sub)">github.com/IncludeSpecial/GetBox/releases</div>
+  </div>
+
+  <div id="debug"></div>
+</div>
+
+<script src="director.js"></script>
+<script>
+  // Timed to music13.wav (120 bpm): drops at 0:10 and 0:44, the rollback stop at 0:29.5,
+  // a cut per second in the features run (0:32–0:40).
+  const DURATION = 53;
+  const params = new URLSearchParams(location.search);
+  const OUT_H = Number(params.get('h') || 1080), OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
+  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || (OUT_H <= 360 ? 30 : 60)), duration: DURATION };
+  const $ = (id) => document.getElementById(id);
+  $('stage').style.transform = `scale(${OUT_W / 1920})`;
+  document.body.style.width = OUT_W + 'px'; document.body.style.height = OUT_H + 'px';
+  if (params.get('debug')) $('debug').style.display = 'block';
+  const { FULL, fit, camera, apply, highlight, mark, seg, lerp, outCubic } = Director;
+  const WIN_W = 1400, WIN_H = 875;
+  const F = (shot, key) => (key ? fit(shot, key, { pad: 80, maxZoom: 1.9 }) : FULL);
+
+  /**
+   * Segments of the product part. layers: [at, shot] (cut with a short crossfade);
+   * stops: [at, shot, mark | null] (camera arrives at `at`); hl: [from, to, shot, mark, label];
+   * kick: [at, kicker] replaces the kicker mid-segment.
+   */
+  const SEG = [
+    { t0: 3, t1: 6, kicker: 'GETBOX 1.3', title: 'Все программы — в одном окне',
+      layers: [[3, 'home-classic']], stops: [[3, 'home-classic', null]] },
+    { t0: 6, t1: 10, kicker: 'УСТАНОВКА', title: 'Один клик — и программа ставится',
+      layers: [[6, 'home-classic'], [7.5, 'install-queue']],
+      stops: [[6, 'home-classic', null], [7.0, 'home-classic', 'heroCta'], [8.6, 'install-queue', 'queueFirst']],
+      hl: [[7.05, 7.5, 'home-classic', 'heroCta', 'Установить'], [7.55, 8.0, 'install-queue', 'heroCta', 'Загрузка началась'],
+        [8.65, 9.9, 'install-queue', 'queueFirst', 'Очередь: прогресс и отмена']],
+      click: [7.5, 'home-classic', 'heroCta'] },
+    { t0: 10, t1: 14, kicker: 'ТЕМА · КЛАССИКА', title: 'Пять тем оформления',
+      layers: [[10, 'home-classic'], [10.5, 'home-light'], [11, 'home-oled'], [11.5, 'home-contrast'], [12, 'home-mica']],
+      stops: [[10, 'home-classic', null]],
+      kick: [[10.5, 'ТЕМА · СВЕТЛАЯ'], [11, 'ТЕМА · OLED'], [11.5, 'ТЕМА · ВЫСОКИЙ КОНТРАСТ'], [12, 'ТЕМА · WINDOWS 11']] },
+    { t0: 14, t1: 17, kicker: 'АКЦЕНТ', title: 'Свой акцентный цвет',
+      layers: [[14, 'accent-blue'], [14.5, 'accent-violet'], [15, 'accent-teal'], [15.5, 'accent-pink']],
+      stops: [[14, 'accent-blue', null], [14.6, 'accent-blue', 'accent']],
+      hl: [[14.65, 16.85, 'accent-blue', 'accent', 'Любой цвет интерфейса']] },
+    { t0: 17, t1: 21, kicker: 'ВИД СПИСКА', title: 'Четыре вида — как удобно вам',
+      layers: [[17, 'cat-cards'], [17.5, 'cat-list'], [18, 'cat-table'], [18.5, 'cat-tiles-hover']],
+      stops: [[17, 'cat-cards', null]],
+      hl: [[17.05, 17.5, 'cat-cards', 'viewSwitch', 'Карточки'], [17.5, 18, 'cat-cards', 'viewSwitch', 'Список'],
+        [18, 18.5, 'cat-cards', 'viewSwitch', 'Таблица'], [18.5, 20.8, 'cat-cards', 'viewSwitch', 'Плитки']] },
+    { t0: 21, t1: 25, kicker: 'ОБНОВЛЕНИЯ', title: 'Все обновления — на одной вкладке',
+      layers: [[21, 'updates']], stops: [[21, 'updates', null], [22.0, 'updates', 'pending']],
+      hl: [[22.05, 24.8, 'updates', 'pending', 'Ожидают обновления']] },
+    { t0: 25, t1: 28, kicker: 'ОБНОВЛЕНИЯ', title: 'Обновить всё — одной кнопкой',
+      layers: [[25, 'updates-queue']], stops: [[25, 'updates-queue', null], [25.9, 'updates-queue', 'queueFirst']],
+      hl: [[25.95, 27.85, 'updates-queue', 'queueFirst', 'Обновление идёт в очереди']] },
+    { t0: 28, t1: 32, kicker: 'ОТКАТ', title: 'Не понравилось — откатите',
+      layers: [[28, 'updates']], stops: [[28, 'updates', null], [28.8, 'updates', 'history']],
+      hl: [[28.85, 31.85, 'updates', 'rollback', 'Вернуть 1.140.2']] },
+  ];
+  // Features run: a cut on every second, the camera already framing the element.
+  const FEATS = [
+    ['feat-search', 'results', 'Поиск сразу по всем источникам', 'каталог · winget · Scoop · Chocolatey'],
+    ['feat-games', 'gridTop', 'Категории', 'Игры'],
+    ['feat-profiles', 'profiles', 'Наборы программ в один клик', 'Установить набор'],
+    ['feat-favorites', 'gridTop', 'Избранное', 'Отмечено звёздочкой'],
+    ['feat-packages', 'tableTop', 'Все пакеты в одной таблице', 'winget · Scoop · Chocolatey'],
+    ['feat-scale', null, 'Масштаб интерфейса до 125%', ''],
+    ['feat-english', 'tabs', 'Русский и English', 'English'],
+    ['feat-fallback', 'queueFirst', 'Запасной путь через winget', 'Установлено через winget'],
+  ];
+  FEATS.forEach(([shot, key, title, label], i) => {
+    const t0 = 32 + i;
+    SEG.push({ t0, t1: t0 + 1, kicker: `ЕЩЁ ВОЗМОЖНОСТИ · ${i + 1}/8`, title, layers: [[t0, shot]], stops: [[t0, shot, key]],
+      hl: key ? [[t0 + 0.12, t0 + 0.95, shot, key, label]] : [] });
+  });
+  SEG.push({ t0: 40, t1: 44, kicker: 'РЕКОМЕНДАЦИИ', title: 'Подскажет, что поставить ещё',
+    layers: [[40, 'modal-light']], stops: [[40, 'modal-light', 'modal'], [41.2, 'modal-light', 'modalRelated']],
+    hl: [[41.25, 43.85, 'modal-light', 'modalRelated', 'Часто ставят вместе · Альтернативы']] });
+
+  const SHOTS = [...new Set(SEG.flatMap((s) => s.layers.map(([, f]) => f)))];
+  $('layers').innerHTML = SHOTS.map((f) => `<div class="cam" id="L-${f}"><img src="shots/13/${f}.png" alt=""></div>`).join('');
+  SEG.forEach((s) => {
+    s.cam = s.stops.map(([at, shot, key], i) => ({ at: i === 0 ? s.t0 : at, rect: F(shot, key) }));
+  });
+
+  const ICONS = {
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    shield: '<path d="M12 3l8 3.5v5.5c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6.5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+    refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+    palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+  };
+  $('tiles').innerHTML = [
+    ['grid', 'Каталог', 'проверенные программы и наборы'], ['search', 'Поиск', 'каталог · winget · Scoop · Chocolatey'],
+    ['shield', 'Безопасность', 'проверка SHA256 перед запуском'], ['refresh', 'Обновления', 'история и откат'],
+    ['palette', 'Оформление', '5 тем, акцент, 4 вида'], ['globe', 'Языки', 'русский и English'],
+  ].map(([i, b, s], k) => `<div class="tile" id="tl${k}"><div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true">${ICONS[i]}</svg></div><b>${b}</b><span>${s}</span></div>`).join('');
+
+  function scene(id, t, a, b, w = 0.4) {
+    const el = $(id);
+    const vis = t >= a && t < b + w * 0.5;
+    el.style.visibility = vis ? 'visible' : 'hidden';
+    if (!vis) return -1;
+    el.style.opacity = outCubic(seg(t, a, a + w)) * (1 - seg(t, b - w * 0.5, b + w * 0.5));
+    return t - a;
+  }
+  function fadeUp(el, lt, at, dur = 0.45, dy = 30) {
+    const k = outCubic(seg(lt, at, at + dur));
+    el.style.opacity = k;
+    el.style.transform = `translateY(${(1 - k) * dy}px)`;
+  }
+
+  window.render = function render(t) {
+    $('debug').textContent = `${t.toFixed(1)} с`;
+
+    // Intro: the logo settles, the name and version follow on the beat.
+    let lt = scene('intro', t, 0, 3, 0.3);
+    if (lt >= 0) {
+      const k = outCubic(seg(lt, 0.15, 1.0));
+      $('logo0').style.opacity = k; $('logo0').style.transform = `scale(${lerp(0.8, 1, k)})`;
+      fadeUp($('name0'), lt, 0.9); fadeUp($('ver0'), lt, 1.6);
+    }
+
+    // Product: the window rises once, then segments switch layers, camera and highlights.
+    lt = scene('product', t, 3, 44, 0.5);
+    if (lt >= 0) {
+      const wk = outCubic(seg(t, 3, 3.8));
+      const pulse = t >= 10 ? Math.exp(-(t - 10) * 6) : 0;
+      $('win').style.transform = `translateY(${(1 - wk) * 200}px) scale(${lerp(0.94, 1, wk) + 0.012 * pulse})`;
+      const s = SEG.find((x) => t >= x.t0 && t < x.t1) || SEG[SEG.length - 1];
+
+      // Titles: swap with a short fade-up when the segment (or its kicker) changes.
+      const kick = (s.kick || []).filter(([at]) => t >= at).pop();
+      const kicker = kick ? kick[1] : s.kicker;
+      if ($('kicker').textContent !== kicker) $('kicker').textContent = kicker;
+      if ($('title').textContent !== s.title) $('title').textContent = s.title;
+      fadeUp($('kicker'), t - (kick ? kick[0] : s.t0), 0, 0.3, 14);
+      fadeUp($('title'), t - s.t0, 0.05, 0.35, 22);
+
+      // Layers: the newest layer fades in over 0.15 s on top of the previous one.
+      const shown = s.layers.filter(([at]) => t >= at);
+      const layer = shown[shown.length - 1], prev = shown[shown.length - 2];
+      const lk = seg(t, layer[0], layer[0] + 0.15);
+      for (const f of SHOTS) {
+        const el = $(`L-${f}`);
+        el.style.opacity = f === layer[1] ? (prev ? lk : 1) : prev && f === prev[1] ? 1 : 0;
+        el.style.zIndex = f === layer[1] ? 2 : 1;
+      }
+      const rect = camera(s.cam, t, 0.7);
+      if (prev) apply($(`L-${prev[1]}`), WIN_W, WIN_H, rect);
+      const camState = apply($(`L-${layer[1]}`), WIN_W, WIN_H, rect);
+
+      // Highlight: only while the camera holds still on the element.
+      const h = (s.hl || []).find(([a, b]) => t >= a && t < b);
+      if (h) {
+        const [a, b, shot, key, label] = h;
+        if ($('hlTag').textContent !== label) $('hlTag').textContent = label;
+        const hk = outCubic(seg(t, a, a + 0.22)) * (1 - seg(t, b - 0.18, b));
+        highlight($('hlBox'), $('hlTag'), null, camState, mark(shot, key), hk, WIN_W, WIN_H);
+      } else {
+        $('hlBox').style.opacity = 0; $('hlTag').style.opacity = 0;
+      }
+
+      // A click ripple on the install button.
+      const c = s.click;
+      const ck = c ? seg(t, c[0], c[0] + 0.5) : 0;
+      if (c && ck > 0 && ck < 1) {
+        const m = mark(c[1], c[2]);
+        const cx = (m.x + 70) * camState.s + camState.tx, cy = (m.y + 15) * camState.s + camState.ty, r = lerp(30, 140, outCubic(ck));
+        Object.assign($('ripple').style, { left: cx - r + 'px', top: cy - r + 'px', width: 2 * r + 'px', height: 2 * r + 'px', opacity: 1 - ck });
+      } else {
+        $('ripple').style.opacity = 0;
+      }
+    }
+
+    // Summary on the second drop.
+    lt = scene('summary', t, 44, 49, 0.5);
+    if (lt >= 0) {
+      fadeUp($('sk'), lt, 0.1); fadeUp($('st'), lt, 0.25);
+      for (let k = 0; k < 6; k++) fadeUp($(`tl${k}`), lt, 0.6 + k * 0.15, 0.5, 40);
+    }
+
+    // End card.
+    lt = scene('end', t, 49, DURATION + 1, 0.5);
+    if (lt >= 0) {
+      const k = outCubic(seg(lt, 0.1, 0.9));
+      $('logo9').style.opacity = k; $('logo9').style.transform = `scale(${lerp(0.85, 1, k)})`;
+      fadeUp($('name9'), lt, 0.4); fadeUp($('sub9'), lt, 0.8); fadeUp($('cta9'), lt, 1.2); fadeUp($('url9'), lt, 1.5);
+      $('end').style.opacity = Math.min(Number($('end').style.opacity), 1 - seg(t, DURATION - 0.8, DURATION));
+    }
+  };
+  window.render(0);
+</script>
+</body>
+</html>

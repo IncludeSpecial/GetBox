@@ -55,6 +55,41 @@ export interface QueueJob {
   detail?: string;
   errorCode?: InstallErrorCode;
   progress?: InstallProgress;
+  kind?: 'install' | 'upgrade' | 'rollback';
+  fromVersion?: string;
+  toVersion?: string;
+  catalogId?: string;
+}
+
+export interface UpdateInfo {
+  provider: string;
+  packageId: string;
+  name: string;
+  installed: string;
+  available: string;
+  catalogId?: string;
+}
+
+export interface UpdateHistoryEntry {
+  id: string;
+  kind: 'upgrade' | 'rollback';
+  provider: string;
+  packageId: string;
+  name: string;
+  catalogId?: string;
+  from?: string;
+  to?: string;
+  at: number;
+  ok: boolean;
+  message?: string;
+  errorCode?: InstallErrorCode;
+}
+
+export interface UpdatesState {
+  items: UpdateInfo[];
+  checkedAt?: number;
+  checking: boolean;
+  history: UpdateHistoryEntry[];
 }
 
 export interface SearchResult {
@@ -68,7 +103,16 @@ export interface AppSettings {
   quietInstall: boolean;
   remoteCatalogUrl?: string;
   language: 'ru' | 'en';
+  theme: ThemeId;
+  accent?: string;
+  uiScale: number;
+  listView: ListView;
+  autoCheckUpdates: boolean;
+  autoInstallUpdates: boolean;
 }
+
+export type ThemeId = 'classic' | 'light' | 'oled' | 'contrast' | 'mica';
+export type ListView = 'cards' | 'list' | 'table' | 'tiles';
 
 export interface MetaProgress {
   running: boolean;
@@ -92,6 +136,7 @@ export type ViewMode =
   | 'recommended'
   | 'favorites'
   | 'installed'
+  | 'updates'
   | 'search'
   | 'settings';
 

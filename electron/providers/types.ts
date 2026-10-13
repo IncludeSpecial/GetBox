@@ -68,6 +68,45 @@ export interface PackageProvider {
   listAll?(): Promise<Package[]>;
   /** Description and homepage for a single package, used to fill in index entries. */
   describe?(packageId: string): Promise<PackageDetails | undefined>;
+  /** Installed packages that have a newer version in the source. */
+  listUpgrades?(): Promise<UpdateInfo[]>;
+  upgrade?(packageId: string, opts: InstallOptions): Promise<InstallResult>;
+  /** Install an exact version over the current one; used to roll back an update. */
+  installVersion?(packageId: string, version: string, opts: InstallOptions): Promise<InstallResult>;
+}
+
+export interface UpdateInfo {
+  provider: string;
+  packageId: string;
+  name: string;
+  installed: string;
+  available: string;
+  /** Catalog package id when the update belongs to a curated app, for its name and icon. */
+  catalogId?: string;
+}
+
+export type JobKind = 'install' | 'upgrade' | 'rollback';
+
+export interface UpdateHistoryEntry {
+  id: string;
+  kind: 'upgrade' | 'rollback';
+  provider: string;
+  packageId: string;
+  name: string;
+  catalogId?: string;
+  from?: string;
+  to?: string;
+  at: number;
+  ok: boolean;
+  message?: string;
+  errorCode?: InstallErrorCode;
+}
+
+export interface UpdatesState {
+  items: UpdateInfo[];
+  checkedAt?: number;
+  checking: boolean;
+  history: UpdateHistoryEntry[];
 }
 
 export interface CuratedEntry {
@@ -142,6 +181,11 @@ export interface QueueJob {
   detail?: string;
   errorCode?: InstallErrorCode;
   progress?: InstallProgress;
+  /** Absent on plain installs. */
+  kind?: JobKind;
+  fromVersion?: string;
+  toVersion?: string;
+  catalogId?: string;
 }
 
 export interface AppSettings {
@@ -149,7 +193,23 @@ export interface AppSettings {
   quietInstall: boolean;
   remoteCatalogUrl?: string;
   language: 'ru' | 'en';
+  theme: ThemeId;
+  /** Custom accent hex; overrides the theme's own accent when set. */
+  accent?: string;
+  /** Interface zoom factor, 0.9–1.25. */
+  uiScale: number;
+  listView: ListView;
+  /** Look for updates at launch and every 6 hours. */
+  autoCheckUpdates: boolean;
+  /** Queue every found update without asking. */
+  autoInstallUpdates: boolean;
 }
+
+export const THEME_IDS = ['classic', 'light', 'oled', 'contrast', 'mica'] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
+
+export const LIST_VIEWS = ['cards', 'list', 'table', 'tiles'] as const;
+export type ListView = (typeof LIST_VIEWS)[number];
 
 export const APP_NAME = 'GetBox';
 

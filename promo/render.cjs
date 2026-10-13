@@ -1,6 +1,7 @@
 // Render a promo page frame by frame (deterministic) and pipe the frames into ffmpeg.
 //   node promo/render.cjs video  [page.html]           → promo/<page>.mp4 (no audio)
 //   node promo/render.cjs stills [page.html] t1 t2 …   → promo/still-<page>-<t>.png
+// QUERY="h=240&debug=1" is appended to the page URL (output size, overlays) where the page supports it.
 // The page sets window.FORMAT = { width, height, fps, duration } and window.render(t).
 // Playwright is not a project dependency: npx playwright, or point PLAYWRIGHT_MODULE at an install.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? 'playwright');
@@ -22,7 +23,7 @@ const server = http.createServer((req, res) => {
 }).listen(0, async () => {
   const browser = await chromium.launch(launchOpts);
   const page = await browser.newPage();
-  await page.goto(`http://127.0.0.1:${server.address().port}/promo/${pageFile}`);
+  await page.goto(`http://127.0.0.1:${server.address().port}/promo/${pageFile}${process.env.QUERY ? `?${process.env.QUERY}` : ''}`);
   const format = await page.evaluate(() => window.FORMAT ?? { width: 1920, height: 1080, fps: 30, duration: window.DURATION });
   await page.setViewportSize({ width: format.width, height: format.height });
   await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => {}))));
@@ -34,9 +35,9 @@ const server = http.createServer((req, res) => {
       await page.screenshot({ path: path.join(DIR, `still-${pageName}-${t}.png`) });
     }
   } else {
-    const out = path.join(DIR, `${pageName}.mp4`);
+    const out = path.join(DIR, `${pageName}${process.env.OUT_SUFFIX ?? ''}.mp4`);
     const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(format.fps), '-c:v', 'mjpeg', '-i', '-',
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', process.env.CRF ?? '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
     const frames = Math.round(format.duration * format.fps);
     for (let i = 0; i < frames; i++) {
       await page.evaluate((t) => window.render(t), i / format.fps);

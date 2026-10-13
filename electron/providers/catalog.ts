@@ -767,3 +767,20 @@ export function invalidateCatalogCache(): void {
   wingetMapCache = null;
   installersCache = null;
 }
+
+/**
+ * Package-manager id (`winget:Mozilla.Firefox`) → catalog package id, so an update
+ * reported by winget can be shown under the curated app's name and icon.
+ * Ids are compared case-insensitively: winget and choco ignore case.
+ */
+export function catalogIdsBySource(): Map<string, string> {
+  const installers = loadInstallers();
+  const wingetMap = loadWingetMap();
+  const map = new Map<string, string>();
+  for (const item of loadLocalCatalog()) {
+    const plan = resolveInstallPlan(item.id, installers, wingetMap);
+    const source = plan.fallback;
+    if (source) map.set(`${source.provider}:${source.packageId.toLowerCase()}`, item.packageId);
+  }
+  return map;
+}

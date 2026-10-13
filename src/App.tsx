@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MergedApp, ProfileEntry, QueueJob, SearchResult, ViewMode, AppSettings } from './types';
+import type { MergedApp, ProfileEntry, QueueJob, SearchResult, ViewMode, AppSettings, ListView, UpdatesState } from './types';
 import { packageKey } from './types';
 import { I18nProvider } from './i18n/I18nContext';
 import { translations, type Locale } from './i18n/translations';
@@ -18,6 +18,10 @@ import { ProviderBanner } from './components/ProviderBanner';
 import { BootstrapOverlay } from './components/BootstrapOverlay';
 import { MetaLoadingBar } from './components/MetaLoadingBar';
 import { ToastContainer } from './components/Toast';
+import { ViewSwitcher } from './components/ViewSwitcher';
+import { UpdatesView } from './components/UpdatesView';
+import { AppearanceSettings } from './components/AppearanceSettings';
+import { applyAppearance } from './appearance';
 import type { MetaProgress } from './types';
 import { isStoreApp } from './i18n/helpers';
 
@@ -36,11 +40,13 @@ export default function App() {
   const [related, setRelated] = useState<RelatedData>({ stacks: [], alternatives: [] });
   const [providers, setProviders] = useState<Array<{ id: string; displayName: string; ok: boolean; version?: string; message?: string }>>([]);
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [nativeMica, setNativeMica] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [searchBadge, setSearchBadge] = useState<string | undefined>();
   const [queueJobs, setQueueJobs] = useState<QueueJob[]>([]);
+  const [updatesState, setUpdatesState] = useState<UpdatesState>({ items: [], checking: false, history: [] });
   const [queueOpen, setQueueOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<MergedApp | null>(null);
   const [featuredId, setFeaturedId] = useState<string | null>(null);
@@ -113,6 +119,21 @@ export default function App() {
       setSettings(null);
     }
   }, []);
+
+  const patchSettings = useCallback(async (partial: Partial<AppSettings>) => {
+    const s = await window.getbox.updateSettings(partial);
+    setSettings(s);
+  }, []);
+
+  useEffect(() => {
+    window.getbox.windowNativeMica().then(setNativeMica, () => setNativeMica(false));
+  }, []);
+
+  useEffect(() => {
+    if (settings) applyAppearance(settings, nativeMica);
+  }, [settings, nativeMica]);
+
+  const listView: ListView = settings?.listView ?? 'cards';
 
   const loadBootstrap = useCallback(async () => {
     try {
@@ -209,6 +230,8 @@ export default function App() {
 
     const unsubDirty = window.getbox.onCatalogDirty(() => loadCatalog());
     const unsubQueue = window.getbox.onQueueUpdated((jobs) => setQueueJobs(jobs));
+    window.getbox.getUpdates().then(setUpdatesState, () => {});
+    const unsubUpdates = window.getbox.onUpdatesChanged(setUpdatesState);
     const unsubToast = window.getbox.onToastError((msg) => addToast(msg, 'error'));
     const unsubIndex = window.getbox.onIndexProgress((msg) => {
       setIndexBuilding(true);
@@ -262,6 +285,7 @@ export default function App() {
       cancelled = true;
       unsubDirty();
       unsubQueue();
+      unsubUpdates();
       unsubToast();
       unsubIndex();
       unsubIndexDone();
@@ -491,6 +515,7 @@ export default function App() {
     { id: 'recommended', label: t.nav.recommended },
     { id: 'favorites', label: t.nav.favorites, count: apps.filter((a) => a.isFavorite).length },
     { id: 'installed', label: t.nav.installed, count: apps.filter((a) => a.isInstalled).length },
+    { id: 'updates', label: t.nav.updates, count: updatesState.items.length, highlight: true },
   ];
 
   return (
@@ -607,6 +632,7 @@ export default function App() {
 
               {view === 'settings' && settings && (
                 <div className="settings-section">
+                  <AppearanceSettings settings={settings} onChange={patchSettings} />
                   <h2 className="page-title">{t.settings.title}</h2>
                   <div className="setting-row">
                     <label>
@@ -694,7 +720,28 @@ export default function App() {
                 </div>
               )}
 
-              {view !== 'home' && view !== 'settings' && (
+              {view === 'updates' && settings && (
+                <UpdatesView
+                  state={updatesState}
+                  apps={apps}
+                  jobs={queueJobs}
+                  settings={settings}
+                  onCheck={() => void window.getbox.checkUpdates().catch(() => addToast(t.toast.updatesError, 'error'))}
+                  onUpgrade={(keys) => {
+                    void window.getbox.upgradePackages(keys.map(({ provider, packageId }) => ({ provider, packageId })));
+                    setQueueOpen(true);
+                  }}
+                  onRollback={(id) => {
+                    void window.getbox.rollbackUpdate(id);
+                    setQueueOpen(true);
+                  }}
+                  onClearHistory={() => void window.getbox.clearUpdateHistory()}
+                  onOpen={setSelectedApp}
+                  onSettingsChange={(partial) => void patchSettings(partial)}
+                />
+              )}
+
+              {view !== 'home' && view !== 'settings' && view !== 'updates' && (
                 <>
                   {view === 'catalog' && (
                     <h2 className="page-title">
@@ -743,6 +790,12 @@ export default function App() {
                   {view === 'installed' && <h2 className="page-title">{t.nav.installed}</h2>}
                   {view === 'search' && <h2 className="page-title">{t.search.results}</h2>}
 
+                  {filteredApps.length > 0 && (
+                    <div className="list-toolbar">
+                      <ViewSwitcher value={listView} onChange={(v) => void patchSettings({ listView: v })} />
+                    </div>
+                  )}
+
                   {filteredApps.length === 0 ? (
                     view === 'packages' && packageFilter.trim() ? (
                       <div className="empty-state empty-state--compact">
@@ -763,6 +816,7 @@ export default function App() {
                       onToggleFavorite={handleToggleFavorite}
                       onVisibleChange={enrichVisible}
                       reasons={view === 'recommended' ? reasonByKey : undefined}
+                      layout={listView}
                     />
                   )}
                 </>

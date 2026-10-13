@@ -89,8 +89,18 @@ function QueueJobRow({
   return (
     <div className={`queue-item ${job.status}`}>
       <div className="queue-item-top">
-        <div className="queue-item-name">{job.name}</div>
-        <div className="queue-item-status">{t.queue.status[job.status]}</div>
+        <div className="queue-item-name">
+          {job.name}
+          {(job.kind === 'upgrade' || job.kind === 'rollback') && (
+            <span className="queue-item-kind mono">
+              {job.kind === 'rollback' ? t.updates.queueRollback : t.updates.queueLabel}
+              {job.fromVersion && job.toVersion ? ` ${job.fromVersion} → ${job.toVersion}` : ''}
+            </span>
+          )}
+        </div>
+        <div className="queue-item-status">
+          {job.status === 'running' && job.kind === 'upgrade' ? t.updates.updating : t.queue.status[job.status]}
+        </div>
       </div>
       {friendly && job.status !== 'pending' && job.status !== 'running' && (
         <div className="queue-item-detail">{friendly}</div>
