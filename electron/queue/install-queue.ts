@@ -1,11 +1,18 @@
 import { EventEmitter } from 'node:events';
 import crypto from 'node:crypto';
-import type { InstallProgress, QueueJob } from '../providers/types.js';
+import type { InstallProgress, InstallResult, JobKind, QueueJob } from '../providers/types.js';
 import { getProvider } from '../providers/registry.js';
 import { getSettings } from '../store/settings.js';
 import { classifyError } from '../providers/install-errors.js';
 
 const PROGRESS_EMIT_MS = 250;
+
+export interface JobExtra {
+  kind?: JobKind;
+  fromVersion?: string;
+  toVersion?: string;
+  catalogId?: string;
+}
 
 export class InstallQueue extends EventEmitter {
   private jobs: QueueJob[] = [];
@@ -20,14 +27,21 @@ export class InstallQueue extends EventEmitter {
     return [...this.jobs];
   }
 
-  add(provider: string, packageId: string, name: string): void {
+  add(provider: string, packageId: string, name: string, extra: JobExtra = {}): void {
     const id = crypto.randomUUID();
-    this.jobs.push({ id, provider, packageId, name, status: 'pending' });
+    this.jobs.push({ id, provider, packageId, name, status: 'pending', ...extra });
     this.emitUpdated();
     this.processNext();
   }
 
-  addMany(items: Array<{ provider: string; packageId: string; name: string }>): void {
+  /** True while an install, upgrade or rollback of this package waits or runs. */
+  isQueued(provider: string, packageId: string): boolean {
+    return this.jobs.some(
+      (j) => j.provider === provider && j.packageId === packageId && (j.status === 'pending' || j.status === 'running'),
+    );
+  }
+
+  addMany(items: Array<{ provider: string; packageId: string; name: string } & JobExtra>): void {
     for (const item of items) {
       this.jobs.push({
         id: crypto.randomUUID(),
@@ -35,6 +49,10 @@ export class InstallQueue extends EventEmitter {
         packageId: item.packageId,
         name: item.name,
         status: 'pending',
+        kind: item.kind,
+        fromVersion: item.fromVersion,
+        toVersion: item.toVersion,
+        catalogId: item.catalogId,
       });
     }
     this.emitUpdated();
@@ -161,16 +179,28 @@ export class InstallQueue extends EventEmitter {
       next.status = 'failed';
       next.errorCode = 'unknown';
       next.message = `Провайдер ${next.provider} не найден`;
-      this.finishJob();
+      this.finishJob(next.id);
       return;
     }
 
     try {
-      const result = await provider.install(next.packageId, {
+      const opts = {
         quiet: settings.quietInstall,
         signal: controller.signal,
-        onProgress: (progress) => this.reportProgress(next.id, progress),
-      });
+        onProgress: (progress: InstallProgress) => this.reportProgress(next.id, progress),
+      };
+      let result: InstallResult;
+      if (next.kind === 'upgrade') {
+        result = provider.upgrade
+          ? await provider.upgrade(next.packageId, opts)
+          : { ok: false, errorCode: 'unknown', message: `${provider.displayName} не умеет обновлять пакеты` };
+      } else if (next.kind === 'rollback') {
+        result = provider.installVersion && next.toVersion
+          ? await provider.installVersion(next.packageId, next.toVersion, opts)
+          : { ok: false, errorCode: 'unknown', message: `${provider.displayName} не умеет ставить версию` };
+      } else {
+        result = await provider.install(next.packageId, opts);
+      }
 
       if (controller.signal.aborted || result.errorCode === 'cancelled') {
         next.status = 'cancelled';
@@ -212,7 +242,10 @@ export class InstallQueue extends EventEmitter {
 
   private finishJob(jobId?: string): void {
     const job = jobId ? this.jobs.find((j) => j.id === jobId) : undefined;
-    if (job) job.progress = undefined;
+    if (job) {
+      job.progress = undefined;
+      this.emit('job-finished', { ...job });
+    }
 
     if (this.dropRunningOnComplete && job) {
       this.jobs = this.jobs.filter((j) => j.id !== job.id);

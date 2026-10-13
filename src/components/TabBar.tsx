@@ -5,6 +5,8 @@ export interface TabDescriptor {
   id: ViewMode;
   label: string;
   count?: number;
+  /** Count drawn as an accent badge: something waits for the user. */
+  highlight?: boolean;
 }
 
 interface TabBarProps {
@@ -26,7 +28,9 @@ export function TabBar({ tabs, active, onSelect }: TabBarProps) {
           onClick={() => onSelect(tab.id)}
         >
           {tab.label}
-          {tab.count !== undefined && tab.count > 0 && <span className="tab-count mono">{tab.count}</span>}
+          {tab.count !== undefined && tab.count > 0 && (
+            <span className={`tab-count mono${tab.highlight ? ' tab-count--badge' : ''}`}>{tab.count}</span>
+          )}
         </button>
       ))}
     </nav>

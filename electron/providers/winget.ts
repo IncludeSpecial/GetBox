@@ -5,10 +5,12 @@ import type {
   PackageDetails,
   PackageProvider,
   ProviderStatus,
+  UpdateInfo,
 } from './types.js';
 import { getRuntimePaths, testWinget, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
 import { classifyError } from './install-errors.js';
+import { parseWingetUpgrade } from '../updates/parse.js';
 
 /** winget prints in the Windows display language, so every label needs both forms. */
 const FIELD_LABELS: Record<keyof PackageDetails, RegExp> = {
@@ -136,15 +138,29 @@ export class WingetProvider implements PackageProvider {
   }
 
   async install(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['install', '--id', packageId, '-e', '--scope', 'user'], opts);
+  }
+
+  async upgrade(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['upgrade', '--id', packageId, '-e'], opts);
+  }
+
+  async installVersion(packageId: string, version: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['install', '--id', packageId, '-e', '--version', version, '--force'], opts);
+  }
+
+  async listUpgrades(): Promise<UpdateInfo[]> {
+    const exe = this.wingetExe();
+    if (!exe || !(await this.available()).ok) return [];
+    const out = await runCmd(exe, ['upgrade', '--accept-source-agreements', '--disable-interactivity'], 120000);
+    return parseWingetUpgrade(out).map((u) => ({ ...u, provider: this.id }));
+  }
+
+  private async run(packageId: string, base: string[], opts: InstallOptions): Promise<InstallResult> {
     const exe = this.wingetExe();
     if (!exe) return { ok: false, message: 'winget недоступен' };
     try {
-      const args = [
-        'install', '--id', packageId, '-e',
-        '--accept-package-agreements', '--accept-source-agreements',
-        '--disable-interactivity',
-        '--scope', 'user',
-      ];
+      const args = [...base, '--accept-package-agreements', '--accept-source-agreements', '--disable-interactivity'];
       if (opts.quiet) args.push('--silent');
       const { code, output } = await runCliWithProgress(exe, args, {
         timeout: 600000,

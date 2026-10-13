@@ -639,5 +639,66 @@ test('clearDone removes done, cancelled, and failed', () => {
   });
 }
 
+
+console.log('\nupdate checks:');
+{
+  const { parseWingetUpgrade, parseScoopStatus, parseChocoOutdated } = loadTsModule(
+    path.join(__dirname, '..', 'electron', 'updates', 'parse.ts'),
+  );
+
+  test('winget upgrade: fixed-width table, names with spaces, footer ignored', () => {
+    const out = [
+      '   - \r   \\ \rName                         Id                         Version Available Source',
+      '------------------------------------------------------------------------------------------',
+      'Mozilla Firefox (x64 ru)     Mozilla.Firefox            156.0   157.0.1   winget',
+      'Microsoft Visual Studio Code Microsoft.VisualStudioCode 1.140.2 1.141.0   winget',
+      'OBS  Studio                  OBSProject.OBSStudio       32.1.0  32.2.2    winget',
+      '3 upgrades available.',
+      '',
+      'The following packages have an upgrade available, but require explicit targeting for upgrade:',
+    ].join('\n');
+    const r = parseWingetUpgrade(out);
+    assert.deepEqual(r.map((u) => u.packageId), ['Mozilla.Firefox', 'Microsoft.VisualStudioCode', 'OBSProject.OBSStudio']);
+    assert.deepEqual(r[0], { packageId: 'Mozilla.Firefox', name: 'Mozilla Firefox (x64 ru)', installed: '156.0', available: '157.0.1' });
+    assert.equal(r[2].name, 'OBS  Studio');
+  });
+
+  test('winget upgrade: localised header and footer', () => {
+    const out = [
+      'Имя             ИД               Версия  Доступно Источник',
+      '----------------------------------------------------------',
+      'Git             Git.Git          2.44.0  2.45.1   winget',
+      'Доступно обновлений: 1.',
+    ].join('\n');
+    assert.deepEqual(parseWingetUpgrade(out), [{ packageId: 'Git.Git', name: 'Git', installed: '2.44.0', available: '2.45.1' }]);
+  });
+
+  test('winget upgrade: "no updates" message yields nothing', () => {
+    assert.deepEqual(parseWingetUpgrade('No installed package found matching input criteria.\n'), []);
+  });
+
+  test('scoop status: dashed underline marks multi-word columns', () => {
+    const out = [
+      'Scoop is up to date.',
+      '',
+      'Name     Installed Version Latest Version Missing Dependencies Info',
+      '----     ----------------- -------------- -------------------- ----',
+      'git      2.44.0            2.45.1',
+      'nodejs   21.0.0            22.1.0',
+      '7zip     23.01             23.01                               Held package',
+      '',
+    ].join('\r\n');
+    assert.deepEqual(parseScoopStatus(out).map((u) => [u.packageId, u.installed, u.available]), [
+      ['git', '2.44.0', '2.45.1'],
+      ['nodejs', '21.0.0', '22.1.0'],
+    ]);
+  });
+
+  test('choco outdated: pinned and unchanged packages are skipped', () => {
+    const out = 'firefox|156.0|157.0.1|false\nvlc|3.0.20|3.0.21|true\ngit|2.45.1|2.45.1|false\nChocolatey v2.3.0\n';
+    assert.deepEqual(parseChocoOutdated(out), [{ packageId: 'firefox', name: 'firefox', installed: '156.0', available: '157.0.1' }]);
+  });
+}
+
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed > 0 ? 1 : 0);

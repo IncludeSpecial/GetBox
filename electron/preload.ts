@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { MergedApp, Package, QueueJob, SearchResult, AppSettings } from './providers/types.js';
+import type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState } from './providers/types.js';
 
 export interface RuntimeToolInfo {
   status: string;
@@ -60,6 +60,12 @@ export interface GetBoxAPI {
   dismissQueueJob: (jobId: string) => Promise<boolean>;
   retryQueueJob: (jobId: string) => Promise<boolean>;
   onQueueUpdated: (cb: (jobs: QueueJob[]) => void) => () => void;
+  getUpdates: () => Promise<UpdatesState>;
+  checkUpdates: () => Promise<UpdatesState>;
+  upgradePackages: (keys: Array<{ provider: string; packageId: string }>) => Promise<number>;
+  rollbackUpdate: (historyId: string) => Promise<boolean>;
+  clearUpdateHistory: () => Promise<void>;
+  onUpdatesChanged: (cb: (state: UpdatesState) => void) => () => void;
   rebuildIndex: () => Promise<{ ok: boolean; count: number; message?: string }>;
   onIndexProgress: (cb: (msg: string) => void) => () => void;
   onIndexDone: (cb: (count: number) => void) => () => void;
@@ -133,6 +139,16 @@ const api: GetBoxAPI = {
   cancelQueueJob: (jobId) => ipcRenderer.invoke('queue:cancel', jobId),
   dismissQueueJob: (jobId) => ipcRenderer.invoke('queue:dismiss', jobId),
   retryQueueJob: (jobId) => ipcRenderer.invoke('queue:retryJob', jobId),
+  getUpdates: () => ipcRenderer.invoke('updates:get'),
+  checkUpdates: () => ipcRenderer.invoke('updates:check'),
+  upgradePackages: (keys) => ipcRenderer.invoke('updates:upgrade', keys),
+  rollbackUpdate: (historyId) => ipcRenderer.invoke('updates:rollback', historyId),
+  clearUpdateHistory: () => ipcRenderer.invoke('updates:clearHistory'),
+  onUpdatesChanged: (cb) => {
+    const handler = (_: unknown, state: UpdatesState) => cb(state);
+    ipcRenderer.on('updates:changed', handler);
+    return () => ipcRenderer.removeListener('updates:changed', handler);
+  },
   onQueueUpdated: (cb) => {
     const handler = (_: unknown, jobs: QueueJob[]) => cb(jobs);
     ipcRenderer.on('queue:updated', handler);
@@ -209,4 +225,4 @@ declare global {
   }
 }
 
-export type { MergedApp, Package, QueueJob, SearchResult, AppSettings };
+export type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState };

@@ -6,10 +6,12 @@ import type {
   PackageDetails,
   PackageProvider,
   ProviderStatus,
+  UpdateInfo,
 } from './types.js';
 import { getRuntimePaths, testChocolatey, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
 import { classifyError } from './install-errors.js';
+import { parseChocoOutdated } from '../updates/parse.js';
 
 const INFO_LABEL = /^\s*(Summary|Description|Software Site|Title)\s*:\s*(.*)$/i;
 
@@ -98,9 +100,27 @@ export class ChocolateyProvider implements PackageProvider {
   }
 
   async install(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    const args = ['install', packageId, '-y'];
+    if (opts.quiet) args.push('--force');
+    return this.run(packageId, args, opts);
+  }
+
+  async upgrade(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['upgrade', packageId, '-y'], opts);
+  }
+
+  async installVersion(packageId: string, version: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['install', packageId, '--version', version, '--allow-downgrade', '--force', '-y'], opts);
+  }
+
+  async listUpgrades(): Promise<UpdateInfo[]> {
+    if (!(await this.available()).ok) return [];
+    const out = await runCmd(this.chocoExe(), ['outdated', '--limit-output'], 120000);
+    return parseChocoOutdated(out).map((u) => ({ ...u, provider: this.id }));
+  }
+
+  private async run(packageId: string, args: string[], opts: InstallOptions): Promise<InstallResult> {
     try {
-      const args = ['install', packageId, '-y'];
-      if (opts.quiet) args.push('--force');
       const { code, output } = await runCliWithProgress(this.chocoExe(), args, {
         timeout: 600000,
         onProgress: opts.onProgress,

@@ -10,6 +10,8 @@ const DEFAULTS: AppSettings = {
   accent: undefined,
   uiScale: 1,
   listView: 'cards',
+  autoCheckUpdates: true,
+  autoInstallUpdates: false,
 };
 
 export const UI_SCALE_MIN = 0.9;
@@ -31,7 +33,15 @@ function sanitize(s: AppSettings): AppSettings {
   const uiScale = Number.isFinite(scale)
     ? Math.min(UI_SCALE_MAX, Math.max(UI_SCALE_MIN, Math.round(scale * 100) / 100))
     : DEFAULTS.uiScale;
-  return { ...s, theme, listView, accent, uiScale };
+  return {
+    ...s,
+    theme,
+    listView,
+    accent,
+    uiScale,
+    autoCheckUpdates: typeof s.autoCheckUpdates === 'boolean' ? s.autoCheckUpdates : DEFAULTS.autoCheckUpdates,
+    autoInstallUpdates: typeof s.autoInstallUpdates === 'boolean' ? s.autoInstallUpdates : DEFAULTS.autoInstallUpdates,
+  };
 }
 
 export function getSettings(): AppSettings {

@@ -8,10 +8,12 @@ import type {
   PackageDetails,
   PackageProvider,
   ProviderStatus,
+  UpdateInfo,
 } from './types.js';
 import { getRuntimePaths, testScoop, loadRuntimeState } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
 import { classifyError } from './install-errors.js';
+import { parseScoopStatus } from '../updates/parse.js';
 import { getAppDataDir } from '../paths.js';
 import path from 'node:path';
 
@@ -206,11 +208,30 @@ export class ScoopProvider implements PackageProvider {
   }
 
   async install(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    const args = ['install', packageId];
+    if (opts.quiet) args.push('-g');
+    return this.run(packageId, args, opts);
+  }
+
+  async upgrade(packageId: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['update', packageId], opts);
+  }
+
+  /** Scoop keeps earlier versions on disk until `scoop cleanup`, so a reset switches back offline. */
+  async installVersion(packageId: string, version: string, opts: InstallOptions): Promise<InstallResult> {
+    return this.run(packageId, ['reset', `${packageId}@${version}`], opts);
+  }
+
+  async listUpgrades(): Promise<UpdateInfo[]> {
+    if (!(await this.available()).ok) return [];
+    const out = await runScoop(['status'], 120000);
+    return parseScoopStatus(out).map((u) => ({ ...u, provider: this.id }));
+  }
+
+  private async run(packageId: string, args: string[], opts: InstallOptions): Promise<InstallResult> {
     try {
       const resolved = await resolveScoopExe();
       if (!resolved) throw new Error('Scoop runtime not ready');
-      const args = ['install', packageId];
-      if (opts.quiet) args.push('-g');
       const { code, output } = await runCliWithProgress(resolved.exe, args, {
         timeout: 300000,
         env: resolved.env,

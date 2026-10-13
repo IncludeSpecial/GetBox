@@ -8,6 +8,7 @@ import { enqueuePackageMeta, onPackageMetaUpdate, type PackageMetaRequest } from
 import { getCatalog, invalidateCatalog, setInstalledSet, findApp } from './catalog/merge.js';
 import { searchPackages } from './search-cache.js';
 import { installQueue } from './queue/install-queue.js';
+import { updates } from './updates/updates.js';
 import { buildIndex, isIndexEmptyOrSmall } from './index-builder.js';
 import { getSettings, updateSettings } from './store/settings.js';
 import { toggleFavorite, isFavorite } from './store/favorites.js';
@@ -15,7 +16,7 @@ import { registerMediaProtocol } from './protocol.js';
 import { loadCuratedCatalog } from './providers/catalog.js';
 import fs from 'node:fs';
 import { getDataDir } from './paths.js';
-import type { ProfileEntry } from './providers/types.js';
+import type { ProfileEntry, UpdateInfo } from './providers/types.js';
 import {
   bootstrapRuntime,
   isBootstrapComplete,
@@ -176,6 +177,22 @@ function applyAppearance(): void {
   mainWindow.setBackgroundMaterial(mica ? 'mica' : 'none');
 }
 
+function queueUpgrades(items: UpdateInfo[]): void {
+  installQueue.addMany(
+    items
+      .filter((u) => !installQueue.isQueued(u.provider, u.packageId))
+      .map((u) => ({
+        provider: u.provider,
+        packageId: u.packageId,
+        name: u.name,
+        kind: 'upgrade' as const,
+        fromVersion: u.installed,
+        toVersion: u.available,
+        catalogId: u.catalogId,
+      })),
+  );
+}
+
 function sendToRenderer(channel: string, ...args: unknown[]): void {
   mainWindow?.webContents.send(channel, ...args);
 }
@@ -258,6 +275,30 @@ function setupIpc(): void {
   ipcMain.handle('queue:dismiss', (_e, jobId: string) => installQueue.dismiss(jobId));
   ipcMain.handle('queue:retryJob', (_e, jobId: string) => installQueue.retryJob(jobId));
 
+  ipcMain.handle('updates:get', () => updates.getState());
+  ipcMain.handle('updates:check', () => updates.check());
+  ipcMain.handle('updates:clearHistory', () => updates.clearHistory());
+  // The renderer names packages; versions come from our own state, never from IPC.
+  ipcMain.handle('updates:upgrade', (_e, keys: Array<{ provider: string; packageId: string }>) => {
+    const items = updates.getState().items.filter((u) =>
+      keys.some((k) => k.provider === u.provider && k.packageId === u.packageId),
+    );
+    queueUpgrades(items);
+    return items.length;
+  });
+  ipcMain.handle('updates:rollback', (_e, historyId: string) => {
+    const entry = updates.getState().history.find((h) => h.id === historyId);
+    if (!entry || !entry.ok || entry.kind !== 'upgrade' || !entry.from) return false;
+    if (installQueue.isQueued(entry.provider, entry.packageId)) return false;
+    installQueue.add(entry.provider, entry.packageId, entry.name, {
+      kind: 'rollback',
+      fromVersion: entry.to,
+      toVersion: entry.from,
+      catalogId: entry.catalogId,
+    });
+    return true;
+  });
+
   ipcMain.handle('index:rebuild', () => runIndexBuild());
 
   ipcMain.handle('providers:status', async () => {
@@ -278,6 +319,7 @@ function setupIpc(): void {
     const next = updateSettings(partial);
     setCatalogRemoteUrl(next.remoteCatalogUrl);
     if (next.uiScale !== prev.uiScale || next.theme !== prev.theme) applyAppearance();
+    if (next.autoCheckUpdates !== prev.autoCheckUpdates) updates.schedule();
     if (partial.language && partial.language !== prev.language) {
       invalidateCatalog('index');
       sendToRenderer('catalog:onDirty');
@@ -399,11 +441,15 @@ app.whenReady().then(async () => {
   });
 
   installQueue.on('updated', (jobs) => sendToRenderer('queue:updated', jobs));
+  installQueue.on('job-finished', (job) => updates.record(job));
+  updates.on('changed', (state) => sendToRenderer('updates:changed', state));
+  updates.on('auto-install', (items: UpdateInfo[]) => queueUpgrades(items));
   installQueue.on('installed-changed', () => {
     refreshInstalledInBackground();
   });
 
   createWindow();
+  updates.schedule(true);
 
   if (shouldRetryBootstrap()) {
     startBootstrap();
