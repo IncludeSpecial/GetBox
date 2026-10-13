@@ -5,6 +5,11 @@
 - `director.js` — общая камера и подсветка для `promo13.html` и `corp13.html`. Зумы и выноски берутся только из `shots/13/marks.json`: `capture13.cjs` измеряет реальные элементы интерфейса на каждом скриншоте. Размер задаётся параметром `h` (240…1080), `debug=1` выводит номер сцены и таймкод.
 - `edit13.html` — динамичный эдит 1.3: ~25 с, 130 BPM, склейка на каждую долю (во втором дропе — на полдоли), удары зумом, вспышки, слова-титры. Музыка — `music-edit13.py` (фонк-набросок: ковбелл, 808 с глайдом).
 - `corp13.html` — корпоративное промо 1.3: 50 с, светлый стиль. Проблема → решение → 4 блока (каталог, установка, обновления, интерфейс) с выносками на интерфейсе → сводка → призыв. Музыка — `music-corp13.py` (фортепиано и пэд, 100 BPM).
+- Три ролика 1.3 в разных стилях, у каждого своя анимация и музыка (общий синтезатор — `synth.py`, numpy, 48 кГц):
+  - `kinetic13.html` — кинетическая типографика: бумага, чёрный и красный, сетка из 12 колонок, склейки на долю и красные шторки между разделами; ~33 с. Музыка `music-kinetic13.py` — минимал-хаус 124 BPM, Fm, брейкдаун на SHA256.
+  - `synth13.html` — синтвейв: неоновое солнце, бегущая сетка, хромированный логотип, ЭЛТ-монитор и VHS-глитчи на склейках; 34 с. Музыка `music-synth13.py` — 96 BPM, Am–F–C–G, арпеджио, октавный бас, гейтованный снейр.
+  - `lofi13.html` — лоу-фай «уютный стол»: стикер со списком дел, полароиды, кружка, стоп-моушен на 12 кадрах в секунду, текст печатается; ~37 с. Музыка `music-lofi13.py` — 82 BPM, родес, свинг, винил и «плавание» плёнки; щелчки машинки, карандаш и бумага синхронно с кадром.
+- `kinetic13-v.html`, `synth13-v.html`, `lofi13-v.html` — вертикальные версии этих трёх роликов для Shorts / Reels (1080×1920): тот же таймлайн и та же музыка, вёрстка под 9:16. Важное держится в безопасной зоне — ниже верхних 170 px, выше нижних 380 px (подпись и канал), левее кнопок справа; `safe=1` в `QUERY` подсвечивает закрытые интерфейсом зоны.
 - `shorts.html` — вертикальная версия для Shorts / Reels: 30 с, 1080×1920, 60 fps, монтаж по долям 128 BPM.
 
 Кадры интерфейса — настоящий renderer GetBox на тестовых данных из `data/`.
@@ -36,6 +41,19 @@ ffmpeg -i promo/edit13-360p.mp4 -i promo/music-edit13.wav -c:v copy -af loudnorm
 QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video corp13.html
 python3 promo/music-corp13.py
 ffmpeg -i promo/corp13-360p.mp4 -i promo/music-corp13.wav -c:v copy -af loudnorm=I=-16:TP=-1.5 -ar 48000 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-corporate-360p.mp4
+
+# 1.3 — три стиля (720p со звуком)
+for n in kinetic synth lofi; do
+  QUERY="h=720&fps=60" OUT_SUFFIX=-720p CRF=20 node promo/render.cjs video $n'13.html'   # lofi: fps=30
+  python3 promo/music-$n'13.py'
+  ffmpeg -i promo/$n'13-720p.mp4' -i promo/music-$n'13.wav' -c:v copy -af loudnorm=I=-14:TP=-1 -ar 48000 -c:a aac -b:a 192k -shortest promo/GetBox-1.3-$n-720p.mp4
+done
+
+# 1.3 — три стиля для Shorts (1080×1920), музыка та же
+for n in kinetic synth lofi; do
+  QUERY="h=1920&fps=60" OUT_SUFFIX=-shorts CRF=20 node promo/render.cjs video $n'13-v.html'   # lofi: fps=30
+  ffmpeg -i promo/$n'13-v-shorts.mp4' -i promo/music-$n'13.wav' -c:v copy -af loudnorm=I=-14:TP=-1 -ar 48000 -c:a aac -b:a 192k -shortest promo/GetBox-1.3-$n-shorts.mp4
+done
 
 # Shorts
 node promo/render.cjs video shorts.html

@@ -34,3 +34,33 @@ jobs:
           node scripts/test-app-full.cjs
       - name: Build main + renderer
         run: mkdir -p dist-electron && npx tsc -p tsconfig.node.json && npx vite build
+
+  # The app is Windows-only: build the real exe, run the Windows-specific tests and start it once.
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Windows tests (self-update swap, cmd.exe arguments, real choco/winget output)
+        run: node scripts/test-windows.cjs
+      - name: Build portable
+        run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Start the app (--smoke)
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'smoke.json'
+          $env:GETBOX_SMOKE_OUT = $out
+          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'appdata'
+          $p = Start-Process -FilePath 'release/win-unpacked/GetBox.exe' -ArgumentList '--smoke' -PassThru -Wait
+          if (Test-Path $out) { Get-Content $out } else { Write-Host 'no smoke result' }
+          $log = Join-Path $env:LOCALAPPDATA 'GetBox/logs/getbox.log'
+          if (Test-Path $log) { Get-Content $log -Tail 40 }
+          if ($p.ExitCode -ne 0) { throw "smoke run failed with exit code $($p.ExitCode)" }
+          Get-ChildItem release/GetBox-*-portable.exe | ForEach-Object { "{0} {1:N1} MB" -f $_.Name, ($_.Length / 1MB) }

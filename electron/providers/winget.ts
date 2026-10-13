@@ -9,6 +9,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testWinget, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { cleanQuery } from './shell-args.js';
 import { classifyError } from './install-errors.js';
 import { parseWingetUpgrade } from '../updates/parse.js';
 
@@ -80,11 +81,12 @@ export class WingetProvider implements PackageProvider {
 
   async search(query: string): Promise<Package[]> {
     const exe = this.wingetExe();
-    if (!exe || !(await this.available()).ok) return [];
+    const q = cleanQuery(query);
+    if (!exe || !q || !(await this.available()).ok) return [];
     try {
       const out = await runCmd(
         exe,
-        ['search', query, '--accept-source-agreements', '--disable-interactivity'],
+        ['search', q, '--accept-source-agreements', '--disable-interactivity'],
         60000,
       );
       return this.parseSearchOutput(out);

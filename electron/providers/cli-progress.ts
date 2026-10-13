@@ -1,6 +1,7 @@
 import { spawn, execFile } from 'node:child_process';
 import type { InstallPhase, InstallProgress } from './types.js';
 import { InstallError } from './install-errors.js';
+import { shellCommand } from './shell-args.js';
 
 /**
  * Package CLIs (scoop, winget, choco) report their progress as plain stdout,
@@ -108,7 +109,14 @@ export function runCliWithProgress(
       return;
     }
 
-    const child = spawn(exe, args, {
+    let command: string;
+    try {
+      command = shellCommand(exe, args);
+    } catch (err) {
+      reject(err);
+      return;
+    }
+    const child = spawn(command, {
       windowsHide: true,
       shell: true,
       env: { ...process.env, ...env },

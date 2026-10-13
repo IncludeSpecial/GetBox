@@ -10,6 +10,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testChocolatey, runCmd } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { cleanQuery } from './shell-args.js';
 import { classifyError } from './install-errors.js';
 import { parseChocoOutdated } from '../updates/parse.js';
 
@@ -64,9 +65,10 @@ export class ChocolateyProvider implements PackageProvider {
   }
 
   async search(query: string): Promise<Package[]> {
-    if (!(await this.available()).ok) return [];
+    const q = cleanQuery(query);
+    if (!q || !(await this.available()).ok) return [];
     try {
-      const out = await runCmd(this.chocoExe(), ['search', query, '--limit-output', '--exact=false'], 60000);
+      const out = await runCmd(this.chocoExe(), ['search', q, '--limit-output', '--exact=false'], 60000);
       return out
         .split('\n')
         .filter((l) => l.trim() && !l.startsWith('|') && !l.includes('Approved'))

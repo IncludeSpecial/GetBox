@@ -73,6 +73,8 @@ export interface GetBoxAPI {
   updateOnQuit: (on: boolean) => Promise<void>;
   openReleasePage: (version?: string) => Promise<void>;
   onSelfUpdateChanged: (cb: (state: SelfUpdateState) => void) => () => void;
+  copyDiagnostics: () => Promise<boolean>;
+  openLogs: () => Promise<string>;
   rebuildIndex: () => Promise<{ ok: boolean; count: number; message?: string }>;
   onIndexProgress: (cb: (msg: string) => void) => () => void;
   onIndexDone: (cb: (count: number) => void) => () => void;
@@ -157,6 +159,8 @@ const api: GetBoxAPI = {
   restartToUpdate: () => ipcRenderer.invoke('selfUpdate:restart'),
   updateOnQuit: (on) => ipcRenderer.invoke('selfUpdate:onQuit', on),
   openReleasePage: (version) => ipcRenderer.invoke('selfUpdate:openRelease', version),
+  copyDiagnostics: () => ipcRenderer.invoke('diagnostics:copyReport'),
+  openLogs: () => ipcRenderer.invoke('diagnostics:openLogs'),
   onSelfUpdateChanged: (cb) => {
     const handler = (_: unknown, state: SelfUpdateState) => cb(state);
     ipcRenderer.on('selfUpdate:changed', handler);

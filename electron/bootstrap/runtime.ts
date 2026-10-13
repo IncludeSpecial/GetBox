@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { getAppDataDir, getDataDir } from '../paths.js';
+import { shellCommand } from '../providers/shell-args.js';
 
 const execFileAsync = promisify(execFile);
 const __bootstrapDir = path.dirname(fileURLToPath(import.meta.url));
@@ -99,7 +100,7 @@ async function runPowerShell(script: string, timeout = 300000, env?: Record<stri
 }
 
 async function runCmd(exe: string, args: string[], timeout = 60000, env?: Record<string, string>): Promise<string> {
-  const { stdout } = await execFileAsync(exe, args, {
+  const { stdout } = await execFileAsync(shellCommand(exe, args), [], {
     timeout,
     windowsHide: true,
     shell: true,
