@@ -27,20 +27,22 @@ ffmpeg -i promo/promo13-240p.mp4 -i promo/music13.wav -c:v copy -c:a aac -b:a 96
 # 1.3 — эдит 360p
 QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video edit13.html
 python3 promo/music-edit13.py
-ffmpeg -i promo/edit13-360p.mp4 -i promo/music-edit13.wav -c:v copy -af loudnorm=I=-12:TP=-1 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-edit-360p.mp4
+ffmpeg -i promo/edit13-360p.mp4 -i promo/music-edit13.wav -c:v copy -af loudnorm=I=-12:TP=-1 -ar 48000 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-edit-360p.mp4
 
 # 1.3 — корпоративное промо 360p
 QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video corp13.html
 python3 promo/music-corp13.py
-ffmpeg -i promo/corp13-360p.mp4 -i promo/music-corp13.wav -c:v copy -af loudnorm=I=-16:TP=-1.5 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-corporate-360p.mp4
+ffmpeg -i promo/corp13-360p.mp4 -i promo/music-corp13.wav -c:v copy -af loudnorm=I=-16:TP=-1.5 -ar 48000 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-corporate-360p.mp4
 
 # Shorts
 node promo/render.cjs video shorts.html
 python3 promo/music-shorts.py
-ffmpeg -i promo/shorts.mp4 -i promo/music-shorts.wav -c:v copy -af loudnorm=I=-13:TP=-1 -c:a aac -b:a 192k -shortest promo/GetBox-shorts.mp4
+ffmpeg -i promo/shorts.mp4 -i promo/music-shorts.wav -c:v copy -af loudnorm=I=-13:TP=-1 -ar 48000 -c:a aac -b:a 192k -shortest promo/GetBox-shorts.mp4
 ```
 
 Нужны Playwright с Chromium (`PLAYWRIGHT_MODULE`, `CHROMIUM_PATH` — если стоят не в стандартном месте) и ffmpeg с libx264.
 
 - `promo.html` — сцены; `render(t)` задаёт состояние кадра по времени, поэтому рендер детерминированный. Тексты и тайминги — там же.
 - `music.py`, `music-shorts.py`, `music13.py` — синтезированная музыка (96, 128 и 120 BPM, Am–F–C–G), без сторонних сэмплов.
+
+`loudnorm` внутри работает на 192 кГц и без `-ar 48000` отдаёт AAC 96 кГц — многие плееры (браузеры, мессенджеры) такой звук молча не воспроизводят.
