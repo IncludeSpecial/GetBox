@@ -3,6 +3,7 @@
 - `promo.html` — основной ролик: 40 с, 1920×1080, 30 fps.
 - `promo13.html` — ролик о версии 1.3: 53 с, 120 BPM, 13 сцен (раскадровка + нарезка «Ещё фишки»). Размер задаётся параметром `h` (240…1080), `debug=1` выводит номер сцены и таймкод.
 - `edit13.html` — динамичный эдит 1.3: ~25 с, 130 BPM, склейка на каждую долю (во втором дропе — на полдоли), удары зумом, вспышки, слова-титры. Музыка — `music-edit13.py` (фонк-набросок: ковбелл, 808 с глайдом).
+- `corp13.html` — корпоративное промо 1.3: 50 с, светлый стиль. Проблема → решение → 4 блока (каталог, установка, обновления, интерфейс) с выносками на интерфейсе → сводка → призыв. Музыка — `music-corp13.py` (фортепиано и пэд, 100 BPM).
 - `shorts.html` — вертикальная версия для Shorts / Reels: 30 с, 1080×1920, 60 fps, монтаж по долям 128 BPM.
 
 Кадры интерфейса — настоящий renderer GetBox на тестовых данных из `data/`.
@@ -26,6 +27,11 @@ ffmpeg -i promo/promo13-240p.mp4 -i promo/music13.wav -c:v copy -c:a aac -b:a 96
 QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video edit13.html
 python3 promo/music-edit13.py
 ffmpeg -i promo/edit13-360p.mp4 -i promo/music-edit13.wav -c:v copy -af loudnorm=I=-12:TP=-1 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-edit-360p.mp4
+
+# 1.3 — корпоративное промо 360p
+QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video corp13.html
+python3 promo/music-corp13.py
+ffmpeg -i promo/corp13-360p.mp4 -i promo/music-corp13.wav -c:v copy -af loudnorm=I=-16:TP=-1.5 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-corporate-360p.mp4
 
 # Shorts
 node promo/render.cjs video shorts.html

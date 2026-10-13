@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox 1.3 corporate promo</title>
+<style>
+  :root { --ink: #0e1a2b; --sub: #556577; --line: #dbe3ec; --accent: #1a73c8; --accent-soft: #e6f0fb; --green: #3f7410; --bg: #f6f8fb; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; background: #fff; }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'DejaVu Sans Mono', monospace; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%); }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .abs { position: absolute; }
+  .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  /* Soft decorative shapes behind the content. */
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .55; }
+
+  .win { position: absolute; border-radius: 14px; overflow: hidden; background: #fff;
+    box-shadow: 0 50px 110px rgba(16, 36, 70, .18), 0 0 0 1px rgba(14, 26, 43, .07); }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
+  .callout { position: absolute; border-radius: 10px; border: 3px solid var(--accent); box-shadow: 0 0 0 6px rgba(26,115,200,.15); }
+  .tag { position: absolute; padding: 10px 18px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 26px; font-weight: 700;
+    white-space: nowrap; box-shadow: 0 12px 30px rgba(26,115,200,.3); }
+
+  .kicker { font: 700 26px 'DejaVu Sans Mono', monospace; letter-spacing: .14em; color: var(--accent); }
+  .title { font-size: 66px; font-weight: 800; letter-spacing: -.02em; line-height: 1.08; }
+  .body { font-size: 30px; line-height: 1.45; color: var(--sub); }
+  .bullets { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+  .bullets li { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 600; }
+  .bullets li i { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); display: grid; place-items: center; }
+  .card { padding: 34px 36px; border-radius: 18px; background: #fff; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(16,36,70,.08); }
+  .tile { padding: 34px; border-radius: 18px; background: #fff; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(16,36,70,.07);
+    display: flex; flex-direction: column; gap: 14px; }
+  .tile b { font-size: 32px; }
+  .tile span { font-size: 24px; color: var(--sub); }
+  .icon { width: 64px; height: 64px; border-radius: 16px; background: var(--accent-soft); display: grid; place-items: center; }
+  .icon svg, .bullets svg { stroke: var(--accent); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  #progress { position: absolute; left: 120px; right: 120px; bottom: 54px; display: flex; gap: 24px; opacity: 0; }
+  #progress div { flex: 1; display: flex; flex-direction: column; gap: 10px; font-size: 22px; font-weight: 600; color: var(--sub); }
+  #progress div span { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  #progress div span i { display: block; height: 100%; width: 0; background: var(--accent); }
+  #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.75); color: #ffd400;
+    font: 600 34px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="orb" id="orbA" style="left:-200px;top:-260px;width:900px;height:900px;background:#cfe3f8"></div>
+  <div class="orb" id="orbB" style="right:-260px;bottom:-320px;width:1000px;height:1000px;background:#e3dcfb"></div>
+
+  <!-- 1 Opening -->
+  <div class="scene center" id="c1">
+    <img id="logo1" src="../data/logo.png" alt="" style="width:190px;height:190px;filter:drop-shadow(0 20px 40px rgba(16,36,70,.25))">
+    <div id="name1" style="margin-top:34px;font-size:110px;font-weight:800;letter-spacing:.08em">GETBOX</div>
+    <div id="tag1" class="body" style="margin-top:14px;font-size:38px">Программы для Windows — под контролем.</div>
+  </div>
+
+  <!-- 2 Problem -->
+  <div class="scene" id="c2">
+    <div class="abs" style="left:120px;top:150px;width:1680px">
+      <div class="kicker" id="k2">ЗАДАЧА</div>
+      <div class="title" id="t2" style="margin-top:18px">Установка программ отнимает время</div>
+    </div>
+    <div class="abs" style="left:120px;top:440px;width:1680px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px" id="cards2"></div>
+    <div class="abs" id="t2b" style="left:120px;top:830px;font-size:48px;font-weight:800;color:var(--accent)">Есть способ проще.</div>
+  </div>
+
+  <!-- 3 Solution -->
+  <div class="scene" id="c3">
+    <div class="abs center" style="left:0;right:0;top:90px">
+      <div class="kicker" id="k3">РЕШЕНИЕ</div>
+      <div class="title" id="t3" style="margin-top:16px">GetBox — один каталог для всех программ</div>
+      <div class="body" id="b3" style="margin-top:14px">Найти, установить и обновить — в одном окне, в один клик.</div>
+    </div>
+    <div class="win" id="w3" style="left:330px;top:400px;width:1260px;height:788px"><div class="cam" id="cam3"><img src="shots/13/L-home.png" alt=""></div></div>
+  </div>
+
+  <!-- 4–7 Pillars -->
+  <div id="pillars"></div>
+
+  <!-- 8 Summary -->
+  <div class="scene" id="c8">
+    <div class="abs center" style="left:0;right:0;top:110px">
+      <div class="kicker" id="k8">GETBOX 1.3</div>
+      <div class="title" id="t8" style="margin-top:16px">Всё, что нужно, — в одном приложении</div>
+    </div>
+    <div class="abs" id="tiles8" style="left:150px;right:150px;top:400px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px"></div>
+  </div>
+
+  <!-- 9 CTA -->
+  <div class="scene center" id="c9">
+    <img id="logo9" src="../data/logo.png" alt="" style="width:160px;height:160px;filter:drop-shadow(0 20px 40px rgba(16,36,70,.25))">
+    <div id="name9" style="margin-top:28px;display:flex;align-items:baseline;gap:22px"><span style="font-size:100px;font-weight:800;letter-spacing:.06em">GETBOX</span><span class="mono" style="font-size:56px;color:var(--accent)">1.3</span></div>
+    <div id="sub9" class="body" style="margin-top:10px;font-size:36px">Бесплатный магазин программ для Windows 10 и 11</div>
+    <div id="cta9" style="margin-top:44px;padding:24px 60px;border-radius:12px;background:var(--green);color:#fff;font-size:38px;font-weight:700;box-shadow:0 20px 40px rgba(63,116,16,.25)">Скачать</div>
+    <div id="url9" class="mono" style="margin-top:26px;font-size:30px;color:var(--sub)">github.com/IncludeSpecial/GetBox/releases</div>
+  </div>
+
+  <div id="progress"></div>
+  <div id="debug"></div>
+</div>
+
+<script>
+  const BPM = 100, B = 60 / BPM, DURATION = 50;
+  const params = new URLSearchParams(location.search);
+  const OUT_H = Number(params.get('h') || 1080), OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
+  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || (OUT_H <= 360 ? 30 : 60)), duration: DURATION };
+  const $ = (id) => document.getElementById(id);
+  $('stage').style.transform = `scale(${OUT_W / 1920})`;
+  document.body.style.width = OUT_W + 'px'; document.body.style.height = OUT_H + 'px';
+  if (params.get('debug')) $('debug').style.display = 'block';
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const lerp = (a, b, x) => a + (b - a) * x;
+  const outCubic = (x) => 1 - Math.pow(1 - x, 3);
+  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const R = (x, y, w, h) => ({ x: x / 1440, y: y / 900, w: w / 1440, h: h / 900 });
+  const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
+  const FULL = R(0, 0, 1440, 900);
+  function frame(cam, vw, vh, r) {
+    const s = Math.max(vw / (r.w * 1440), vh / (r.h * 900), vw / 1440, vh / 900);
+    const cx = (r.x + r.w / 2) * 1440 * s, cy = (r.y + r.h / 2) * 900 * s;
+    const tx = clamp(vw / 2 - cx, vw - 1440 * s, 0), ty = clamp(vh / 2 - cy, vh - 900 * s, 0);
+    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    cam.cameraState = { s, tx, ty };
+    return cam.cameraState;
+  }
+  /** Calm scene window: fade + gentle rise in, fade + slight lift out. */
+  function scene(id, t, a, b, w = 0.6) {
+    const el = $(id);
+    const vis = t >= a && t < b + w * 0.5;
+    el.style.visibility = vis ? 'visible' : 'hidden';
+    if (!vis) return -1;
+    const ki = outCubic(seg(t, a, a + w)), ko = seg(t, b - w * 0.5, b + w * 0.5);
+    el.style.opacity = ki * (1 - ko);
+    el.style.transform = `translateY(${(1 - ki) * 30 - ko * 20}px)`;
+    return t - a;
+  }
+  function fadeUp(el, lt, at, dur = 0.6, dy = 34) {
+    const k = outCubic(seg(lt, at, at + dur));
+    el.style.opacity = k;
+    el.style.transform = `translateY(${(1 - k) * dy}px)`;
+  }
+
+  const ICONS = {
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    shield: '<path d="M12 3l8 3.5v5.5c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6.5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+    refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+    palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/><path d="M12 21a3 3 0 0 1 0-6h2"/>',
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    file: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',
+  };
+  const svg = (name, size = 34) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+
+  // Problem cards.
+  $('cards2').innerHTML = [
+    ['file', 'Искать установщики', 'на сайтах разработчиков'],
+    ['clock', 'Проходить мастера', '«Далее», «Принимаю», «Далее»…'],
+    ['refresh', 'Следить за обновлениями', 'вручную, для каждой программы'],
+  ].map(([i, b, s], k) => `<div class="card" id="pc${k}" style="display:flex;flex-direction:column;gap:16px">
+      <div class="icon">${svg(i)}</div><div style="font-size:36px;font-weight:700">${b}</div><div class="body" style="font-size:26px">${s}</div>
+      <div id="pcs${k}" style="height:4px;width:0;background:#d14d4d;border-radius:2px;margin-top:6px"></div></div>`).join('');
+
+  // Pillars: [id, start, kicker, title, body, bullets, shot timeline, side, callouts]
+  const P0 = 15.6, PLEN = 6;
+  const PILLARS = [
+    { kicker: '01 · КАТАЛОГ', title: 'Всё в одном каталоге', bullets: ['118 проверенных программ', 'Поиск сразу в winget, Scoop и Chocolatey', 'Подборки и наборы в один клик'],
+      shots: [['L-search', FULL, R(232, 90, 1000, 562)], ['L-catalog', FULL, R(232, 110, 1000, 562)]],
+      side: 'right', callouts: [[0.9, 2.9, R(232, 215, 1190, 230), 'Один запрос — все источники'], [3.4, 5.6, R(1282, 178, 135, 32), '4 вида списка']] },
+    { kicker: '02 · УСТАНОВКА', title: 'Безопасно и без мастеров', bullets: ['Проверка SHA256 из манифестов winget', 'Тихая установка в фоне', 'Очередь с прогрессом и отменой'],
+      shots: [['L-install', FULL, R(560, 30, 880, 495)]],
+      side: 'left', callouts: [[1.2, 5.6, R(1110, 90, 320, 115), 'Очередь установок']] },
+    { kicker: '03 · ОБНОВЛЕНИЯ', title: 'Обновления под контролем', bullets: ['Все обновления на одной вкладке', 'История и откат в один клик', 'Проверка при запуске и раз в 6 часов'],
+      shots: [['L-updates', FULL, R(232, 150, 1000, 562)]],
+      side: 'right', callouts: [[0.9, 2.9, R(232, 200, 960, 165), 'Ожидают обновления'], [3.2, 5.6, R(995, 486, 135, 28), 'Откат до прошлой версии']] },
+    { kicker: '04 · ИНТЕРФЕЙС', title: 'Под ваш стиль работы', bullets: ['5 тем, включая Windows 11', 'Свой акцентный цвет и масштаб', 'Русский и English'],
+      shots: [['L-appearance', FULL, R(232, 90, 1000, 562)]],
+      side: 'left', callouts: [[0.9, 2.9, R(240, 205, 875, 155), '5 тем оформления'], [3.2, 5.6, R(240, 392, 430, 38), 'Свой акцент']] },
+  ];
+  const WIN = { right: { x: 800, y: 170, w: 1040, h: 650 }, left: { x: 80, y: 170, w: 1040, h: 650 } };
+  $('pillars').innerHTML = PILLARS.map((p, i) => {
+    const w = WIN[p.side], tx = p.side === 'right' ? 120 : 1200;
+    return `<div class="scene" id="p${i}">
+      <div class="abs" style="left:${tx}px;top:230px;width:640px">
+        <div class="kicker" id="pk${i}">${p.kicker}</div>
+        <div class="title" id="pt${i}" style="margin-top:18px">${p.title}</div>
+        <ul class="bullets" id="pb${i}" style="margin-top:44px">${p.bullets.map((b, k) => `<li id="pb${i}_${k}"><i>${svg('check', 24)}</i>${b}</li>`).join('')}</ul>
+      </div>
+      <div class="win" id="pw${i}" style="left:${w.x}px;top:${w.y}px;width:${w.w}px;height:${w.h}px">
+        ${p.shots.map(([f], k) => `<div class="cam" id="pc${i}_${k}"><img src="shots/13/${f}.png" alt=""></div>`).join('')}
+        ${p.callouts.map((_, k) => `<div class="callout" id="po${i}_${k}"></div>`).join('')}
+      </div>
+      ${p.callouts.map(([, , , label], k) => `<div class="tag" id="pg${i}_${k}">${label}</div>`).join('')}
+    </div>`;
+  }).join('');
+
+  $('tiles8').innerHTML = [
+    ['grid', 'Каталог', '118 программ и наборы'], ['search', 'Поиск', 'каталог · winget · Scoop · Chocolatey'],
+    ['shield', 'Безопасность', 'проверка SHA256 перед запуском'], ['refresh', 'Обновления', 'история и откат'],
+    ['palette', 'Оформление', '5 тем, акцент, масштаб'], ['globe', 'Языки', 'русский и English'],
+  ].map(([i, b, s], k) => `<div class="tile" id="tl${k}"><div class="icon">${svg(i)}</div><b>${b}</b><span>${s}</span></div>`).join('');
+
+  $('progress').innerHTML = ['Каталог', 'Установка', 'Обновления', 'Интерфейс']
+    .map((l, i) => `<div><span><i id="pr${i}"></i></span>${l}</div>`).join('');
+
+  window.render = function render(t) {
+    $('debug').textContent = `${t.toFixed(1)} с`;
+    $('orbA').style.transform = `translate(${Math.sin(t * 0.15) * 80}px, ${Math.cos(t * 0.12) * 60}px)`;
+    $('orbB').style.transform = `translate(${Math.cos(t * 0.13) * 90}px, ${Math.sin(t * 0.1) * 70}px)`;
+
+    // 1 Opening
+    let lt = scene('c1', t, 0, 4.8);
+    if (lt >= 0) {
+      const k = outCubic(seg(lt, 0.2, 1.4));
+      $('logo1').style.opacity = k; $('logo1').style.transform = `scale(${lerp(0.85, 1, k)})`;
+      fadeUp($('name1'), lt, 0.8, 0.9); fadeUp($('tag1'), lt, 1.6, 0.9);
+    }
+
+    // 2 Problem
+    lt = scene('c2', t, 4.8, 10.2);
+    if (lt >= 0) {
+      fadeUp($('k2'), lt, 0.2); fadeUp($('t2'), lt, 0.4);
+      for (let k = 0; k < 3; k++) {
+        fadeUp($(`pc${k}`), lt, 1.0 + k * 0.35, 0.7, 50);
+        const sk = inOut(seg(lt, 3.0 + k * 0.25, 3.5 + k * 0.25));
+        $(`pcs${k}`).style.width = sk * 100 + '%';
+        if (sk > 0) $(`pc${k}`).style.opacity = 1 - 0.45 * sk;
+      }
+      fadeUp($('t2b'), lt, 4.0, 0.7);
+    }
+
+    // 3 Solution
+    lt = scene('c3', t, 10.2, 15.6);
+    if (lt >= 0) {
+      fadeUp($('k3'), lt, 0.2); fadeUp($('t3'), lt, 0.4); fadeUp($('b3'), lt, 0.8);
+      const k = outCubic(seg(lt, 0.6, 1.8));
+      $('w3').style.transform = `translateY(${(1 - k) * 260 - inOut(seg(lt, 1.8, 5.4)) * 180}px) scale(${lerp(0.94, 1, k)})`;
+      frame($('cam3'), 1260, 788, FULL);
+    }
+
+    // 4–7 Pillars
+    PILLARS.forEach((p, i) => {
+      const a = P0 + i * PLEN;
+      const pl = scene(`p${i}`, t, a, a + PLEN);
+      if (pl < 0) return;
+      fadeUp($(`pk${i}`), pl, 0.2); fadeUp($(`pt${i}`), pl, 0.35);
+      p.bullets.forEach((_, k) => fadeUp($(`pb${i}_${k}`), pl, 0.9 + k * 0.35, 0.6, 24));
+      const w = WIN[p.side];
+      const wk = outCubic(seg(pl, 0.2, 1.2));
+      $(`pw${i}`).style.transform = `translateX(${(1 - wk) * (p.side === 'right' ? 160 : -160)}px)`;
+      // Shots: crossfade between them halfway, each slowly pushing in.
+      const per = PLEN / p.shots.length;
+      let f = null;
+      p.shots.forEach(([, from, to], k) => {
+        const cam = $(`pc${i}_${k}`);
+        const sk = k === 0 ? 1 : seg(pl, k * per - 0.4, k * per + 0.2);
+        cam.style.opacity = sk;
+        const local = pl - k * per;
+        const tr = frame(cam, w.w, w.h, mix(from, to, inOut(seg(local, 0.6, per))));
+        if (pl >= k * per - 0.4) f = tr;
+      });
+      // Callouts: a box around the element and a label tag beside the window.
+      p.callouts.forEach(([c0, c1, r, label], k) => {
+        const box = $(`po${i}_${k}`), tag = $(`pg${i}_${k}`);
+        const shotIdx = Math.min(p.shots.length - 1, Math.floor(c0 / per));
+        const cam = $(`pc${i}_${shotIdx}`);
+        const { tx, ty, s } = cam.cameraState;
+        const x = r.x * 1440 * s + tx, y = r.y * 900 * s + ty, bw = r.w * 1440 * s, bh = r.h * 900 * s;
+        const k1 = outCubic(seg(pl, c0, c0 + 0.5)) * (1 - seg(pl, c1 - 0.4, c1));
+        Object.assign(box.style, { left: x - 8 + 'px', top: y - 8 + 'px', width: bw + 16 + 'px', height: bh + 16 + 'px', opacity: k1,
+          transform: `scale(${lerp(1.06, 1, k1)})` });
+        const tagX = clamp(w.x + x, 40, 1920 - 520), tagY = clamp(w.y + y + bh + 20, 60, 1000);
+        Object.assign(tag.style, { left: tagX + 'px', top: tagY + 'px', opacity: k1, transform: `translateY(${(1 - k1) * 12}px)` });
+      });
+      void f;
+    });
+    // Section progress under the pillars.
+    const pv = t >= P0 - 0.3 && t < P0 + 4 * PLEN;
+    $('progress').style.opacity = pv ? outCubic(seg(t, P0 - 0.3, P0 + 0.5)) * (1 - seg(t, P0 + 4 * PLEN - 0.6, P0 + 4 * PLEN)) : 0;
+    for (let i = 0; i < 4; i++) $(`pr${i}`).style.width = seg(t, P0 + i * PLEN, P0 + (i + 1) * PLEN) * 100 + '%';
+
+    // 8 Summary
+    const S0 = P0 + 4 * PLEN;
+    lt = scene('c8', t, S0, S0 + 4.8);
+    if (lt >= 0) {
+      fadeUp($('k8'), lt, 0.2); fadeUp($('t8'), lt, 0.4);
+      for (let k = 0; k < 6; k++) fadeUp($(`tl${k}`), lt, 0.9 + k * 0.18, 0.6, 40);
+    }
+
+    // 9 CTA
+    lt = scene('c9', t, S0 + 4.8, DURATION + 1);
+    if (lt >= 0) {
+      const k = outCubic(seg(lt, 0.2, 1.2));
+      $('logo9').style.opacity = k; $('logo9').style.transform = `scale(${lerp(0.85, 1, k)})`;
+      fadeUp($('name9'), lt, 0.6); fadeUp($('sub9'), lt, 1.0); fadeUp($('cta9'), lt, 1.5); fadeUp($('url9'), lt, 1.9);
+      $('c9').style.opacity = Math.min(Number($('c9').style.opacity), 1 - seg(t, DURATION - 0.8, DURATION));
+    }
+  };
+  window.render(0);
+</script>
+</body>
+</html>

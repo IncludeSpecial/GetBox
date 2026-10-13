@@ -126,6 +126,19 @@ server.listen(0, async () => {
     { id: 'f2', packageId: 'vlc', provider: 'catalog', name: 'VLC media player', status: 'done', message: 'Установлено: VLC media player' },
     { id: 'f3', packageId: 'obs-studio', provider: 'catalog', name: 'OBS Studio', status: 'running', progress: { phase: 'install', note: 'winget:OBSProject.OBSStudio' } },
   ], act: tab(/Очередь/) });
+  // Corporate promo (corp13.html): the same states in the light theme.
+  const light = { theme: 'light' };
+  await shot(browser, base, 'L-home', { owned: me, look: light });
+  await shot(browser, base, 'L-search', { owned: me, look: { ...light, listView: 'list' }, results: [
+    { id: 'vlc', provider: 'catalog', name: 'VLC media player', category: 'media' },
+    { id: 'VideoLAN.VLC', provider: 'winget', name: 'VLC media player' },
+    { id: 'vlc', provider: 'scoop', name: 'vlc' },
+    { id: 'vlc', provider: 'chocolatey', name: 'vlc' },
+  ], act: async (p) => { const box = p.getByPlaceholder(/Поиск/); await box.fill('vlc'); await box.press('Enter'); } });
+  await shot(browser, base, 'L-catalog', { owned: me, look: { ...light, listView: 'list' }, act: catalogTab });
+  await shot(browser, base, 'L-install', { owned: me, look: light, queue: QUEUE, act: tab(/Очередь/) });
+  await shot(browser, base, 'L-updates', { owned: me, look: light, act: updatesTab });
+  await shot(browser, base, 'L-appearance', { owned: me, look: light, act: settings });
   await shot(browser, base, 'modal-light', { owned: me, look: { theme: 'light' }, act: async (p) => {
     await catalogTab(p); await p.waitForTimeout(300); await p.locator('.capsule').first().click();
   } });
