@@ -156,7 +156,19 @@
     </div>
   </div>
 
-  <!-- 10 Suggestions -->
+  <!-- 10 More features: one per two beats -->
+  <div class="scene" id="sf">
+    <div id="feats"></div>
+    <div class="shade-b" style="height:460px"></div>
+    <div class="abs mono" id="fcount" style="right:80px;top:60px;font-size:44px;font-weight:700;color:#fff;padding:10px 22px;border-radius:12px;background:rgba(7,13,19,.85)"></div>
+    <div class="abs" id="fdots" style="left:80px;top:78px;display:flex;gap:12px"></div>
+    <div class="abs" style="left:90px;bottom:84px">
+      <div class="h1" id="ftitle"></div>
+      <div class="mono" id="fsub" style="margin-top:18px;font-size:34px;color:#a5d8ff"></div>
+    </div>
+  </div>
+
+  <!-- 11 Suggestions -->
   <div class="scene" id="s10" style="background:#eef2f6">
     <div class="view" id="v10" style="left:0;top:0;width:1920px;height:1080px;background:#eef2f6"><div class="cam" id="c10"><img src="shots/13/modal-light.png" alt=""></div></div>
     <div class="abs" style="left:0;right:0;top:0;height:300px;background:linear-gradient(180deg,rgba(238,242,246,.98) 45%,rgba(238,242,246,0))"></div>
@@ -187,8 +199,8 @@
 </div>
 
 <script>
-  const BPM = 120, B = 60 / BPM, DURATION = 45;
-  const DROP1 = 10, STOP = 29.5, BREAK = 32, DROP2 = 36, END = 41;
+  const BPM = 120, B = 60 / BPM, DURATION = 53;
+  const DROP1 = 10, STOP = 29.5, FEATS = 32, BREAK = 40, DROP2 = 44, END = 49;
   const params = new URLSearchParams(location.search);
   const OUT_H = Number(params.get('h') || 1080);
   const OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
@@ -214,10 +226,10 @@
   const SHOTS = [
     [0, '01 Холодный старт'], [3, '02 Всё в одном окне'], [6, '03 Один клик'], [10, '04 Пять тем'],
     [14, '05 Свой акцент'], [17, '06 Четыре вида'], [21, '07 Обновления'], [25, '08 Обновить все'],
-    [28, '09 Откат'], [32, '10 Подскажет'], [36, '11 Финальный веер'], [41, '12 Энд-кард'],
+    [28, '09 Откат'], [32, '10 Ещё фишки'], [40, '11 Подскажет'], [44, '12 Финальный веер'], [49, '13 Энд-кард'],
   ];
   // Hits that kick the whole frame: drops, the badge, the rollback stop, the fan.
-  const HITS = [[DROP1, 1], [21.7, 0.6], [STOP, 0.7], [DROP2, 1.2], [END, 0.5]];
+  const HITS = [[DROP1, 1], [21.7, 0.6], [STOP, 0.7], [FEATS, 0.6], [DROP2, 1.2], [END, 0.5]];
 
   /** Scene window [a, b): whip in from the right, whip out to the left, with motion blur. */
   function scene(id, t, a, b, w = 0.2) {
@@ -306,6 +318,20 @@
   const FAN = [['home-contrast', -2, 1], ['home-light', -1, 2], ['home-oled', 1, 2], ['home-mica', 2, 1], ['home-classic', 0, 3]];
   $('fan11').innerHTML = FAN.map(([f, k, z], i) =>
     `<img id="fn${i}" src="shots/13/${f}.png" alt="" style="position:absolute;left:600px;top:290px;width:720px;height:450px;border-radius:12px;z-index:${z};box-shadow:0 50px 100px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.14)">`).join('');
+
+  const FEATURES = [
+    ['feat-search', R(216, 80, 900, 506), R(216, 100, 760, 427), 'Поиск сразу везде', 'каталог · winget · Scoop · Chocolatey'],
+    ['feat-games', R(216, 80, 1100, 619), R(230, 100, 900, 506), 'Категории', 'игры, браузеры, разработка, офис…'],
+    ['feat-profiles', R(216, 80, 1224, 688), R(230, 90, 760, 427), 'Наборы в один клик', 'Gaming Rig · Dev Starter · Essentials'],
+    ['feat-favorites', R(216, 80, 1224, 688), R(230, 100, 900, 506), 'Избранное', 'отметь звёздочкой — вернёшься потом'],
+    ['feat-packages', R(216, 80, 1000, 562), R(230, 150, 760, 427), 'Все пакеты', 'winget, Scoop и Chocolatey в одной таблице'],
+    ['feat-scale', FULL, R(0, 0, 1200, 675), 'Масштаб до 125%', 'крупнее — без лупы'],
+    ['feat-english', R(216, 80, 1224, 688), R(230, 90, 900, 506), 'Русский и English', 'язык переключается на лету'],
+    ['feat-fallback', R(860, 30, 580, 326), R(1000, 40, 440, 247), 'Запасной путь', 'ссылка подвела — поставит через winget'],
+  ];
+  $('feats').innerHTML = FEATURES.map(([f], i) =>
+    `<div class="view" id="ft${i}" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="ftc${i}"><img src="shots/13/${f}.png" alt=""></div></div>`).join('');
+  $('fdots').innerHTML = FEATURES.map((_, i) => `<span id="fd${i}" style="width:44px;height:8px;border-radius:4px;background:rgba(255,255,255,.25)"></span>`).join('');
 
   // ---------- render ----------
   window.render = function render(t) {
@@ -503,16 +529,39 @@
       slam($('t9a'), lt, 1.6); slam($('t9b'), lt, 2.45);
     }
 
-    // 10 — snap into the light theme, glide down the suggestions
-    lt = scene('s10', t, 32, 36);
+    // 10 — rapid-fire features, a hard cut every two beats
+    lt = scene('sf', t, FEATS, BREAK, 0.16);
+    if (lt >= 0) {
+      const n = FEATURES.length, per = (BREAK - FEATS) / n;
+      const idx = Math.min(n - 1, Math.floor(lt / per)), ll = lt - idx * per;
+      FEATURES.forEach(([, a, b], i) => {
+        const v = $(`ft${i}`);
+        // display, not visibility: a visible child would show through its hidden scene.
+        v.style.display = i === idx ? 'block' : 'none';
+        if (i !== idx) return;
+        frame($(`ftc${i}`), 1920, 1080, mix(a, b, inOut(seg(ll, 0.05, per))));
+        v.style.transform = `scale(${1 + 0.1 * sincePulse(ll, 0, 10)}) translateX(${(1 - outQuint(seg(ll, 0, 0.14))) * 120}px)`;
+        v.style.filter = ll < 0.1 ? `blur(${(1 - ll / 0.1) * 10}px)` : 'none';
+      });
+      const [, , , title, sub] = FEATURES[idx];
+      words($('ftitle'), title, ll, 0.04, 0.08);
+      rise($('fsub'), ll, 0.22, 0.2, 24);
+      $('fsub').textContent = sub;
+      $('fcount').textContent = `${String(idx + 1).padStart(2, '0')}/${String(n).padStart(2, '0')}`;
+      $('fcount').style.transform = `scale(${1 + 0.25 * sincePulse(ll, 0, 12)})`;
+      FEATURES.forEach((_, i) => { $(`fd${i}`).style.background = i <= idx ? '#66c0f4' : 'rgba(255,255,255,.25)'; });
+    }
+
+    // 11 — snap into the light theme, glide down the suggestions
+    lt = scene('s10', t, BREAK, DROP2);
     if (lt >= 0) {
       frame($('c10'), 1920, 1080, mix(R(411, 200, 620, 349), R(411, 400, 620, 349), inOut(seg(lt, 0.4, 3.3))));
       words($('t10'), 'Подскажет, что поставить ещё.', lt, 0.25, 0.1);
       [...$('t10').children].slice(1).forEach((sp) => { sp.style.color = '#5a3fd6'; });
     }
 
-    // 11 — the fan bursts open on the drop, a light sweep, then folds into the logo
-    lt = scene('s11', t, 36, 41, 0.12);
+    // 12 — the fan bursts open on the drop, a light sweep, then folds into the logo
+    lt = scene('s11', t, DROP2, END, 0.12);
     if (lt >= 0) {
       const k = outBack(seg(lt, 0, 0.55), 1.4), close = inOut(seg(lt, 4.4, 5));
       FAN.forEach(([, kk], i) => {
@@ -527,8 +576,8 @@
       words($('t11b'), 'Твой вид.', lt, 1.5, 0.14);
     }
 
-    // 12 — end card builds in four beats
-    lt = scene('s12', t, 41, 46, 0.25);
+    // 13 — end card builds in four beats
+    lt = scene('s12', t, END, END + 5, 0.25);
     if (lt >= 0) {
       pop($('logo12'), lt, 0.0, 0.4);
       slam($('name12'), lt, 0.3, 0.25, 1.8);
@@ -537,11 +586,12 @@
         $('logo12').style.transform = `scale(${1 + 0.04 * Math.sin(lt * 2.4)})`;
         $('cta12').style.transform = `scale(${1 + 0.035 * Math.sin(lt * 4)})`;
       }
-      $('s12').style.opacity = 1 - seg(t, 44.2, 45);
+      $('s12').style.opacity = 1 - seg(t, DURATION - 0.8, DURATION);
     }
 
     // Flashes and light bars on the drops.
-    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), 0.5 * sincePulse(t, STOP, 12));
+    const featCut = t >= FEATS && t < BREAK ? 0.35 * sincePulse(t, FEATS + Math.floor(t - FEATS), 22) : 0;
+    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), 0.5 * sincePulse(t, STOP, 12), featCut);
     $('flash').style.opacity = 0.8 * fl;
     const bars = Math.max(sincePulse(t, DROP1, 5), sincePulse(t, DROP2, 5));
     $('bars').style.background = bars > 0.02

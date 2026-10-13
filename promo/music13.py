@@ -2,8 +2,9 @@
 
 Sections follow the storyboard: filtered intro with a pulse (0-10 s),
 drop 1 at 0:10 under the theme / accent / views / updates scenes, a one-beat
-stop for the rollback (0:29.5), a filtered breakdown for the suggestions
-scene (0:32-0:36), drop 2 at 0:36 for the fan, and a ringing final chord.
+stop for the rollback (0:29.5), the rapid-fire features montage with a hit
+on every cut (0:32-0:40), a filtered breakdown for the suggestions scene
+(0:40-0:44), drop 2 at 0:44 for the fan, and a ringing final chord.
 Scene sound effects (click, dings, whooshes, reverse cymbal) sit on the
 same beats as the picture.
 """
@@ -15,14 +16,14 @@ import numpy as np
 SR, BPM = 44100, 120
 B = 60 / BPM
 BAR = 4 * B
-DUR = 45.0
+DUR = 53.0
 N = int(SR * DUR)
 t = np.arange(N) / SR
 L = np.zeros(N)
 R = np.zeros(N)
 rng = np.random.default_rng(13)
 
-DROP1, STOP, BREAK, DROP2, END = 10.0, 29.5, 32.0, 36.0, 41.0
+DROP1, STOP, FEATS, BREAK, DROP2, END = 10.0, 29.5, 32.0, 40.0, 44.0, 49.0
 
 
 def hz(n):
@@ -215,9 +216,18 @@ for k, n in enumerate((79, 83, 86)):
 rev = crash()[: int(0.9 * SR)][::-1]
 both(STOP - 0.9, rev, 0.16)
 
-# 10 — pops on the chips, riser into drop 2.
+# 10 — a whoosh and a snare hit on every feature cut.
+for k in range(8):
+    at = FEATS + k
+    w = whoosh(0.22)
+    place(L, at - 0.08, w * np.linspace(0.2, 1, len(w)), 0.16)
+    place(R, at - 0.08, w * np.linspace(1, 0.2, len(w)), 0.16)
+    both(at, C, 0.18)
+    both(at, blip(1800 + 120 * k, 900, 0.06, 60), 0.08)
+
+# 11 — pops on the chips, riser into drop 2.
 for k in range(5):
-    both(32.6 + k * B / 2, blip(1400, 800, 0.08, 40), 0.09, pan=-0.3 + 0.15 * k)
+    both(BREAK + 0.6 + k * B / 2, blip(1400, 800, 0.08, 40), 0.09, pan=-0.3 + 0.15 * k)
 tt = np.arange(int(2.0 * SR)) / SR
 riser2 = lowpass(rng.standard_normal(len(tt)), 300 + 7000 * (tt / tt[-1]) ** 2) * (tt / tt[-1]) ** 2
 both(DROP2 - 2.0, riser2, 0.34)
