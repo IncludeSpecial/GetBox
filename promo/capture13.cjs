@@ -175,6 +175,9 @@ server.listen(0, async () => {
   await shot(browser, base, 'modal-light', { owned: me, look: { theme: 'light' }, act: async (p) => {
     await catalogTab(p); await p.waitForTimeout(300); await p.locator('.capsule').first().click();
   } });
+  await shot(browser, base, 'modal', { owned: me, look: { listView: 'tiles' }, act: async (p) => {
+    await catalogTab(p); await p.waitForTimeout(300); await p.locator('.capsule').first().click();
+  } });
   fs.writeFileSync(path.join(OUT, 'marks.json'), JSON.stringify(MARKS));
   await browser.close(); server.close();
 });

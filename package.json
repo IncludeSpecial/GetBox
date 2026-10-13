@@ -21,7 +21,7 @@
   "build": {
     "appId": "com.getbox.app",
     "productName": "GetBox",
-    "icon": "build/icon.png",
+    "icon": "build/icon.ico",
     "directories": {
       "output": "release"
     },

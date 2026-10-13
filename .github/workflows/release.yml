@@ -67,3 +67,18 @@ jobs:
             release/GetBox-*-portable.exe
             release/GetBox-*-portable.exe.sha256
           fail_on_unmatched_files: true
+      # Rebuild getbox.ne-nas.ru with the new version right away (GetBoxLanding's
+      # release-sync workflow). Needs a token with access to GetBoxLanding in the
+      # LANDING_DISPATCH_TOKEN secret; skipped without it — the site then catches
+      # up within an hour on its own.
+      - name: Update landing
+        env:
+          LANDING_TOKEN: ${{ secrets.LANDING_DISPATCH_TOKEN }}
+        if: env.LANDING_TOKEN != ''
+        shell: bash
+        run: >
+          curl -fsS -X POST
+          -H "Authorization: Bearer $LANDING_TOKEN"
+          -H "Accept: application/vnd.github+json"
+          https://api.github.com/repos/IncludeSpecial/GetBoxLanding/dispatches
+          -d '{"event_type":"getbox-release"}'

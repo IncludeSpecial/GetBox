@@ -113,7 +113,8 @@ function createWindow(): void {
     minWidth: 960,
     minHeight: 600,
     backgroundColor: '#0a1118',
-    icon: path.join(getDataDir(), 'logo.png'),
+    // Multi-size .ico keeps the taskbar icon crisp on Windows.
+    icon: path.join(getDataDir(), process.platform === 'win32' ? 'logo.ico' : 'logo.png'),
     frame: false,
     webPreferences: {
       preload: preloadPath,

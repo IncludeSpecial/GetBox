@@ -24,6 +24,9 @@ python3 promo/music13.py
 ffmpeg -i promo/promo13-240p.mp4 -i promo/music13.wav -c:v copy -c:a aac -b:a 96k -shortest promo/GetBox-1.3-preview-240p.mp4
 # 1.3 — финал: QUERY="h=1080" node promo/render.cjs video promo13.html
 
+# Скриншоты для README (docs/screenshots/*.webp) — из кадров capture13
+node promo/docs-screenshots.cjs
+
 # 1.3 — эдит 360p
 QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video edit13.html
 python3 promo/music-edit13.py

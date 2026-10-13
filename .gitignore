@@ -12,6 +12,7 @@ build/
 
 # Generated icons (from data/logo.svg)
 data/logo.png
+data/logo.ico
 data/bootstrap/
 
 # Caches & logs
