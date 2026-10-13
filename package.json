@@ -1,6 +1,6 @@
 {
   "name": "getbox",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "GetBox — локальный магазин программ для Windows",
   "main": "dist-electron/main.js",
   "type": "module",
@@ -11,7 +11,7 @@
     "dist": "npm run build && electron-builder --win portable",
     "index": "electron . --index-rebuild",
     "prewarm": "electron . --prewarm-meta",
-    "test": "node scripts/verify-catalog.cjs && node scripts/smoke.cjs && node scripts/test-download.cjs && node scripts/test-resilience.cjs && node scripts/generate-winget-map.cjs --verify && node scripts/test-app-full.cjs",
+    "test": "node scripts/verify-catalog.cjs && node scripts/smoke.cjs && node scripts/test-download.cjs && node scripts/test-resilience.cjs && node scripts/generate-winget-map.cjs --verify && node scripts/test-app-full.cjs && node scripts/test-windows.cjs",
     "verify:catalog": "node scripts/verify-catalog.cjs",
     "catalog:installers": "node --no-warnings scripts/refresh-installers.cjs",
     "winget:map": "node scripts/generate-winget-map.cjs",
