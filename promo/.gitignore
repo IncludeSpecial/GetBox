@@ -6,3 +6,4 @@ still-*.png
 contact*.png
 spec.png
 storyboard-frames/
+__pycache__/
