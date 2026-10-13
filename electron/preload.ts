@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState } from './providers/types.js';
+import type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState, SelfUpdateState } from './providers/types.js';
 
 export interface RuntimeToolInfo {
   status: string;
@@ -66,6 +66,13 @@ export interface GetBoxAPI {
   rollbackUpdate: (historyId: string) => Promise<boolean>;
   clearUpdateHistory: () => Promise<void>;
   onUpdatesChanged: (cb: (state: UpdatesState) => void) => () => void;
+  getAppVersion: () => Promise<string>;
+  getSelfUpdate: () => Promise<SelfUpdateState>;
+  checkSelfUpdate: () => Promise<SelfUpdateState>;
+  restartToUpdate: () => Promise<boolean>;
+  updateOnQuit: (on: boolean) => Promise<void>;
+  openReleasePage: (version?: string) => Promise<void>;
+  onSelfUpdateChanged: (cb: (state: SelfUpdateState) => void) => () => void;
   rebuildIndex: () => Promise<{ ok: boolean; count: number; message?: string }>;
   onIndexProgress: (cb: (msg: string) => void) => () => void;
   onIndexDone: (cb: (count: number) => void) => () => void;
@@ -144,6 +151,17 @@ const api: GetBoxAPI = {
   upgradePackages: (keys) => ipcRenderer.invoke('updates:upgrade', keys),
   rollbackUpdate: (historyId) => ipcRenderer.invoke('updates:rollback', historyId),
   clearUpdateHistory: () => ipcRenderer.invoke('updates:clearHistory'),
+  getAppVersion: () => ipcRenderer.invoke('app:version'),
+  getSelfUpdate: () => ipcRenderer.invoke('selfUpdate:get'),
+  checkSelfUpdate: () => ipcRenderer.invoke('selfUpdate:check'),
+  restartToUpdate: () => ipcRenderer.invoke('selfUpdate:restart'),
+  updateOnQuit: (on) => ipcRenderer.invoke('selfUpdate:onQuit', on),
+  openReleasePage: (version) => ipcRenderer.invoke('selfUpdate:openRelease', version),
+  onSelfUpdateChanged: (cb) => {
+    const handler = (_: unknown, state: SelfUpdateState) => cb(state);
+    ipcRenderer.on('selfUpdate:changed', handler);
+    return () => ipcRenderer.removeListener('selfUpdate:changed', handler);
+  },
   onUpdatesChanged: (cb) => {
     const handler = (_: unknown, state: UpdatesState) => cb(state);
     ipcRenderer.on('updates:changed', handler);
@@ -225,4 +243,4 @@ declare global {
   }
 }
 
-export type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState };
+export type { MergedApp, Package, QueueJob, SearchResult, AppSettings, UpdatesState, SelfUpdateState };

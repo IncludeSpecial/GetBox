@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MergedApp, ProfileEntry, QueueJob, SearchResult, ViewMode, AppSettings, ListView, UpdatesState } from './types';
+import { createPortal } from 'react-dom';
+import type { MergedApp, ProfileEntry, QueueJob, SearchResult, ViewMode, AppSettings, ListView, UpdatesState, SelfUpdateState } from './types';
 import { packageKey } from './types';
 import { I18nProvider } from './i18n/I18nContext';
 import { translations, type Locale } from './i18n/translations';
@@ -20,6 +21,16 @@ import { MetaLoadingBar } from './components/MetaLoadingBar';
 import { ToastContainer } from './components/Toast';
 import { ViewSwitcher } from './components/ViewSwitcher';
 import { UpdatesView } from './components/UpdatesView';
+import { SelfUpdateButton } from './components/SelfUpdateButton';
+import { WhatsNew, notesFor } from './components/WhatsNew';
+import { AppUpdateSettings } from './components/AppUpdateSettings';
+
+/** -1 / 0 / 1 for dotted versions; enough for «is this a newer GetBox». */
+function compareVersions(a: string, b: string): number {
+  const pa = a.split('-')[0].split('.').map(Number), pb = b.split('-')[0].split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return Math.sign((pa[i] || 0) - (pb[i] || 0));
+  return 0;
+}
 import { AppearanceSettings } from './components/AppearanceSettings';
 import { applyAppearance } from './appearance';
 import type { MetaProgress } from './types';
@@ -41,6 +52,10 @@ export default function App() {
   const [providers, setProviders] = useState<Array<{ id: string; displayName: string; ok: boolean; version?: string; message?: string }>>([]);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [nativeMica, setNativeMica] = useState(false);
+  const [selfUpdate, setSelfUpdate] = useState<SelfUpdateState | null>(null);
+  const [appVersion, setAppVersion] = useState<string | null>(null);
+  const [whatsNew, setWhatsNew] = useState<{ version: string; previous?: string } | null>(null);
+  const [titleSlot, setTitleSlot] = useState<HTMLElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
@@ -127,7 +142,32 @@ export default function App() {
 
   useEffect(() => {
     window.getbox.windowNativeMica().then(setNativeMica, () => setNativeMica(false));
+    window.getbox.getAppVersion().then(setAppVersion, () => {});
+    window.getbox.getSelfUpdate().then(setSelfUpdate, () => {});
+    setTitleSlot(document.getElementById('titlebar-slot'));
+    return window.getbox.onSelfUpdateChanged(setSelfUpdate);
   }, []);
+
+  // «Что нового»: once per version after an update; a fresh install just remembers its version.
+  const seenChecked = useRef(false);
+  useEffect(() => {
+    if (!settings || !appVersion || seenChecked.current) return;
+    seenChecked.current = true;
+    const last = settings.lastSeenVersion;
+    if (last && compareVersions(appVersion, last) > 0 && notesFor(appVersion)) {
+      setWhatsNew({ version: appVersion, previous: last });
+    } else if (last !== appVersion) {
+      void window.getbox.updateSettings({ lastSeenVersion: appVersion }).then(setSettings);
+    }
+  }, [settings, appVersion]);
+
+  const closeWhatsNew = useCallback(() => {
+    setWhatsNew(null);
+    if (appVersion) void window.getbox.updateSettings({ lastSeenVersion: appVersion }).then(setSettings);
+  }, [appVersion]);
+  const showWhatsNew = useCallback(() => {
+    if (appVersion && notesFor(appVersion)) setWhatsNew({ version: appVersion });
+  }, [appVersion]);
 
   useEffect(() => {
     if (settings) applyAppearance(settings, nativeMica);
@@ -633,6 +673,7 @@ export default function App() {
               {view === 'settings' && settings && (
                 <div className="settings-section">
                   <AppearanceSettings settings={settings} onChange={patchSettings} />
+                  <AppUpdateSettings settings={settings} state={selfUpdate} onChange={patchSettings} onShowWhatsNew={showWhatsNew} />
                   <h2 className="page-title">{t.settings.title}</h2>
                   <div className="setting-row">
                     <label>
@@ -870,6 +911,11 @@ export default function App() {
         }}
         onDismiss={() => setBootstrapVisible(false)}
       />
+
+      {titleSlot && selfUpdate && createPortal(<SelfUpdateButton state={selfUpdate} onShowWhatsNew={showWhatsNew} />, titleSlot)}
+      {whatsNew && (
+        <WhatsNew version={whatsNew.version} previous={whatsNew.previous} onClose={closeWhatsNew} onNavigate={(v) => handleNavigate(v)} />
+      )}
 
       <ToastContainer toasts={toasts} onDismiss={(id) => setToasts((t) => t.filter((x) => x.id !== id))} />
     </div>

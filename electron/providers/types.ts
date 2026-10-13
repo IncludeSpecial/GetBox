@@ -203,6 +203,27 @@ export interface AppSettings {
   autoCheckUpdates: boolean;
   /** Queue every found update without asking. */
   autoInstallUpdates: boolean;
+  /** Download new GetBox versions in the background. */
+  autoUpdateApp: boolean;
+  appUpdateChannel: 'stable' | 'beta';
+  /** Last version whose «Что нового» screen was shown. */
+  lastSeenVersion?: string;
+}
+
+export interface SelfUpdateState {
+  status: 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error';
+  current: string;
+  latest?: string;
+  /** Release notes (Markdown) of `latest`. */
+  notes?: string;
+  releaseUrl?: string;
+  checkedAt?: number;
+  progress?: number;
+  downloadedPath?: string;
+  /** False when not running as the portable exe (dev builds): updates are shown but not installed. */
+  canApply: boolean;
+  applyOnQuit?: boolean;
+  error?: string;
 }
 
 export const THEME_IDS = ['classic', 'light', 'oled', 'contrast', 'mica'] as const;

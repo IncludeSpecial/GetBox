@@ -700,5 +700,34 @@ console.log('\nupdate checks:');
   });
 }
 
+
+console.log('\nself-update:');
+{
+  const { compareVersions, pickRelease } = loadTsModule(
+    path.join(__dirname, '..', 'electron', 'self-update', 'self-update.ts'),
+    {
+      electron: { ...electronStub, app: { ...electronStub.app, getVersion: () => '1.2.5' } },
+      'electron-store': class { get() { return {}; } set() {} },
+    },
+  );
+  test('versions compare numerically, a release beats its prerelease', () => {
+    assert.equal(compareVersions('1.10.0', '1.9.9'), 1);
+    assert.equal(compareVersions('v1.3.0', '1.3.0'), 0);
+    assert.equal(compareVersions('1.3.0', '1.3.0-beta.2'), 1);
+    assert.equal(compareVersions('1.3.0-beta.1', '1.3.0-beta.2'), -1);
+  });
+  const rel = (tag, prerelease = false, asset = true) => ({
+    tag_name: tag, name: tag, body: '', html_url: '', prerelease, draft: false,
+    assets: asset ? [{ name: `GetBox-${tag.slice(1)}-portable.exe`, browser_download_url: 'https://github.com/x', size: 1 }] : [],
+  });
+  test('stable channel skips prereleases and releases without the exe', () => {
+    const r = pickRelease([rel('v1.4.0-beta.1', true), rel('v1.3.1', false, false), rel('v1.3.0'), rel('v1.2.5')], 'stable');
+    assert.equal(r.version, '1.3.0');
+  });
+  test('beta channel takes the newest prerelease', () => {
+    assert.equal(pickRelease([rel('v1.3.0'), rel('v1.4.0-beta.1', true)], 'beta').version, '1.4.0-beta.1');
+  });
+}
+
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed > 0 ? 1 : 0);

@@ -48,6 +48,12 @@ jobs:
       - run: npm run build
       - name: Package portable exe
         run: npx electron-builder --win portable --publish never
+      # GetBox checks the downloaded update against this file before replacing itself.
+      - name: Checksum
+        shell: bash
+        run: |
+          cd release
+          for f in GetBox-*-portable.exe; do sha256sum "$f" > "$f.sha256"; done
       - name: Release notes
         shell: bash
         run: node scripts/release-notes.cjs "${{ steps.meta.outputs.tag }}" > release-notes.md
@@ -57,5 +63,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: ${{ steps.meta.outputs.name }}
           body_path: release-notes.md
-          files: release/GetBox-*-portable.exe
+          files: |
+            release/GetBox-*-portable.exe
+            release/GetBox-*-portable.exe.sha256
           fail_on_unmatched_files: true

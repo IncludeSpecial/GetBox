@@ -1,3 +1,4 @@
+/* global window, XMLHttpRequest */
 // Shared camera and highlight logic for promo13.html and corp13.html.
 //
 // Every zoom targets a real element: capture13.cjs measures element rects on

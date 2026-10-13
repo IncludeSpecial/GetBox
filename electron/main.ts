@@ -9,6 +9,7 @@ import { getCatalog, invalidateCatalog, setInstalledSet, findApp } from './catal
 import { searchPackages } from './search-cache.js';
 import { installQueue } from './queue/install-queue.js';
 import { updates } from './updates/updates.js';
+import { selfUpdater } from './self-update/self-update.js';
 import { buildIndex, isIndexEmptyOrSmall } from './index-builder.js';
 import { getSettings, updateSettings } from './store/settings.js';
 import { toggleFavorite, isFavorite } from './store/favorites.js';
@@ -275,6 +276,21 @@ function setupIpc(): void {
   ipcMain.handle('queue:dismiss', (_e, jobId: string) => installQueue.dismiss(jobId));
   ipcMain.handle('queue:retryJob', (_e, jobId: string) => installQueue.retryJob(jobId));
 
+  ipcMain.handle('app:version', () => app.getVersion());
+  ipcMain.handle('selfUpdate:get', () => selfUpdater.getState());
+  ipcMain.handle('selfUpdate:check', () => selfUpdater.check(true));
+  ipcMain.handle('selfUpdate:restart', () => {
+    if (!selfUpdater.apply(true)) return false;
+    app.quit();
+    return true;
+  });
+  ipcMain.handle('selfUpdate:onQuit', (_e, on: boolean) => selfUpdater.setApplyOnQuit(Boolean(on)));
+  // Opens the release page of a version (or of the pending update); only this repo's releases.
+  ipcMain.handle('selfUpdate:openRelease', (_e, version?: string) => {
+    const v = typeof version === 'string' && /^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version) ? version : selfUpdater.getState().latest;
+    if (v) void shell.openExternal(`https://github.com/IncludeSpecial/GetBox/releases/tag/v${v}`);
+  });
+
   ipcMain.handle('updates:get', () => updates.getState());
   ipcMain.handle('updates:check', () => updates.check());
   ipcMain.handle('updates:clearHistory', () => updates.clearHistory());
@@ -443,6 +459,8 @@ app.whenReady().then(async () => {
   installQueue.on('updated', (jobs) => sendToRenderer('queue:updated', jobs));
   installQueue.on('job-finished', (job) => updates.record(job));
   updates.on('changed', (state) => sendToRenderer('updates:changed', state));
+  selfUpdater.on('changed', (state) => sendToRenderer('selfUpdate:changed', state));
+  app.on('will-quit', () => selfUpdater.onQuit());
   updates.on('auto-install', (items: UpdateInfo[]) => queueUpgrades(items));
   installQueue.on('installed-changed', () => {
     refreshInstalledInBackground();
@@ -450,6 +468,7 @@ app.whenReady().then(async () => {
 
   createWindow();
   updates.schedule(true);
+  selfUpdater.schedule(true);
 
   if (shouldRetryBootstrap()) {
     startBootstrap();
