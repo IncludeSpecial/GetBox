@@ -172,7 +172,8 @@ class SelfUpdater extends EventEmitter {
       '@echo off',
       ':wait',
       `tasklist /FI "PID eq ${process.pid}" | find "${process.pid}" >nul && (timeout /t 1 /nobreak >nul & goto wait)`,
-      `copy /Y ${q(next)} ${q(exe)} >nul || goto end`,
+      // No write access to the exe's folder: bring the old version back instead of leaving GetBox closed.
+      `copy /Y ${q(next)} ${q(exe)} >nul || (${restart ? `start "" ${q(exe)} & ` : ''}goto end)`,
       `del ${q(next)} >nul 2>&1`,
       restart ? `start "" ${q(exe)}` : 'rem no restart',
       ':end',
