@@ -2,6 +2,7 @@
 
 - `promo.html` — основной ролик: 40 с, 1920×1080, 30 fps.
 - `promo13.html` — ролик о версии 1.3: 53 с, 120 BPM, 13 сцен (раскадровка + нарезка «Ещё фишки»). Размер задаётся параметром `h` (240…1080), `debug=1` выводит номер сцены и таймкод.
+- `edit13.html` — динамичный эдит 1.3: ~25 с, 130 BPM, склейка на каждую долю (во втором дропе — на полдоли), удары зумом, вспышки, слова-титры. Музыка — `music-edit13.py` (фонк-набросок: ковбелл, 808 с глайдом).
 - `shorts.html` — вертикальная версия для Shorts / Reels: 30 с, 1080×1920, 60 fps, монтаж по долям 128 BPM.
 
 Кадры интерфейса — настоящий renderer GetBox на тестовых данных из `data/`.
@@ -20,6 +21,11 @@ QUERY="h=240&debug=1" OUT_SUFFIX=-240p CRF=28 node promo/render.cjs video promo1
 python3 promo/music13.py
 ffmpeg -i promo/promo13-240p.mp4 -i promo/music13.wav -c:v copy -c:a aac -b:a 96k -shortest promo/GetBox-1.3-preview-240p.mp4
 # 1.3 — финал: QUERY="h=1080" node promo/render.cjs video promo13.html
+
+# 1.3 — эдит 360p
+QUERY="h=360" OUT_SUFFIX=-360p CRF=24 node promo/render.cjs video edit13.html
+python3 promo/music-edit13.py
+ffmpeg -i promo/edit13-360p.mp4 -i promo/music-edit13.wav -c:v copy -af loudnorm=I=-12:TP=-1 -c:a aac -b:a 128k -shortest promo/GetBox-1.3-edit-360p.mp4
 
 # Shorts
 node promo/render.cjs video shorts.html

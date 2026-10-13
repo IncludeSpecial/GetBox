@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox 1.3 edit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; background: #000; }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; background: #000; }
+  #world { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  .view { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; display: none; background: #05090d; }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
+  #word { position: absolute; left: 0; right: 0; top: 50%; text-align: center; font-weight: 900; letter-spacing: -.03em; line-height: 1;
+    text-transform: uppercase; white-space: nowrap; text-shadow: 0 10px 60px rgba(0,0,0,.6); }
+  #sub { position: absolute; left: 0; right: 0; text-align: center; font: 700 44px 'DejaVu Sans Mono', monospace; letter-spacing: .2em; color: #a5d8ff; }
+  .bar { position: absolute; left: 0; right: 0; height: 0; background: #000; z-index: 4; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 5; }
+  #black { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 3; }
+  #vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.65) 100%); }
+  #logo { position: absolute; left: 50%; top: 50%; width: 300px; height: 300px; margin: -230px 0 0 -150px; opacity: 0; z-index: 2;
+    filter: drop-shadow(0 0 80px rgba(102,192,244,.7)); }
+  #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.7); color: #ffd400;
+    font: 600 34px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="views"></div>
+    <img id="logo" src="../data/logo.png" alt="">
+    <div id="vignette"></div>
+    <div id="word"></div>
+    <div id="sub"></div>
+  </div>
+  <div class="bar" id="barT" style="top:0"></div>
+  <div class="bar" id="barB" style="bottom:0"></div>
+  <div id="black"></div>
+  <div id="flash"></div>
+  <div id="debug"></div>
+</div>
+<script>
+  // 130 bpm phonk-style edit: intro bar + pickup, drop (cut per beat), half-time break,
+  // second drop (cut per half beat), logo outro.
+  const BPM = 130, B = 60 / BPM, BAR = 4 * B;
+  const DROP1 = 2 * BAR, BREAK = 6 * BAR, DROP2 = 8 * BAR, OUTRO = 12 * BAR, DURATION = OUTRO + 2.6 * B * 2;
+  const params = new URLSearchParams(location.search);
+  const OUT_H = Number(params.get('h') || 1080), OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
+  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || 30), duration: DURATION };
+  const $ = (id) => document.getElementById(id);
+  $('stage').style.transform = `scale(${OUT_W / 1920})`;
+  document.body.style.width = OUT_W + 'px'; document.body.style.height = OUT_H + 'px';
+  if (params.get('debug')) $('debug').style.display = 'block';
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const lerp = (a, b, x) => a + (b - a) * x;
+  const outExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const outBack = (x, c = 2.2) => 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
+  const noise = (x) => { const s = Math.sin(x * 127.1) * 43758.5453; return (s - Math.floor(s)) * 2 - 1; };
+  const since = (t, at, k) => (t >= at ? Math.exp(-(t - at) * k) : 0);
+  const R = (x, y, w, h) => ({ x: x / 1440, y: y / 900, w: w / 1440, h: h / 900 });
+  const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
+  function frame(cam, vw, vh, r) {
+    const s = Math.max(vw / (r.w * 1440), vh / (r.h * 900), vw / 1440, vh / 900);
+    const cx = (r.x + r.w / 2) * 1440 * s, cy = (r.y + r.h / 2) * 900 * s;
+    const tx = clamp(vw / 2 - cx, vw - 1440 * s, 0), ty = clamp(vh / 2 - cy, vh - 900 * s, 0);
+    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  }
+
+  // ---------- shots ----------
+  const C = R(216, 126, 1224, 688);           // content below the tab row
+  const H = R(216, 36, 1224, 688);            // window from the toolbar down
+  const TIGHT = (x, y) => R(x, y, 860, 484);  // ~2x close-up
+  const IMG = {};
+  const use = (f) => (IMG[f] = IMG[f] || Object.keys(IMG).length, f);
+
+  /** One clip: [start beat, length in beats, screenshot, rect from, rect to, word, sub, accent]. */
+  const CLIPS = [];
+  const at = (beat, len, f, a, b, word = '', sub = '', color = '#fff') => CLIPS.push({ t0: beat * B, t1: (beat + len) * B, f: use(f), a, b, word, sub, color });
+
+  // Intro: strobing glimpses on the 8ths of the second bar.
+  ['home-classic', 'home-light', 'home-oled', 'home-contrast', 'home-mica', 'cat-tiles', 'updates', 'accent-pink'].forEach((f, i) =>
+    at(4 + i * 0.5, 0.25, f, C, TIGHT(300 + i * 30, 160)));
+  // Drop 1: one cut per beat.
+  const d1 = DROP1 / B;
+  [['home-classic', 'Классика', '#66c0f4'], ['home-light', 'Светлая', '#8b6cff'], ['home-oled', 'OLED', '#2dd4bf'],
+    ['home-contrast', 'Контраст', '#ffd400'], ['home-mica', 'Windows 11', '#4aa3ff']]
+    .forEach(([f, w, c], i) => at(d1 + i, 1, f, TIGHT(260, 150), C, w, 'тема', c));
+  [['cat-cards', 'Карточки'], ['cat-list', 'Список'], ['cat-table', 'Таблица'], ['cat-tiles-hover', 'Плитки']]
+    .forEach(([f, w], i) => at(d1 + 5 + i, 1, f, C, TIGHT(240, 140), w, 'вид', '#fff'));
+  [['accent-blue', '#66c0f4'], ['accent-violet', '#8b6cff'], ['accent-teal', '#2dd4bf'], ['accent-pink', '#ef5da8']]
+    .forEach(([f, c], i) => at(d1 + 9 + i, 1, f, R(216, 100, 1010, 568), R(240, 120, 860, 484), 'Акцент', 'свой цвет', c));
+  at(d1 + 13, 1, 'updates', H, TIGHT(240, 120), 'Обновления', '3 новых', '#66c0f4');
+  at(d1 + 14, 1, 'updates-queue', C, TIGHT(240, 140), 'Все сразу', 'одной кнопкой', '#9fd65a');
+  at(d1 + 15, 1, 'updates', R(240, 360, 900, 506), R(262, 400, 860, 484), 'Откат', '1.141.0 → 1.140.2', '#f2c98a');
+  // Break: half-time, two long slow shots.
+  const br = BREAK / B;
+  at(br, 4, 'modal-light', R(411, 290, 620, 349), R(411, 350, 620, 349), '', '');
+  at(br + 4, 4, 'home-mica', R(0, 0, 1440, 810), R(160, 80, 1120, 630), 'Твой вид.', '', '#fff');
+  // Drop 2: a cut every half beat.
+  const d2 = DROP2 / B;
+  const FAST = [
+    ['feat-search', 'Поиск'], ['install-queue', 'Один клик'], ['feat-games', 'Категории'], ['feat-profiles', 'Наборы'],
+    ['feat-favorites', 'Избранное'], ['feat-packages', 'Пакеты'], ['feat-scale', '125%'], ['feat-english', 'English'],
+    ['feat-fallback', 'winget'], ['updates', 'Обновления'], ['home-light', 'Светлая'], ['home-oled', 'OLED'],
+    ['cat-tiles-hover', 'Плитки'], ['accent-pink', 'Акцент'], ['home-contrast', 'Контраст'], ['home-classic', 'GetBox'],
+  ];
+  FAST.forEach(([f, w], i) => {
+    const a = i % 2 ? TIGHT(300, 180) : C, b = i % 2 ? C : TIGHT(280, 160);
+    at(d2 + i * 0.5, 0.5, f, a, b, w, '', ['#fff', '#66c0f4'][i % 2]);
+  });
+  // Last bar of drop 2: one cut per beat back on the five themes, faster.
+  ['home-classic', 'home-light', 'home-oled', 'home-contrast', 'home-mica', 'cat-tiles', 'accent-teal', 'updates'].forEach((f, i) =>
+    at(d2 + 8 + i, 1, f, TIGHT(260, 150), C, ['Все', 'программы', 'в', 'одном', 'окне', 'для', 'Windows', '11'][i], '', i % 2 ? '#66c0f4' : '#fff'));
+
+  $('views').innerHTML = Object.keys(IMG).map((f) =>
+    `<div class="view" id="v-${f}"><div class="cam"><img src="shots/13/${f}.png" alt=""></div></div>`).join('');
+
+  // Hits: drops shake hardest; every beat in the drops gives a small kick.
+  const HITS = [[DROP1, 1.3], [BREAK, 0.5], [DROP2, 1.5], [OUTRO, 1.2]];
+
+  window.render = function render(t) {
+    const beat = t / B;
+    const inDrop = (t >= DROP1 && t < BREAK) || (t >= DROP2 && t < OUTRO);
+    const kick = inDrop ? since(t, Math.floor(beat) * B, 9) : 0;
+    const shake = HITS.reduce((acc, [a, amp]) => acc + amp * since(t, a, 7), 0) + 0.35 * kick;
+    $('world').style.transform =
+      `translate(${noise(t * 29) * 16 * shake}px, ${noise(t * 19 + 7) * 16 * shake}px) rotate(${noise(t * 11) * 0.6 * shake}deg) scale(${1.02 + 0.04 * shake})`;
+
+    // Active clip: hard cut, velocity zoom in (fast in, slow settle), motion blur on the first frames.
+    const clip = CLIPS.find((c) => t >= c.t0 && t < c.t1);
+    for (const f of Object.keys(IMG)) $(`v-${f}`).style.display = clip && clip.f === f ? 'block' : 'none';
+    if (clip) {
+      const lt = t - clip.t0, len = clip.t1 - clip.t0, p = lt / len;
+      const v = $(`v-${clip.f}`);
+      const rect = mix(clip.a, clip.b, inOut(p));
+      frame(v.firstElementChild, 1920, 1080, rect);
+      const vel = 1 - outExpo(seg(lt, 0, Math.min(0.35, len * 0.6)));
+      const dir = (CLIPS.indexOf(clip) % 2 ? 1 : -1);
+      v.style.transform = `scale(${1 + 0.28 * vel}) rotate(${dir * 2.5 * vel}deg) translateX(${dir * 60 * vel}px)`;
+      v.style.filter = `blur(${vel * 10}px) contrast(${1.12 + 0.2 * kick}) saturate(${1.15 + 0.3 * kick}) brightness(${1 + 0.35 * vel})`;
+      // Chromatic split lives on the title: red and cyan offsets that snap together.
+      const split = clamp((inDrop ? 0.5 * kick : 0) + 1.4 * vel);
+      $('word').style.textShadow = `${-12 * split}px 0 rgba(255,40,90,${0.9 * split}), ${12 * split}px 0 rgba(40,220,255,${0.9 * split}), 0 0 24px rgba(0,0,0,.85), 0 0 70px rgba(0,0,0,.7)`;
+
+      // Word on screen: slams in with the cut.
+      const w = $('word');
+      if (w.dataset.k !== String(clip.t0)) { w.dataset.k = String(clip.t0); w.textContent = clip.word; $('sub').textContent = clip.sub; }
+      const big = clip.word.length <= 6 ? 230 : clip.word.length <= 10 ? 170 : 130;
+      w.style.fontSize = big + 'px'; w.style.marginTop = -big * 0.6 + 'px'; w.style.color = clip.color;
+      const wk = outExpo(seg(lt, 0, 0.12));
+      w.style.opacity = clip.word ? clamp(wk * 1.5) : 0;
+      w.style.transform = `scale(${lerp(1.9, 1, wk)})`;
+      w.style.filter = wk < 1 ? `blur(${(1 - wk) * 18}px)` : 'none';
+      $('sub').style.top = 540 + big * 0.55 + 'px';
+      $('sub').style.opacity = clip.sub ? seg(lt, 0.08, 0.2) : 0;
+    } else {
+      $('word').style.opacity = 0; $('sub').style.opacity = 0;
+    }
+
+    // Intro: logo flickers in on the first bar, glitching; title types per beat.
+    const introLogo = t < 4 * B ? seg(t, 0.2, 3.5 * B) : 0;
+    const flick = t < 4 * B && noise(Math.floor(t * 14)) > 0.2 ? 1 : 0.25;
+    if (t < 4 * B) {
+      $('logo').style.opacity = introLogo * flick;
+      $('logo').style.transform = `scale(${lerp(0.6, 1, outExpo(introLogo))}) translateX(${noise(Math.floor(t * 20)) * 14 * flick}px)`;
+      const w = $('word'); const txt = 'GETBOX'.slice(0, Math.ceil(seg(t, B, 4 * B) * 6));
+      w.textContent = txt; w.style.fontSize = '160px'; w.style.marginTop = '120px'; w.style.color = '#fff';
+      w.style.opacity = txt ? 1 : 0; w.style.transform = `translateX(${noise(Math.floor(t * 24)) * 10}px)`; w.style.filter = 'none';
+      $('sub').textContent = '1.3'; $('sub').style.top = '820px'; $('sub').style.opacity = seg(t, 3 * B, 3.5 * B);
+    }
+    // Outro: logo slam and the name, then a fade to black.
+    if (t >= OUTRO) {
+      const lt = t - OUTRO, k = outBack(seg(lt, 0, 0.35), 1.6);
+      $('logo').style.opacity = clamp(lt * 8); $('logo').style.transform = `scale(${lerp(2.6, 1, k)})`;
+      const w = $('word'); w.textContent = 'GETBOX 1.3'; w.style.fontSize = '150px'; w.style.marginTop = '120px'; w.style.color = '#fff';
+      const wk = outExpo(seg(lt, B, B + 0.2)); w.style.opacity = wk; w.style.transform = `scale(${lerp(1.8, 1, wk)})`; w.style.filter = 'none';
+      $('sub').textContent = 'github.com/IncludeSpecial/GetBox'; $('sub').style.top = '840px'; $('sub').style.fontSize = '34px';
+      $('sub').style.opacity = seg(lt, 2 * B, 2 * B + 0.2);
+    } else if (t >= 4 * B) {
+      $('logo').style.opacity = 0;
+      $('sub').style.fontSize = '44px';
+    }
+
+    // Letterbox in the break; black gap on the beat before each drop; flashes on the hits.
+    const lb = t >= BREAK && t < DROP2 ? 130 * inOut(seg(t, BREAK, BREAK + B)) * (1 - seg(t, DROP2 - 0.15, DROP2)) : 0;
+    $('barT').style.height = lb + 'px'; $('barB').style.height = lb + 'px';
+    const gap = (t >= DROP1 - B && t < DROP1) || (t >= DROP2 - B * 0.5 && t < DROP2) || (t >= OUTRO - B * 0.5 && t < OUTRO);
+    $('black').style.opacity = gap ? 1 : t > DURATION - 0.6 ? seg(t, DURATION - 0.6, DURATION) : 0;
+    $('flash').style.opacity = 0.9 * Math.max(since(t, DROP1, 10), since(t, DROP2, 10), since(t, OUTRO, 10)) + (inDrop ? 0.18 * kick : 0);
+    $('debug').textContent = `${t.toFixed(2)} с · доля ${Math.floor(beat) + 1}`;
+  };
+  window.render(0);
+</script>
+</body>
+</html>
