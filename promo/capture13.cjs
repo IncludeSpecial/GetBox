@@ -40,7 +40,7 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': type }); fs.createReadStream(file).pipe(res);
 });
 async function shot(browser, base, name, { owned = [], lang = 'ru', queue = [], act, look = {}, results = [], zoom = 1 }) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
   await page.addInitScript(({ d, lang, queue, look, results }) => {
     const ok = async () => ({ ok: true });
     const values = {

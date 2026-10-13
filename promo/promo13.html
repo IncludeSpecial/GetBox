@@ -100,7 +100,7 @@
   <div class="scene" id="s4">
     <div id="themes"></div>
     <div class="shade-t"></div>
-    <div class="h1 abs" id="t4" style="left:80px;top:50px;color:#fff"></div>
+    <div class="h1 abs" id="t4" style="left:80px;top:70px;color:#fff"></div>
   </div>
 
   <!-- 05 Accent -->
@@ -320,13 +320,13 @@
     `<img id="fn${i}" src="shots/13/${f}.png" alt="" style="position:absolute;left:600px;top:290px;width:720px;height:450px;border-radius:12px;z-index:${z};box-shadow:0 50px 100px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.14)">`).join('');
 
   const FEATURES = [
-    ['feat-search', R(216, 80, 900, 506), R(216, 100, 760, 427), 'Поиск сразу везде', 'каталог · winget · Scoop · Chocolatey'],
-    ['feat-games', R(216, 80, 1100, 619), R(230, 100, 900, 506), 'Категории', 'игры, браузеры, разработка, офис…'],
-    ['feat-profiles', R(216, 80, 1224, 688), R(230, 90, 760, 427), 'Наборы в один клик', 'Gaming Rig · Dev Starter · Essentials'],
-    ['feat-favorites', R(216, 80, 1224, 688), R(230, 100, 900, 506), 'Избранное', 'отметь звёздочкой — вернёшься потом'],
-    ['feat-packages', R(216, 80, 1000, 562), R(230, 150, 760, 427), 'Все пакеты', 'winget, Scoop и Chocolatey в одной таблице'],
+    ['feat-search', R(216, 126, 900, 506), R(226, 136, 800, 450), 'Поиск сразу везде', 'каталог · winget · Scoop · Chocolatey'],
+    ['feat-games', R(216, 126, 1000, 562), R(226, 136, 900, 506), 'Категории', 'игры, браузеры, разработка, офис…'],
+    ['feat-profiles', R(216, 126, 1000, 562), R(226, 136, 860, 484), 'Наборы в один клик', 'Gaming Rig · Dev Starter · Essentials'],
+    ['feat-favorites', R(216, 126, 1000, 562), R(226, 136, 900, 506), 'Избранное', 'отметь звёздочкой — вернёшься потом'],
+    ['feat-packages', R(216, 126, 1000, 562), R(226, 136, 860, 484), 'Все пакеты', 'winget, Scoop и Chocolatey в одной таблице'],
     ['feat-scale', FULL, R(0, 0, 1200, 675), 'Масштаб до 125%', 'крупнее — без лупы'],
-    ['feat-english', R(216, 80, 1224, 688), R(230, 90, 900, 506), 'Русский и English', 'язык переключается на лету'],
+    ['feat-english', R(216, 126, 1100, 619), R(226, 136, 960, 540), 'Русский и English', 'язык переключается на лету'],
     ['feat-fallback', R(860, 30, 580, 326), R(1000, 40, 440, 247), 'Запасной путь', 'ссылка подвела — поставит через winget'],
   ];
   $('feats').innerHTML = FEATURES.map(([f], i) =>
@@ -335,10 +335,10 @@
 
   // ---------- render ----------
   window.render = function render(t) {
-    // World camera: punch on every beat in the groove, shake on the hits.
-    const punch = inGroove(t) ? 0.022 * beatPulse(t) : 0;
-    const shake = HITS.reduce((acc, [at, amp]) => acc + amp * sincePulse(t, at, 9), 0);
-    $('world').style.transform = `translate(${noise(t * 31) * 22 * shake}px, ${noise(t * 17 + 3) * 22 * shake}px) scale(${1 + punch + 0.03 * shake})`;
+    // World camera: still between hits; a short damped shake and push-in on each hit.
+    // The push-in always exceeds the shake, so the frame edge never shows.
+    const shake = HITS.reduce((acc, [at, amp]) => acc + amp * sincePulse(t, at, 10), 0);
+    $('world').style.transform = `translate(${noise(t * 23) * 10 * shake}px, ${noise(t * 13 + 3) * 10 * shake}px) scale(${1 + 0.03 * shake})`;
     $('glow').style.opacity = 0.2 + 0.25 * (inGroove(t) ? beatPulse(t) : 0.3);
     const shot = [...SHOTS].reverse().find(([a]) => t >= a);
     $('debug').textContent = `${shot[1]} · ${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
@@ -376,9 +376,9 @@
     lt = scene('s3', t, 6, 10);
     if (lt >= 0) {
       const click = 1.5;
-      const zin = inOut(seg(lt, 0, 0.6)), out = inOut(seg(lt, click + 0.25, click + 0.85));
-      const near = R(540, 250, 420, 236);
-      const rect = mix(mix(FULL, near, zin), R(216, 36, 1224, 688), out);
+      const zin = inOut(seg(lt, 0, 0.9)), out = inOut(seg(lt, click + 0.3, click + 1.3));
+      const near = R(380, 170, 760, 427);
+      const rect = mix(mix(FULL, near, zin), FULL, out);
       const f = frame($('c3'), 1920, 1080, rect);
       const bx = 682 * f.s + f.tx, by = 345 * f.s + f.ty;
       const ck = outCubic(seg(lt, 0.3, 1.3));
@@ -402,7 +402,7 @@
         const p = i === 0 ? 1 : outQuint(seg(lt, i * B, i * B + 0.26));
         const left = lerp(0, i * 20, sk), right = i === 4 ? 0 : lerp(0, (4 - i) * 20, sk);
         $(`th${i}`).style.clipPath = `inset(0 ${Math.max(right, (1 - p) * 100)}% 0 ${left}%)`;
-        frame($(`thc${i}`), 1920, 1080, mix(CONTENT, R(240, 100, 1150, 646), sincePulse(lt, i * B, 6)));
+        frame($(`thc${i}`), 1920, 1080, mix(CONTENT, R(250, 110, 1120, 630), inOut(seg(lt, 0, 4))));
         const edge = $(`the${i}`);
         edge.style.left = p * 1920 - 8 + 'px';
         edge.style.opacity = i > 0 && p > 0 && p < 1 ? 1 : 0;
@@ -415,7 +415,7 @@
     // 05 — each accent spreads out of its dot as a circle
     lt = scene('s5', t, 14, 17);
     if (lt >= 0) {
-      const rect = mix(R(230, 140, 900, 506), R(260, 150, 760, 427), seg(lt, 0, 3));
+      const rect = mix(R(216, 100, 1010, 568), R(230, 110, 900, 506), inOut(seg(lt, 0, 3)));
       const idx = lt < 0.5 ? 0 : Math.min(3, Math.floor((lt - 0.5) / B) + 1);
       ACCENTS.forEach(([color, , dot], i) => {
         frame($(`avc${i}`), 1920, 1080, rect);
@@ -510,7 +510,7 @@
     // 09 — click, the stop, the version rewinds like a tape
     lt = scene('s9', t, 28, 32);
     if (lt >= 0) {
-      const f = frame($('c9'), 1920, 1080, mix(R(262, 380, 880, 495), R(620, 440, 560, 315), inOut(seg(lt, 0, 0.8))));
+      const f = frame($('c9'), 1920, 1080, mix(R(236, 340, 920, 517), R(258, 395, 880, 495), inOut(seg(lt, 0, 1.0))));
       const hk = seg(lt, 0.8, 1.0);
       Object.assign($('hl9').style, { left: 999 * f.s + f.tx + 'px', top: 489 * f.s + f.ty + 'px', width: 128 * f.s + 'px', height: 23 * f.s + 'px',
         opacity: hk * (1 - seg(lt, 1.4, 1.5)) });
@@ -555,7 +555,7 @@
     // 11 — snap into the light theme, glide down the suggestions
     lt = scene('s10', t, BREAK, DROP2);
     if (lt >= 0) {
-      frame($('c10'), 1920, 1080, mix(R(411, 200, 620, 349), R(411, 400, 620, 349), inOut(seg(lt, 0.4, 3.3))));
+      frame($('c10'), 1920, 1080, mix(R(411, 290, 620, 349), R(411, 350, 620, 349), inOut(seg(lt, 0.2, 3.6))));
       words($('t10'), 'Подскажет, что поставить ещё.', lt, 0.25, 0.1);
       [...$('t10').children].slice(1).forEach((sp) => { sp.style.color = '#5a3fd6'; });
     }
@@ -591,7 +591,7 @@
 
     // Flashes and light bars on the drops.
     const featCut = t >= FEATS && t < BREAK ? 0.35 * sincePulse(t, FEATS + Math.floor(t - FEATS), 22) : 0;
-    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), 0.5 * sincePulse(t, STOP, 12), featCut);
+    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), featCut);
     $('flash').style.opacity = 0.8 * fl;
     const bars = Math.max(sincePulse(t, DROP1, 5), sincePulse(t, DROP2, 5));
     $('bars').style.background = bars > 0.02
