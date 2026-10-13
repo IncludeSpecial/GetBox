@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>GetBox 1.3 — kinetic type (Shorts)</title>
+<style>
+  /* Vertical cut of kinetic13.html: same timeline and music, laid out for 1080×1920.
+     Key content stays inside the Shorts safe area (y 170–1540, clear of the right-hand buttons). */
+  :root { --paper: #f2efe8; --ink: #0d0d0d; --red: #ff3b1f; --mute: #6f6a62; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; background: var(--paper); }
+  body { font-family: 'Inter Display', 'Inter', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'DejaVu Sans Mono', monospace; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; transform-origin: 0 0; background: var(--paper); }
+  .scene { position: absolute; inset: 0; display: none; }
+  .abs { position: absolute; }
+
+  #grid { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  #grid i { position: absolute; top: 0; bottom: 0; width: 1px; background: currentColor; opacity: .09; }
+  #hdr { position: absolute; left: 60px; right: 60px; top: 176px; display: flex; justify-content: space-between; z-index: 8;
+    font: 600 22px 'DejaVu Sans Mono', monospace; letter-spacing: .08em; }
+  #hdr b { color: var(--red); }
+
+  .huge { font-weight: 900; letter-spacing: -.045em; line-height: .9; }
+  .mask { overflow: hidden; display: block; padding-bottom: .04em; }
+  .mask > span { display: block; }
+  .num { font-weight: 900; color: var(--red); letter-spacing: -.06em; line-height: .8; }
+  .chip { display: inline-block; padding: 12px 22px; border: 3px solid var(--ink); font-size: 34px; font-weight: 800; margin: 0 14px 14px 0; }
+
+  .win { position: absolute; overflow: hidden; background: #fff; outline: 3px solid var(--ink); }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
+  .hl-box { position: absolute; opacity: 0; pointer-events: none; z-index: 5;
+    box-shadow: 0 0 0 4px var(--red), 0 0 0 9999px rgba(242, 239, 232, .62); }
+  .hl-tag { position: absolute; left: 0; top: 0; padding: 12px 20px; background: var(--ink); color: var(--paper); z-index: 6;
+    font: 700 28px 'DejaVu Sans Mono', monospace; white-space: nowrap; opacity: 0; }
+
+  #wipe { position: absolute; left: 0; right: 0; height: 2100px; top: -2200px; background: var(--red); z-index: 9; }
+  #debug { position: absolute; left: 24px; bottom: 420px; padding: 8px 16px; background: #000; color: #ffd400;
+    font: 600 30px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
+  #safe { position: absolute; inset: 0; z-index: 11; display: none; pointer-events: none;
+    background: linear-gradient(rgba(0,120,255,.25), rgba(0,120,255,.25)) top / 100% 170px no-repeat,
+      linear-gradient(rgba(0,120,255,.25), rgba(0,120,255,.25)) bottom / 100% 380px no-repeat,
+      linear-gradient(rgba(0,120,255,.25), rgba(0,120,255,.25)) right 1000px / 140px 540px no-repeat; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grid"></div>
+  <div id="hdr"><span>GETBOX <b>/</b> 1.3</span><span id="hdrSec">00 — ВСТУПЛЕНИЕ</span><span id="hdrTime">00:00</span></div>
+
+  <!-- 1 The chore, one word per beat -->
+  <div class="scene" id="s1"><div class="abs huge" id="word" style="left:60px;right:60px;top:720px;font-size:150px"></div>
+    <div class="abs mono" id="wordN" style="left:60px;right:60px;top:1440px;font-size:26px;font-weight:700"></div></div>
+
+  <!-- 2 Name -->
+  <div class="scene" id="s2">
+    <div class="abs" id="redPanel" style="left:0;right:0;top:0;height:0;background:var(--red)"></div>
+    <img class="abs" id="logo2" src="../data/logo.png" alt="" style="left:60px;top:520px;width:150px;height:150px">
+    <div class="abs huge" id="name2" style="left:52px;top:730px;font-size:214px;display:flex"></div>
+    <div class="abs" style="left:60px;right:60px;top:980px;font-size:50px;font-weight:700;line-height:1.15"><span class="mask"><span id="sub2">Магазин программ<br>для Windows</span></span></div>
+  </div>
+
+  <div id="features"></div>
+
+  <!-- 5 Checksum -->
+  <div class="scene" id="s5" style="background:var(--ink);color:var(--paper)">
+    <div class="abs num" style="left:60px;top:260px;font-size:180px">03</div>
+    <div class="abs huge" style="left:60px;top:460px;font-size:104px"><span class="mask"><span id="t5">Проверено<br>до запуска</span></span></div>
+    <div class="abs" id="stamp5" style="left:60px;top:740px;padding:16px 30px;border:8px solid var(--red);color:var(--red);font-size:76px;font-weight:900;letter-spacing:.02em">SHA256 ✓</div>
+    <div class="abs mono" style="left:60px;right:60px;top:960px;font-size:36px;line-height:1.45">
+      <div style="color:#8d877d;font-size:26px">установщик</div><div id="hashA" style="min-height:104px"></div>
+      <div style="color:#8d877d;font-size:26px;margin-top:20px">манифест winget</div><div id="hashB" style="min-height:104px"></div>
+    </div>
+    <div class="abs mono" id="note5" style="left:60px;top:1470px;font-size:26px;color:#8d877d">только HTTPS · иначе не запустится</div>
+  </div>
+
+  <!-- 7 Themes -->
+  <div class="scene" id="s8">
+    <div class="abs num" style="left:60px;top:260px;font-size:180px">05</div>
+    <div class="abs huge" style="left:60px;top:460px;font-size:104px"><span class="mask"><span id="t8">Пять тем</span></span></div>
+    <div class="win" id="w8" style="left:60px;top:640px;width:880px;height:550px"><div class="cam" id="cam8"></div></div>
+    <div class="abs" id="themeCount" style="left:60px;top:1236px;font-size:150px;font-weight:900;letter-spacing:-.05em;line-height:1"></div>
+    <div class="abs mono" id="themeName" style="left:420px;top:1296px;font-size:36px;font-weight:700"></div>
+  </div>
+
+  <!-- 8 Call to action -->
+  <div class="scene" id="s9">
+    <div class="abs huge" style="left:52px;top:440px;font-size:214px">
+      <span class="mask"><span id="n9">GETBOX</span></span><span class="mask"><span id="v9" style="color:var(--red)">1.3</span></span></div>
+    <div class="abs" style="left:60px;top:930px;font-size:58px;font-weight:800;line-height:1.15"><span class="mask"><span id="l9a">Бесплатно.</span></span><span class="mask"><span id="l9b">Для Windows 10 и 11.</span></span></div>
+    <div class="abs" id="cta9" style="left:60px;top:1150px;padding:26px 54px;background:var(--red);color:#fff;font-size:56px;font-weight:900">Скачать →</div>
+    <div class="abs mono" id="url9" style="left:60px;top:1330px;font-size:32px;font-weight:700">github.com/IncludeSpecial/GetBox</div>
+  </div>
+
+  <div id="wipe"></div>
+  <div id="safe"></div>
+  <div id="debug"></div>
+</div>
+
+<script src="director.js"></script>
+<script>
+  const BPM = 124, B = 60 / BPM, DURATION = 64 * B + 1.6;
+  const params = new URLSearchParams(location.search);
+  const OUT_H = Number(params.get('h') || 1920), OUT_W = Math.round(OUT_H * 9 / 16 / 2) * 2;
+  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || 30), duration: DURATION };
+  const $ = (id) => document.getElementById(id);
+  $('stage').style.transform = `scale(${OUT_W / 1080})`;
+  document.body.style.width = OUT_W + 'px'; document.body.style.height = OUT_H + 'px';
+  if (params.get('debug')) $('debug').style.display = 'block';
+  if (params.get('safe')) $('safe').style.display = 'block';
+  const { clamp, seg, lerp, inOut, outCubic } = Director;
+  const outExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const beat = (n) => n * B;
+
+  $('grid').innerHTML = Array.from({ length: 7 }, (_, i) => `<i style="left:${60 + i * 160}px"></i>`).join('');
+
+  function slot(el, lt, at, dur = 0.32) {
+    const k = outExpo(seg(lt, at, at + dur));
+    el.style.transform = `translateY(${(1 - k) * 105}%)`;
+  }
+  function show(id, t, a, b) {
+    const on = t >= a && t < b;
+    $(id).style.display = on ? 'block' : 'none';
+    return on ? t - a : -1;
+  }
+
+  const S = { chore: 0, name: 8, window: 16, click: 24, sha: 32, updates: 40, themes: 48, cta: 56 };
+  const SECTIONS = [[S.chore, '00 — ВСТУПЛЕНИЕ'], [S.name, '00 — GETBOX'], [S.window, '01 — КАТАЛОГ'], [S.click, '02 — УСТАНОВКА'],
+    [S.sha, '03 — ПРОВЕРКА'], [S.updates, '04 — ОБНОВЛЕНИЯ'], [S.themes, '05 — ТЕМЫ'], [S.cta, '06 — СКАЧАТЬ']];
+  const WORDS = [['Найти сайт.', 0], ['Скачать.', 1], ['«Далее».', 0], ['«Далее».', 1], ['Снять галочки.', 0], ['Повторить ×20.', 1], ['Хватит.', 2]];
+
+  $('name2').innerHTML = 'GETBOX'.split('').map((c, i) => `<span class="mask"><span id="L${i}">${c}</span></span>`).join('');
+
+  // Feature scenes: number and title on top, the window in the middle, chips under it.
+  const WIN = { x: 60, y: 640, w: 880, h: 550 };
+  const FEATURES = [
+    { id: 'f1', at: S.window, num: '01', title: 'Одно окно', shot: 'L-home',
+      lines: ['Каталог GetBox', 'winget', 'Scoop', 'Chocolatey'], foot: 'тысячи программ — и их становится больше', focus: [] },
+    { id: 'f2', at: S.click, num: '02', title: 'Один клик', shot: 'L-install',
+      lines: ['Без мастеров', 'В фоне', 'С очередью'], foot: 'установщик — с официального сайта',
+      focus: [{ key: 'heroCta', frame: 'heroActions', label: 'Идёт установка', at: 1.5, until: 3.9 }, { key: 'queueFirst', label: 'Очередь с прогрессом', at: 4.5, until: 7.6 }] },
+    { id: 'f4', at: S.updates, num: '04', title: 'Обновления', shot: 'updates',
+      lines: ['winget', 'Scoop', 'Chocolatey'], foot: 'и откат, если что-то пошло не так',
+      focus: [{ key: 'pending', label: 'Ждут обновления', at: 1.5, until: 3.9 }, { key: 'rollback', frame: 'history', label: 'Откат в один клик', at: 4.5, until: 7.6 }] },
+  ];
+  FEATURES.forEach((f) => {
+    f.stops = [{ at: 0, rect: Director.FULL }, ...f.focus.map((p) => ({ at: beat(p.at), rect: Director.fit(f.shot, p.frame || p.key, { pad: 50, maxZoom: 2.2 }) }))];
+  });
+  $('features').innerHTML = FEATURES.map((f) => `<div class="scene" id="${f.id}">
+      <div class="abs num" style="left:60px;top:260px;font-size:180px"><span class="mask"><span id="${f.id}n">${f.num}</span></span></div>
+      <div class="abs huge" style="left:60px;top:460px;font-size:104px"><span class="mask"><span id="${f.id}t">${f.title}</span></span></div>
+      <div class="win" id="${f.id}w" style="left:${WIN.x}px;top:${WIN.y}px;width:${WIN.w}px;height:${WIN.h}px">
+        <div class="cam" id="${f.id}cam"><img src="shots/13/${f.shot}.png" alt=""></div>
+        <div class="hl-box" id="${f.id}hb"></div><div class="hl-tag" id="${f.id}ht"></div>
+      </div>
+      <div class="abs" style="left:60px;top:1236px;width:880px">${f.lines.map((l, k) => `<span class="chip" id="${f.id}c${k}">${l}</span>`).join('')}</div>
+      <div class="abs mono" id="${f.id}f" style="left:60px;top:1440px;width:880px;font-size:26px;font-weight:700;color:var(--mute)">${f.foot}</div>
+      </div>`).join('');
+
+  const THEMES = [['home-classic', 'Классика'], ['home-light', 'Светлая'], ['home-oled', 'OLED'], ['home-contrast', 'Высокий контраст'], ['home-mica', 'Windows 11']];
+  $('cam8').innerHTML = THEMES.map(([s]) => `<img src="shots/13/${s}.png" alt="" style="display:none">`).join('');
+  Director.apply($('cam8'), 880, 550, Director.FULL);
+
+  const HASH = 'c7261ce550b351bde194b1a442dfe76f1e287f09cfc2152cf9266f1edd60b63c';
+  /** The hash in two lines of 32. */
+  const hashLines = (n) => { const s = HASH.slice(0, n); return s.length > 32 ? `${s.slice(0, 32)}<br>${s.slice(32)}` : s; };
+
+  window.render = function render(t) {
+    const bt = t / B;
+    $('debug').textContent = `${t.toFixed(2)} с · доля ${bt.toFixed(1)}`;
+    const sec = [...SECTIONS].reverse().find(([s]) => bt >= s);
+    $('hdrSec').textContent = sec[1];
+    $('hdrTime').textContent = `00:${String(Math.floor(t)).padStart(2, '0')}`;
+    const dark = bt < S.name || (bt >= S.sha && bt < S.updates);
+    let ink = dark ? '#f2efe8' : '#0d0d0d';
+
+    // Red wipe, top to bottom, covers each cut between sections.
+    let wy = -2200;
+    for (const s of [S.name, S.window, S.click, S.sha, S.updates, S.themes, S.cta]) {
+      const k = seg(t, beat(s) - B * 0.55, beat(s) + B * 0.45);
+      if (k > 0 && k < 1) wy = lerp(-2150, 2000, inOut(k));
+    }
+    $('wipe').style.top = wy + 'px';
+
+    // 1 — chores
+    let lt = show('s1', t, 0, beat(S.name));
+    if (lt >= 0) {
+      const i = Math.min(WORDS.length - 1, Math.floor(bt));
+      const [w, style] = WORDS[i];
+      $('s1').style.background = style === 2 ? 'var(--red)' : style === 1 ? 'var(--ink)' : 'var(--paper)';
+      ink = style === 0 ? '#0d0d0d' : '#f2efe8';
+      const el = $('word');
+      if (el.dataset.i !== String(i)) { el.dataset.i = i; el.innerHTML = `<span class="mask"><span id="wd">${w}</span></span>`; }
+      el.style.color = ink;
+      el.style.fontSize = (style === 2 ? 230 : 150) + 'px';
+      slot($('wd'), bt, i, 0.45);
+      $('wordN').textContent = i < 6 ? `${String(i + 1).padStart(2, '0')} / 06 — так ставят программы сегодня` : '';
+      $('wordN').style.color = ink;
+    }
+
+    // 2 — name
+    lt = show('s2', t, beat(S.name), beat(S.window));
+    if (lt >= 0) {
+      const lb = bt - S.name;
+      $('redPanel').style.height = 1920 * outExpo(seg(lb, 4.5, 5.5)) * 0.3 + 'px';
+      $('logo2').style.opacity = outCubic(seg(lb, 0, 0.6));
+      $('logo2').style.transform = `rotate(${(1 - outExpo(seg(lb, 0, 1))) * -90}deg)`;
+      for (let k = 0; k < 6; k++) slot($(`L${k}`), lb, 0.5 + k * 0.5, 0.4);
+      slot($('sub2'), lb, 4, 0.5);
+    }
+
+    // 3, 4, 6 — feature scenes
+    FEATURES.forEach((f) => {
+      const fl = show(f.id, t, beat(f.at), beat(f.at + 8));
+      if (fl < 0) return;
+      const lb = fl / B;
+      slot($(`${f.id}n`), lb, 0.1, 0.4); slot($(`${f.id}t`), lb, 0.4, 0.4);
+      f.lines.forEach((_, k) => {
+        const kk = outExpo(seg(lb, 1 + k * 0.5, 1.3 + k * 0.5));
+        const c = $(`${f.id}c${k}`);
+        const hot = kk > 0 && lb < 1.5 + k * 0.5;
+        c.style.opacity = kk > 0 ? 1 : 0;
+        c.style.transform = `translateX(${(1 - kk) * -40}px)`;
+        c.style.background = hot ? 'var(--ink)' : 'transparent';
+        c.style.color = hot ? 'var(--paper)' : 'var(--ink)';
+      });
+      $(`${f.id}f`).style.opacity = seg(lb, 3, 3.5);
+      const wk = outExpo(seg(lb, 0.2, 1.2));
+      $(`${f.id}w`).style.clipPath = `inset(${(1 - wk) * 100}% 0 0 0)`;
+      const cam = Director.apply($(`${f.id}cam`), WIN.w, WIN.h, Director.camera(f.stops, fl, B * 1.2));
+      const box = $(`${f.id}hb`), tag = $(`${f.id}ht`);
+      const p = f.focus.find((p) => lb >= p.at + 0.1 && lb < p.until);
+      if (!p) { box.style.opacity = 0; tag.style.opacity = 0; return; }
+      if (tag.textContent !== p.label) tag.textContent = p.label;
+      const hk = outExpo(seg(lb, p.at + 0.1, p.at + 0.6)) * (1 - seg(lb, p.until - 0.4, p.until));
+      Director.highlight(box, tag, null, cam, Director.mark(f.shot, p.key), hk, WIN.w, WIN.h);
+    });
+
+    // 5 — checksum
+    lt = show('s5', t, beat(S.sha), beat(S.updates));
+    if (lt >= 0) {
+      const lb = lt / B;
+      slot($('t5'), lb, 0.3, 0.5);
+      const na = Math.floor(HASH.length * seg(lb, 1, 3.6)), nb = Math.floor(HASH.length * seg(lb, 2.6, 5.2));
+      $('hashA').innerHTML = hashLines(na);
+      $('hashB').innerHTML = hashLines(nb);
+      const match = nb === HASH.length ? '#ff3b1f' : '';
+      $('hashA').style.color = match; $('hashB').style.color = match;
+      const sk = seg(lb, 5.5, 5.8);
+      $('stamp5').style.opacity = sk > 0 ? 1 : 0;
+      $('stamp5').style.transform = `rotate(-4deg) scale(${lerp(1.6, 1, outExpo(sk))})`;
+      $('note5').style.opacity = seg(lb, 6, 6.5);
+    }
+
+    // 7 — themes, one per beat
+    lt = show('s8', t, beat(S.themes), beat(S.cta));
+    if (lt >= 0) {
+      const lb = lt / B;
+      slot($('t8'), lb, 0.2, 0.4);
+      const i = clamp(Math.floor(lb - 1), 0, 4);
+      [...$('cam8').children].forEach((img, k) => { img.style.display = k === i ? 'block' : 'none'; });
+      $('themeCount').innerHTML = `${i + 1}<span style="color:var(--mute)">/5</span>`;
+      $('themeName').textContent = THEMES[i][1];
+      $('themeCount').style.opacity = lb >= 1 ? 1 : 0;
+      $('themeName').style.opacity = lb >= 1 ? 1 : 0;
+      const wk = outExpo(seg(lb, 0.2, 1.1));
+      $('w8').style.clipPath = `inset(0 0 0 ${(1 - wk) * 100}%)`;
+      const pk = 1 - outCubic(seg(lb - Math.floor(lb), 0, 0.5));
+      $('w8').style.transform = lb >= 1 && lb < 6 ? `scale(${1 + pk * 0.02})` : '';
+    }
+
+    // 8 — call to action
+    lt = show('s9', t, beat(S.cta), DURATION + 1);
+    if (lt >= 0) {
+      const lb = lt / B;
+      slot($('n9'), lb, 0.1, 0.45); slot($('v9'), lb, 0.6, 0.45);
+      slot($('l9a'), lb, 1.5, 0.4); slot($('l9b'), lb, 2, 0.4);
+      const ck = outExpo(seg(lb, 3, 3.5));
+      $('cta9').style.clipPath = `inset(0 ${(1 - ck) * 100}% 0 0)`;
+      $('url9').style.opacity = seg(lb, 4, 4.5);
+      $('stage').style.opacity = 1 - seg(t, DURATION - 0.6, DURATION);
+    } else $('stage').style.opacity = 1;
+
+    $('hdr').style.color = ink;
+    $('grid').style.color = ink;
+  };
+  window.render(0);
+</script>
+</body>
+</html>
