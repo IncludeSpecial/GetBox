@@ -4,598 +4,271 @@
 <meta charset="utf-8">
 <title>GetBox 1.3 promo</title>
 <style>
+  :root { --ink: #eef3f7; --sub: #93a3b3; --accent: #66c0f4; --green: #7cb928; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { overflow: hidden; background: #000; }
-  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: #dfe7ee; -webkit-font-smoothing: antialiased; }
+  html, body { overflow: hidden; background: #05090d; }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
   .mono { font-family: 'DejaVu Sans Mono', monospace; }
-  /* Everything is laid out at 1920×1080 and scaled to the output size. */
-  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; background: #05090d; }
-  /* The world camera: beat punches and shakes move every scene at once. */
-  #world { position: absolute; inset: 0; transform-origin: 50% 50%;
-    background: radial-gradient(1100px 700px at 50% 50%, #12283c 0%, #05090d 72%); }
-  .glow { position: absolute; width: 1000px; height: 1000px; border-radius: 50%; filter: blur(140px); opacity: .3; left: 460px; top: 40px; background: #1f6fa3; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0;
+    background: radial-gradient(1200px 800px at 50% 70%, #11273a 0%, #060b10 70%); }
+  .glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .35; pointer-events: none; }
   .scene { position: absolute; inset: 0; visibility: hidden; }
   .abs { position: absolute; }
   .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 
-  /* A viewer onto a 1440×900 screenshot; frame() moves the camera. */
-  .view { position: absolute; overflow: hidden; background: #0b1219; }
-  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
-  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; display: block; }
-  .win { border-radius: 16px; box-shadow: 0 60px 140px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.12); }
+  /* Title zone above the window; nothing is ever written over the interface. */
+  #head { position: absolute; left: 0; right: 0; top: 34px; height: 140px; text-align: center; }
+  #kicker { font: 700 24px 'DejaVu Sans Mono', monospace; letter-spacing: .16em; color: var(--accent); }
+  #title { margin-top: 12px; font-size: 62px; font-weight: 800; letter-spacing: -.02em; }
 
-  .h1 { font-size: 112px; font-weight: 900; line-height: 1.0; letter-spacing: -.025em; }
-  .h2 { font-size: 78px; font-weight: 850; line-height: 1.05; letter-spacing: -.02em; }
-  .w { display: inline-block; white-space: pre; }
-  .pill { display: inline-flex; align-items: center; padding: 12px 24px; border-radius: 10px; font-size: 34px; font-weight: 700; }
-  .shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 440px; background: linear-gradient(0deg, rgba(5,9,13,.97) 35%, rgba(5,9,13,0)); }
-  .shade-t { position: absolute; left: 0; right: 0; top: 0; height: 320px; background: linear-gradient(180deg, rgba(5,9,13,.92) 30%, rgba(5,9,13,0)); }
+  #win { position: absolute; left: 260px; top: 190px; width: 1400px; height: 875px; border-radius: 14px; overflow: hidden; background: #0b1219;
+    box-shadow: 0 50px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.1); }
+  .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; opacity: 0; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
+  .hl-box { position: absolute; border-radius: 8px; opacity: 0; pointer-events: none; z-index: 5;
+    box-shadow: 0 0 0 3px var(--accent), 0 0 0 9999px rgba(3, 7, 11, .5); }
+  .hl-tag { position: absolute; left: 0; top: 0; padding: 10px 18px; border-radius: 8px; background: var(--accent); color: #06131d; z-index: 6;
+    font-size: 24px; font-weight: 700; white-space: nowrap; opacity: 0; box-shadow: 0 12px 30px rgba(0,0,0,.4); }
+  .ripple { position: absolute; border-radius: 50%; border: 5px solid rgba(159,214,90,.95); opacity: 0; z-index: 7; }
 
-  .ring { position: absolute; border-radius: 50%; border: 3px solid rgba(102,192,244,.5); }
-  .cursor { position: absolute; width: 60px; height: 70px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
-  .ripple { position: absolute; border-radius: 50%; border: 8px solid rgba(159,214,90,.95); }
-  .hl { position: absolute; border-radius: 10px; box-shadow: 0 0 0 5px #f2c98a, 0 0 50px 10px rgba(242,201,138,.5); }
-  .chip { position: absolute; padding: 12px 26px; border-radius: 30px; font-size: 32px; font-weight: 800; white-space: nowrap; }
-  .dot { width: 84px; height: 84px; border-radius: 50%; }
-  .badge { position: absolute; width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; background: #66c0f4; color: #06131d;
-    font-size: 80px; font-weight: 900; box-shadow: 0 0 0 22px rgba(102,192,244,.25), 0 30px 60px rgba(0,0,0,.5); }
-  .switch { position: absolute; display: flex; gap: 8px; padding: 10px; border-radius: 16px; background: rgba(12,20,28,.94); border: 2px solid rgba(255,255,255,.14);
-    box-shadow: 0 20px 50px rgba(0,0,0,.5); }
-  .switch span { width: 92px; height: 70px; border-radius: 10px; display: grid; place-items: center; color: #93a3b3; }
-  .switch span.on { background: #66c0f4; color: #06131d; }
-  .switch svg { width: 34px; height: 34px; fill: currentColor; }
-  .burst { position: absolute; border-radius: 50%; pointer-events: none; }
-  .bars { position: absolute; inset: 0; pointer-events: none; }
-  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
-  .scan { position: absolute; inset: 0; pointer-events: none; opacity: 0;
-    background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 2px, transparent 2px 6px); }
-  #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.7); color: #ffd400;
+  .tile { padding: 34px; border-radius: 18px; background: rgba(17,27,37,.9); border: 1px solid rgba(255,255,255,.08);
+    display: flex; flex-direction: column; gap: 12px; }
+  .tile b { font-size: 34px; }
+  .tile span { font-size: 24px; color: var(--sub); }
+  .icon { width: 64px; height: 64px; border-radius: 16px; background: rgba(102,192,244,.14); display: grid; place-items: center; }
+  .icon svg { stroke: var(--accent); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.75); color: #ffd400;
     font: 600 34px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
 </style>
 </head>
 <body>
 <div id="stage">
-<div id="world">
-  <div class="glow" id="glow"></div>
+  <div class="glow" style="left:360px;top:300px;width:1200px;height:800px;background:#1f6fa3"></div>
 
-  <!-- 01 Cold open -->
-  <div class="scene center" id="s1">
-    <div class="ring" id="r1a" style="left:810px;top:270px;width:300px;height:300px"></div>
-    <div class="ring" id="r1b" style="left:810px;top:270px;width:300px;height:300px"></div>
-    <div class="ring" id="r1c" style="left:810px;top:270px;width:300px;height:300px"></div>
-    <img id="logo1" src="../data/logo.png" alt="" style="width:240px;height:240px;filter:drop-shadow(0 0 60px rgba(102,192,244,.55))">
-    <div id="brand1" style="margin-top:34px;font-size:130px;font-weight:900;letter-spacing:.16em;height:160px;display:flex"></div>
-    <div id="ver1" class="mono" style="margin-top:10px;padding:8px 30px;border-radius:30px;background:rgba(102,192,244,.18);color:#a5d8ff;font-size:46px">1.3</div>
+  <!-- Intro -->
+  <div class="scene center" id="intro">
+    <img id="logo0" src="../data/logo.png" alt="" style="width:220px;height:220px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
+    <div id="name0" style="margin-top:34px;font-size:120px;font-weight:900;letter-spacing:.12em">GETBOX</div>
+    <div id="ver0" class="mono" style="margin-top:12px;padding:8px 30px;border-radius:30px;background:rgba(102,192,244,.16);color:#a5d8ff;font-size:44px">1.3</div>
   </div>
 
-  <!-- 02 Everything in one window -->
-  <div class="scene" id="s2">
-    <div class="view win" id="v2" style="left:820px;top:170px;width:1280px;height:800px;transform-origin:left center"><div class="cam" id="c2"><img src="shots/13/home-classic.png" alt=""></div></div>
-    <div class="abs" style="left:100px;top:330px;width:740px">
-      <div class="h2" id="t2a"></div>
-      <div class="h2" id="t2b" style="color:#66c0f4"></div>
-      <div class="mono" id="t2c" style="margin-top:30px;font-size:30px;color:#93a3b3"><span style="color:#fff;font-size:44px;font-weight:700">Тысячи программ</span><br>каталог GetBox + winget · Scoop · Chocolatey</div>
+  <!-- The product: one window that stays put, titles above it -->
+  <div class="scene" id="product">
+    <div id="head"><div id="kicker"></div><div id="title"></div></div>
+    <div id="win">
+      <div id="layers"></div>
+      <div class="ripple" id="ripple"></div>
+      <div class="hl-box" id="hlBox"></div>
+      <div class="hl-tag" id="hlTag"></div>
     </div>
   </div>
 
-  <!-- 03 One click -->
-  <div class="scene" id="s3">
-    <div class="view" id="v3" style="left:0;top:0;width:1920px;height:1080px">
-      <div class="cam" id="c3"><img id="i3a" src="shots/13/home-classic.png" alt=""><img id="i3b" src="shots/13/install-queue.png" alt="" style="opacity:0"></div>
+  <!-- Summary -->
+  <div class="scene" id="summary">
+    <div class="abs center" style="left:0;right:0;top:120px">
+      <div class="mono" id="sk" style="font-size:24px;font-weight:700;letter-spacing:.16em;color:var(--accent)">GETBOX 1.3</div>
+      <div id="st" style="margin-top:14px;font-size:66px;font-weight:800;letter-spacing:-.02em">Всё в одном приложении</div>
     </div>
-    <div class="ripple" id="rip3"></div>
-    <svg class="cursor" id="cur3" viewBox="0 0 24 28" aria-hidden="true"><path d="M3 2l17 12-8 1.5L16 25l-3.5 1.5L8.5 17 3 22z" fill="#fff" stroke="#0b1219" stroke-width="1.5"/></svg>
-    <div class="shade-b" id="sh3"></div>
-    <div class="abs" style="left:90px;bottom:80px">
-      <div class="h1" id="t3a"></div>
-      <div style="display:flex;gap:18px;margin-top:24px">
-        <span class="pill mono" id="p3a" style="background:rgba(124,185,40,.24);color:#c4ec8f">SHA256 ✓</span>
-        <span class="pill mono" id="p3b" style="background:rgba(102,192,244,.2);color:#a5d8ff">тихая установка</span>
-        <span class="pill mono" id="p3c" style="background:rgba(255,255,255,.1);color:#dfe7ee">очередь</span>
-      </div>
-    </div>
+    <div class="abs" id="tiles" style="left:160px;right:160px;top:400px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px"></div>
   </div>
 
-  <!-- 04 Five themes -->
-  <div class="scene" id="s4">
-    <div id="themes"></div>
-    <div class="shade-t"></div>
-    <div class="h1 abs" id="t4" style="left:80px;top:70px;color:#fff"></div>
+  <!-- End card -->
+  <div class="scene center" id="end">
+    <img id="logo9" src="../data/logo.png" alt="" style="width:190px;height:190px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
+    <div id="name9" style="margin-top:28px;display:flex;align-items:baseline;gap:26px"><span style="font-size:112px;font-weight:900;letter-spacing:.1em">GETBOX</span><span class="mono" style="font-size:60px;color:var(--accent)">1.3</span></div>
+    <div id="sub9" style="margin-top:12px;font-size:38px;color:#b7c4d0">Магазин программ для Windows 10 и 11</div>
+    <div id="cta9" style="margin-top:40px;padding:22px 56px;border-radius:10px;background:linear-gradient(180deg,#7cb928,#4c7a15);color:#fff;font-size:40px;font-weight:800">Скачать бесплатно</div>
+    <div id="url9" class="mono" style="margin-top:26px;font-size:30px;color:var(--sub)">github.com/IncludeSpecial/GetBox/releases</div>
   </div>
 
-  <!-- 05 Accent -->
-  <div class="scene" id="s5" style="background:#000">
-    <div id="acc5views"></div>
-    <div class="abs" style="left:0;right:0;bottom:0;height:340px;background:linear-gradient(0deg,#000 55%,rgba(0,0,0,0))"></div>
-    <div class="abs" style="left:90px;right:90px;bottom:70px;display:flex;align-items:center;gap:40px">
-      <div class="h1" style="flex:1"><span class="w" id="t5a">Свой </span><span class="w" id="acc5">акцент.</span></div>
-      <div id="dots5" style="display:flex;gap:30px;align-items:center"></div>
-    </div>
-    <div class="burst" id="burst5"></div>
-  </div>
-
-  <!-- 06 Four views -->
-  <div class="scene" id="s6">
-    <div id="views6"></div>
-    <div class="switch" id="sw6" style="right:70px;top:60px;z-index:5"></div>
-    <div class="shade-b" id="sh6" style="z-index:4"></div>
-    <div class="h1 abs" id="t6" style="left:90px;bottom:80px;z-index:5"></div>
-  </div>
-
-  <!-- 07 Updates -->
-  <div class="scene" id="s7" style="perspective:2600px">
-    <div class="view win" id="v7" style="left:110px;top:270px;width:1600px;height:1000px;transform-origin:center top"><div class="cam" id="c7"><img src="shots/13/updates.png" alt=""></div></div>
-    <div class="badge" id="b7">3</div>
-    <div class="abs" style="left:110px;top:70px">
-      <div class="h2" id="t7a"></div>
-      <div class="mono" id="t7b" style="margin-top:14px;font-size:30px;color:#93a3b3">winget · Scoop · Chocolatey</div>
-    </div>
-  </div>
-
-  <!-- 08 Update all -->
-  <div class="scene" id="s8">
-    <div class="view" id="v8" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="c8"><img src="shots/13/updates-queue.png" alt=""></div></div>
-    <div id="checks8"></div>
-    <div class="shade-b"></div>
-    <div class="abs" style="left:90px;bottom:80px"><div class="h1" id="t8"></div></div>
-  </div>
-
-  <!-- 09 Rollback -->
-  <div class="scene" id="s9" style="background:#070d13">
-    <div class="view" id="v9" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="c9"><img src="shots/13/updates.png" alt=""></div></div>
-    <div class="hl" id="hl9"></div>
-    <div class="scan" id="scan9"></div>
-    <div class="abs center" id="ver9" style="left:0;right:0;top:290px">
-      <div style="display:flex;align-items:center;gap:50px;font:700 150px 'DejaVu Sans Mono',monospace">
-        <svg id="rew9" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#f2c98a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-        <span id="num9" style="color:#fff"></span>
-      </div>
-    </div>
-    <div class="abs center" style="left:0;right:0;bottom:120px">
-      <div class="h2"><span class="w" id="t9a">Не понравилось? </span><span class="w" id="t9b" style="color:#f2c98a">Откат в один клик.</span></div>
-    </div>
-  </div>
-
-  <!-- 10 More features: one per two beats -->
-  <div class="scene" id="sf">
-    <div id="feats"></div>
-    <div class="shade-b" style="height:460px"></div>
-    <div class="abs mono" id="fcount" style="right:80px;top:60px;font-size:44px;font-weight:700;color:#fff;padding:10px 22px;border-radius:12px;background:rgba(7,13,19,.85)"></div>
-    <div class="abs" id="fdots" style="left:80px;top:78px;display:flex;gap:12px"></div>
-    <div class="abs" style="left:90px;bottom:84px">
-      <div class="h1" id="ftitle"></div>
-      <div class="mono" id="fsub" style="margin-top:18px;font-size:34px;color:#a5d8ff"></div>
-    </div>
-  </div>
-
-  <!-- 11 Suggestions -->
-  <div class="scene" id="s10" style="background:#eef2f6">
-    <div class="view" id="v10" style="left:0;top:0;width:1920px;height:1080px;background:#eef2f6"><div class="cam" id="c10"><img src="shots/13/modal-light.png" alt=""></div></div>
-    <div class="abs" style="left:0;right:0;top:0;height:300px;background:linear-gradient(180deg,rgba(238,242,246,.98) 45%,rgba(238,242,246,0))"></div>
-    <div class="h2 abs" id="t10" style="left:90px;top:60px;color:#14202b"></div>
-  </div>
-
-  <!-- 11 Fan -->
-  <div class="scene" id="s11">
-    <div id="fan11" class="abs" style="inset:0"></div>
-    <div class="abs" id="sweep11" style="top:0;bottom:0;width:500px;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.18),rgba(255,255,255,0))"></div>
-    <div class="abs center" style="left:0;right:0;top:70px">
-      <div class="h1"><span class="w" id="t11a">Твой Windows. </span><span class="w" id="t11b" style="color:#66c0f4">Твой вид.</span></div>
-    </div>
-  </div>
-
-  <!-- 12 End card -->
-  <div class="scene center" id="s12">
-    <img id="logo12" src="../data/logo.png" alt="" style="width:200px;height:200px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
-    <div id="name12" style="margin-top:30px;display:flex;align-items:baseline;gap:30px"><span style="font-size:130px;font-weight:900;letter-spacing:.1em">GETBOX</span><span class="mono" style="font-size:66px;color:#66c0f4">1.3</span></div>
-    <div id="sub12" style="margin-top:10px;font-size:42px;color:#b7c4d0">Магазин программ для Windows 10 и 11</div>
-    <div id="cta12" style="margin-top:40px;padding:24px 56px;border-radius:10px;background:linear-gradient(180deg,#7cb928,#4c7a15);color:#fff;font-size:42px;font-weight:800">Скачать бесплатно</div>
-    <div id="url12" class="mono" style="margin-top:28px;font-size:32px;color:#93a3b3">github.com/IncludeSpecial/GetBox/releases</div>
-  </div>
-</div>
-  <div class="bars" id="bars"></div>
-  <div class="flash" id="flash"></div>
   <div id="debug"></div>
 </div>
 
+<script src="director.js"></script>
 <script>
-  const BPM = 120, B = 60 / BPM, DURATION = 53;
-  const DROP1 = 10, STOP = 29.5, FEATS = 32, BREAK = 40, DROP2 = 44, END = 49;
+  // Timed to music13.wav (120 bpm): drops at 0:10 and 0:44, the rollback stop at 0:29.5,
+  // a cut per second in the features run (0:32–0:40).
+  const DURATION = 53;
   const params = new URLSearchParams(location.search);
-  const OUT_H = Number(params.get('h') || 1080);
-  const OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
-  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || (OUT_H <= 360 ? 24 : 60)), duration: DURATION };
+  const OUT_H = Number(params.get('h') || 1080), OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
+  window.FORMAT = { width: OUT_W, height: OUT_H, fps: Number(params.get('fps') || (OUT_H <= 360 ? 30 : 60)), duration: DURATION };
   const $ = (id) => document.getElementById(id);
   $('stage').style.transform = `scale(${OUT_W / 1920})`;
   document.body.style.width = OUT_W + 'px'; document.body.style.height = OUT_H + 'px';
   if (params.get('debug')) $('debug').style.display = 'block';
+  const { FULL, fit, camera, apply, highlight, mark, seg, lerp, outCubic } = Director;
+  const WIN_W = 1400, WIN_H = 875;
+  const F = (shot, key) => (key ? fit(shot, key, { pad: 80, maxZoom: 1.9 }) : FULL);
 
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const seg = (t, a, b) => clamp((t - a) / (b - a));
-  const lerp = (a, b, x) => a + (b - a) * x;
-  const outCubic = (x) => 1 - Math.pow(1 - x, 3);
-  const outQuint = (x) => 1 - Math.pow(1 - x, 5);
-  const inCubic = (x) => x * x * x;
-  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-  const outBack = (x, c = 2.2) => 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
-  const noise = (x) => { const s = Math.sin(x * 127.1) * 43758.5453; return (s - Math.floor(s)) * 2 - 1; };
-  const sincePulse = (t, at, k = 7) => (t >= at ? Math.exp(-(t - at) * k) : 0);
-  const inGroove = (t) => (t >= DROP1 && t < BREAK && !(t >= STOP && t < STOP + B)) || (t >= DROP2 && t < END);
-  const beatPulse = (t) => Math.exp(-((t % B + B) % B) * 10);
-
-  const SHOTS = [
-    [0, '01 Холодный старт'], [3, '02 Всё в одном окне'], [6, '03 Один клик'], [10, '04 Пять тем'],
-    [14, '05 Свой акцент'], [17, '06 Четыре вида'], [21, '07 Обновления'], [25, '08 Обновить все'],
-    [28, '09 Откат'], [32, '10 Ещё фишки'], [40, '11 Подскажет'], [44, '12 Финальный веер'], [49, '13 Энд-кард'],
+  /**
+   * Segments of the product part. layers: [at, shot] (cut with a short crossfade);
+   * stops: [at, shot, mark | null] (camera arrives at `at`); hl: [from, to, shot, mark, label];
+   * kick: [at, kicker] replaces the kicker mid-segment.
+   */
+  const SEG = [
+    { t0: 3, t1: 6, kicker: 'GETBOX 1.3', title: 'Все программы — в одном окне',
+      layers: [[3, 'home-classic']], stops: [[3, 'home-classic', null]] },
+    { t0: 6, t1: 10, kicker: 'УСТАНОВКА', title: 'Один клик — и программа ставится',
+      layers: [[6, 'home-classic'], [7.5, 'install-queue']],
+      stops: [[6, 'home-classic', null], [7.0, 'home-classic', 'heroCta'], [8.6, 'install-queue', 'queueFirst']],
+      hl: [[7.05, 7.5, 'home-classic', 'heroCta', 'Установить'], [7.55, 8.0, 'install-queue', 'heroCta', 'Загрузка началась'],
+        [8.65, 9.9, 'install-queue', 'queueFirst', 'Очередь: прогресс и отмена']],
+      click: [7.5, 'home-classic', 'heroCta'] },
+    { t0: 10, t1: 14, kicker: 'ТЕМА · КЛАССИКА', title: 'Пять тем оформления',
+      layers: [[10, 'home-classic'], [10.5, 'home-light'], [11, 'home-oled'], [11.5, 'home-contrast'], [12, 'home-mica']],
+      stops: [[10, 'home-classic', null]],
+      kick: [[10.5, 'ТЕМА · СВЕТЛАЯ'], [11, 'ТЕМА · OLED'], [11.5, 'ТЕМА · ВЫСОКИЙ КОНТРАСТ'], [12, 'ТЕМА · WINDOWS 11']] },
+    { t0: 14, t1: 17, kicker: 'АКЦЕНТ', title: 'Свой акцентный цвет',
+      layers: [[14, 'accent-blue'], [14.5, 'accent-violet'], [15, 'accent-teal'], [15.5, 'accent-pink']],
+      stops: [[14, 'accent-blue', null], [14.6, 'accent-blue', 'accent']],
+      hl: [[14.65, 16.85, 'accent-blue', 'accent', 'Любой цвет интерфейса']] },
+    { t0: 17, t1: 21, kicker: 'ВИД СПИСКА', title: 'Четыре вида — как удобно вам',
+      layers: [[17, 'cat-cards'], [17.5, 'cat-list'], [18, 'cat-table'], [18.5, 'cat-tiles-hover']],
+      stops: [[17, 'cat-cards', null]],
+      hl: [[17.05, 17.5, 'cat-cards', 'viewSwitch', 'Карточки'], [17.5, 18, 'cat-cards', 'viewSwitch', 'Список'],
+        [18, 18.5, 'cat-cards', 'viewSwitch', 'Таблица'], [18.5, 20.8, 'cat-cards', 'viewSwitch', 'Плитки']] },
+    { t0: 21, t1: 25, kicker: 'ОБНОВЛЕНИЯ', title: 'Все обновления — на одной вкладке',
+      layers: [[21, 'updates']], stops: [[21, 'updates', null], [22.0, 'updates', 'pending']],
+      hl: [[22.05, 24.8, 'updates', 'pending', 'Ожидают обновления']] },
+    { t0: 25, t1: 28, kicker: 'ОБНОВЛЕНИЯ', title: 'Обновить всё — одной кнопкой',
+      layers: [[25, 'updates-queue']], stops: [[25, 'updates-queue', null], [25.9, 'updates-queue', 'queueFirst']],
+      hl: [[25.95, 27.85, 'updates-queue', 'queueFirst', 'Обновление идёт в очереди']] },
+    { t0: 28, t1: 32, kicker: 'ОТКАТ', title: 'Не понравилось — откатите',
+      layers: [[28, 'updates']], stops: [[28, 'updates', null], [28.8, 'updates', 'history']],
+      hl: [[28.85, 31.85, 'updates', 'rollback', 'Вернуть 1.140.2']] },
   ];
-  // Hits that kick the whole frame: drops, the badge, the rollback stop, the fan.
-  const HITS = [[DROP1, 1], [21.7, 0.6], [STOP, 0.7], [FEATS, 0.6], [DROP2, 1.2], [END, 0.5]];
+  // Features run: a cut on every second, the camera already framing the element.
+  const FEATS = [
+    ['feat-search', 'results', 'Поиск сразу по всем источникам', 'каталог · winget · Scoop · Chocolatey'],
+    ['feat-games', 'gridTop', 'Категории', 'Игры'],
+    ['feat-profiles', 'profiles', 'Наборы программ в один клик', 'Установить набор'],
+    ['feat-favorites', 'gridTop', 'Избранное', 'Отмечено звёздочкой'],
+    ['feat-packages', 'tableTop', 'Все пакеты в одной таблице', 'winget · Scoop · Chocolatey'],
+    ['feat-scale', null, 'Масштаб интерфейса до 125%', ''],
+    ['feat-english', 'tabs', 'Русский и English', 'English'],
+    ['feat-fallback', 'queueFirst', 'Запасной путь через winget', 'Установлено через winget'],
+  ];
+  FEATS.forEach(([shot, key, title, label], i) => {
+    const t0 = 32 + i;
+    SEG.push({ t0, t1: t0 + 1, kicker: `ЕЩЁ ВОЗМОЖНОСТИ · ${i + 1}/8`, title, layers: [[t0, shot]], stops: [[t0, shot, key]],
+      hl: key ? [[t0 + 0.12, t0 + 0.95, shot, key, label]] : [] });
+  });
+  SEG.push({ t0: 40, t1: 44, kicker: 'РЕКОМЕНДАЦИИ', title: 'Подскажет, что поставить ещё',
+    layers: [[40, 'modal-light']], stops: [[40, 'modal-light', 'modal'], [41.2, 'modal-light', 'modalRelated']],
+    hl: [[41.25, 43.85, 'modal-light', 'modalRelated', 'Часто ставят вместе · Альтернативы']] });
 
-  /** Scene window [a, b): whip in from the right, whip out to the left, with motion blur. */
-  function scene(id, t, a, b, w = 0.2) {
+  const SHOTS = [...new Set(SEG.flatMap((s) => s.layers.map(([, f]) => f)))];
+  $('layers').innerHTML = SHOTS.map((f) => `<div class="cam" id="L-${f}"><img src="shots/13/${f}.png" alt=""></div>`).join('');
+  SEG.forEach((s) => {
+    s.cam = s.stops.map(([at, shot, key], i) => ({ at: i === 0 ? s.t0 : at, rect: F(shot, key) }));
+  });
+
+  const ICONS = {
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    shield: '<path d="M12 3l8 3.5v5.5c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6.5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+    refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+    palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+  };
+  $('tiles').innerHTML = [
+    ['grid', 'Каталог', 'проверенные программы и наборы'], ['search', 'Поиск', 'каталог · winget · Scoop · Chocolatey'],
+    ['shield', 'Безопасность', 'проверка SHA256 перед запуском'], ['refresh', 'Обновления', 'история и откат'],
+    ['palette', 'Оформление', '5 тем, акцент, 4 вида'], ['globe', 'Языки', 'русский и English'],
+  ].map(([i, b, s], k) => `<div class="tile" id="tl${k}"><div class="icon"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true">${ICONS[i]}</svg></div><b>${b}</b><span>${s}</span></div>`).join('');
+
+  function scene(id, t, a, b, w = 0.4) {
     const el = $(id);
-    const visible = t >= a - w * 0.5 && t < b + w * 0.5;
-    el.style.visibility = visible ? 'visible' : 'hidden';
-    if (!visible) return -1;
-    const inK = outQuint(seg(t, a - w * 0.5, a + w * 0.5)), outK = inCubic(seg(t, b - w * 0.5, b + w * 0.5));
-    const x = (1 - inK) * 1500 - outK * 1500;
-    const blur = (1 - inK) * 28 + outK * 28;
-    el.style.transform = `translateX(${x}px) skewX(${((1 - inK) - outK) * -8}deg)`;
-    el.style.filter = blur > 0.5 ? `blur(${blur}px)` : 'none';
-    el.style.opacity = 1;
+    const vis = t >= a && t < b + w * 0.5;
+    el.style.visibility = vis ? 'visible' : 'hidden';
+    if (!vis) return -1;
+    el.style.opacity = outCubic(seg(t, a, a + w)) * (1 - seg(t, b - w * 0.5, b + w * 0.5));
     return t - a;
   }
-  /** Kinetic type: each word slams in from big and blurred, one after another. */
-  function words(el, text, lt, at, step = 0.12) {
-    if (el.dataset.text !== text) {
-      el.dataset.text = text;
-      el.innerHTML = text.split(' ').map((w) => `<span class="w">${w} </span>`).join('');
-    }
-    [...el.children].forEach((sp, i) => slam(sp, lt, at + i * step));
-  }
-  function slam(el, lt, at, dur = 0.22, from = 2.2) {
-    const x = outQuint(seg(lt, at, at + dur));
-    el.style.opacity = clamp(seg(lt, at, at + dur * 0.35));
-    el.style.transform = `scale(${lerp(from, 1, x)})`;
-    el.style.filter = x < 1 ? `blur(${(1 - x) * 14}px)` : 'none';
-  }
-  function rise(el, lt, at, dur = 0.3, dy = 60) {
-    const k = outQuint(seg(lt, at, at + dur));
+  function fadeUp(el, lt, at, dur = 0.45, dy = 30) {
+    const k = outCubic(seg(lt, at, at + dur));
     el.style.opacity = k;
     el.style.transform = `translateY(${(1 - k) * dy}px)`;
   }
-  function pop(el, lt, at, dur = 0.32, extra = '') {
-    const x = seg(lt, at, at + dur);
-    el.style.opacity = clamp(x * 3);
-    el.style.transform = `${extra} scale(${x === 0 ? 0 : outBack(x)})`;
-  }
-  /** Fit a rect (fractions of the 1440×900 screenshot) into a vw×vh viewer; returns the transform. */
-  function frame(cam, vw, vh, r) {
-    const s = Math.max(vw / (r.w * 1440), vh / (r.h * 900), vw / 1440, vh / 900);
-    const cx = (r.x + r.w / 2) * 1440 * s, cy = (r.y + r.h / 2) * 900 * s;
-    const tx = clamp(vw / 2 - cx, vw - 1440 * s, 0), ty = clamp(vh / 2 - cy, vh - 900 * s, 0);
-    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
-    return { s, tx, ty };
-  }
-  const R = (x, y, w, h) => ({ x: x / 1440, y: y / 900, w: w / 1440, h: h / 900 });
-  const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
-  const FULL = R(0, 0, 1440, 900), CONTENT = R(216, 88, 1224, 688), CELL = R(236, 205, 760, 422);
 
-  // ---------- dynamic elements ----------
-  const THEMES = [
-    ['home-classic', 'Классика', '#66c0f4', '#06131d'], ['home-light', 'Светлая', '#8b6cff', '#fff'],
-    ['home-oled', 'OLED', '#2dd4bf', '#04201c'], ['home-contrast', 'Контраст', '#ffd400', '#000'],
-    ['home-mica', 'Windows 11', '#0067c0', '#fff'],
-  ];
-  $('themes').innerHTML = THEMES.map(([f, label, bg, fg], i) => `
-    <div class="view" id="th${i}" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="thc${i}"><img src="shots/13/${f}.png" alt=""></div></div>
-    <div class="abs" id="the${i}" style="top:0;width:16px;height:1080px;background:${bg};box-shadow:0 0 40px 10px ${bg}"></div>
-    <div class="chip" id="thl${i}" style="left:${192 + i * 384}px;bottom:70px;background:${bg};color:${fg}">${label}</div>`).join('') +
-    [1, 2, 3, 4].map((i) => `<div class="abs" id="thg${i}" style="left:${i * 384 - 3}px;top:0;width:6px;height:1080px;background:#000;opacity:0"></div>`).join('');
-
-  const ACCENTS = [['#66c0f4', 'blue', 0], ['#8b6cff', 'violet', 1], ['#2dd4bf', 'teal', 2], ['#ef5da8', 'pink', 5]];
-  $('acc5views').innerHTML = ACCENTS.map(([, f], i) =>
-    `<div class="view" id="av${i}" style="left:0;top:0;width:1920px;height:1080px;background:#000"><div class="cam" id="avc${i}"><img src="shots/13/accent-${f}.png" alt=""></div></div>`).join('');
-  $('dots5').innerHTML = ['#66c0f4', '#8b6cff', '#2dd4bf', '#7cb928', '#f59e0b', '#ef5da8']
-    .map((c, i) => `<span class="dot" id="d5${i}" style="background:${c}"></span>`).join('');
-
-  const VIEW_COLORS = ['#66c0f4', '#8ee8da', '#cbbcff', '#ffe066'];
-  const VIEWS = [['cat-cards', 'Карточки.'], ['cat-list', 'Список.'], ['cat-table', 'Таблица.'], ['cat-tiles-hover', 'Плитки.']];
-  $('views6').innerHTML = VIEWS.map(([f], i) =>
-    `<div class="view" id="vw${i}"><div class="cam" id="vwc${i}"><img src="shots/13/${f}.png" alt=""></div>
-      <span class="chip" id="vwl${i}" style="left:20px;bottom:20px;font-size:30px;padding:8px 20px;background:rgba(7,13,19,.9);color:${VIEW_COLORS[i]}">${VIEWS[i][1].replace('.', '')}</span></div>`).join('');
-  const GLYPHS = [
-    '<rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>',
-    '<rect x="1" y="2" width="4" height="4" rx="1"/><rect x="7" y="3" width="8" height="2" rx="1"/><rect x="1" y="10" width="4" height="4" rx="1"/><rect x="7" y="11" width="8" height="2" rx="1"/>',
-    '<rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="14" height="2" rx="1"/>',
-    '<rect x="1" y="1" width="4" height="4" rx="1"/><rect x="6" y="1" width="4" height="4" rx="1"/><rect x="11" y="1" width="4" height="4" rx="1"/><rect x="1" y="6" width="4" height="4" rx="1"/><rect x="6" y="6" width="4" height="4" rx="1"/><rect x="11" y="6" width="4" height="4" rx="1"/><rect x="1" y="11" width="4" height="4" rx="1"/><rect x="6" y="11" width="4" height="4" rx="1"/><rect x="11" y="11" width="4" height="4" rx="1"/>',
-  ];
-  $('sw6').innerHTML = GLYPHS.map((g) => `<span><svg viewBox="0 0 16 16">${g}</svg></span>`).join('');
-
-  $('checks8').innerHTML = [0, 1, 2].map((i) =>
-    `<div class="abs" id="ck${i}" style="width:74px;height:74px;border-radius:50%;background:#7cb928;display:grid;place-items:center;color:#fff;font-size:44px;font-weight:900;box-shadow:0 0 0 12px rgba(124,185,40,.25)">✓</div>`).join('');
-
-  const FAN = [['home-contrast', -2, 1], ['home-light', -1, 2], ['home-oled', 1, 2], ['home-mica', 2, 1], ['home-classic', 0, 3]];
-  $('fan11').innerHTML = FAN.map(([f, k, z], i) =>
-    `<img id="fn${i}" src="shots/13/${f}.png" alt="" style="position:absolute;left:600px;top:290px;width:720px;height:450px;border-radius:12px;z-index:${z};box-shadow:0 50px 100px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.14)">`).join('');
-
-  const FEATURES = [
-    ['feat-search', R(216, 126, 900, 506), R(226, 136, 800, 450), 'Поиск сразу везде', 'каталог · winget · Scoop · Chocolatey'],
-    ['feat-games', R(216, 126, 1000, 562), R(226, 136, 900, 506), 'Категории', 'игры, браузеры, разработка, офис…'],
-    ['feat-profiles', R(216, 126, 1000, 562), R(226, 136, 860, 484), 'Наборы в один клик', 'Gaming Rig · Dev Starter · Essentials'],
-    ['feat-favorites', R(216, 126, 1000, 562), R(226, 136, 900, 506), 'Избранное', 'отметь звёздочкой — вернёшься потом'],
-    ['feat-packages', R(216, 126, 1000, 562), R(226, 136, 860, 484), 'Все пакеты', 'winget, Scoop и Chocolatey в одной таблице'],
-    ['feat-scale', FULL, R(0, 0, 1200, 675), 'Масштаб до 125%', 'крупнее — без лупы'],
-    ['feat-english', R(216, 126, 1100, 619), R(226, 136, 960, 540), 'Русский и English', 'язык переключается на лету'],
-    ['feat-fallback', R(860, 30, 580, 326), R(1000, 40, 440, 247), 'Запасной путь', 'ссылка подвела — поставит через winget'],
-  ];
-  $('feats').innerHTML = FEATURES.map(([f], i) =>
-    `<div class="view" id="ft${i}" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="ftc${i}"><img src="shots/13/${f}.png" alt=""></div></div>`).join('');
-  $('fdots').innerHTML = FEATURES.map((_, i) => `<span id="fd${i}" style="width:44px;height:8px;border-radius:4px;background:rgba(255,255,255,.25)"></span>`).join('');
-
-  // ---------- render ----------
   window.render = function render(t) {
-    // World camera: still between hits; a short damped shake and push-in on each hit.
-    // The push-in always exceeds the shake, so the frame edge never shows.
-    const shake = HITS.reduce((acc, [at, amp]) => acc + amp * sincePulse(t, at, 10), 0);
-    $('world').style.transform = `translate(${noise(t * 23) * 10 * shake}px, ${noise(t * 13 + 3) * 10 * shake}px) scale(${1 + 0.03 * shake})`;
-    $('glow').style.opacity = 0.2 + 0.25 * (inGroove(t) ? beatPulse(t) : 0.3);
-    const shot = [...SHOTS].reverse().find(([a]) => t >= a);
-    $('debug').textContent = `${shot[1]} · ${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
+    $('debug').textContent = `${t.toFixed(1)} с`;
 
-    // 01 — logo assembles, rings pulse, the name types out
-    let lt = scene('s1', t, 0, 3);
+    // Intro: the logo settles, the name and version follow on the beat.
+    let lt = scene('intro', t, 0, 3, 0.3);
     if (lt >= 0) {
-      const k = seg(lt, 0.15, 0.75);
-      $('logo1').style.opacity = clamp(k * 2);
-      $('logo1').style.transform = `scale(${lerp(0.3, 1, outBack(k, 1.8))}) rotate(${(1 - outCubic(k)) * -90}deg)`;
-      ['r1a', 'r1b', 'r1c'].forEach((id, i) => {
-        const p = (((lt - i * B * 0.66) % (2 * B)) + 2 * B) % (2 * B) / (2 * B);
-        $(id).style.transform = `scale(${1 + p * 2})`; $(id).style.opacity = lt > 0.6 ? (1 - p) * 0.8 : 0;
-      });
-      const word = 'GETBOX';
-      if (!$('brand1').children.length) $('brand1').innerHTML = [...word].map((c) => `<span class="w">${c}</span>`).join('');
-      [...$('brand1').children].forEach((sp, i) => slam(sp, lt, 1.0 + i * 0.1, 0.18, 2.6));
-      pop($('ver1'), lt, 1.9, 0.3);
+      const k = outCubic(seg(lt, 0.15, 1.0));
+      $('logo0').style.opacity = k; $('logo0').style.transform = `scale(${lerp(0.8, 1, k)})`;
+      fadeUp($('name0'), lt, 0.9); fadeUp($('ver0'), lt, 1.6);
     }
 
-    // 02 — the window flies in, the title lands word by word, the count runs up
-    lt = scene('s2', t, 3, 6);
+    // Product: the window rises once, then segments switch layers, camera and highlights.
+    lt = scene('product', t, 3, 44, 0.5);
     if (lt >= 0) {
-      const k = outQuint(seg(lt, 0, 0.6));
-      $('v2').style.transform = `translate(${(1 - k) * 700}px, ${(1 - k) * 120}px) rotateY(${lerp(-40, -16, k)}deg) rotateX(${lerp(14, 6, k)}deg) scale(${lerp(0.8, 1.05, k) + 0.04 * seg(lt, 0.6, 3)})`;
-      $('v2').style.transform = 'perspective(2600px) ' + $('v2').style.transform;
-      frame($('c2'), 1280, 800, mix(FULL, R(0, 0, 1300, 812), seg(lt, 0.6, 3)));
-      words($('t2a'), 'Все программы —', lt, 0.35);
-      words($('t2b'), 'в одном окне', lt, 0.85);
-      rise($('t2c'), lt, 1.3, 0.3, 30);
-    }
+      const wk = outCubic(seg(t, 3, 3.8));
+      const pulse = t >= 10 ? Math.exp(-(t - 10) * 6) : 0;
+      $('win').style.transform = `translateY(${(1 - wk) * 200}px) scale(${lerp(0.94, 1, wk) + 0.012 * pulse})`;
+      const s = SEG.find((x) => t >= x.t0 && t < x.t1) || SEG[SEG.length - 1];
 
-    // 03 — punch into the hero button, click, the queue slides in
-    lt = scene('s3', t, 6, 10);
-    if (lt >= 0) {
-      const click = 1.5;
-      const zin = inOut(seg(lt, 0, 0.9)), out = inOut(seg(lt, click + 0.3, click + 1.3));
-      const near = R(380, 170, 760, 427);
-      const rect = mix(mix(FULL, near, zin), FULL, out);
-      const f = frame($('c3'), 1920, 1080, rect);
-      const bx = 682 * f.s + f.tx, by = 345 * f.s + f.ty;
-      const ck = outCubic(seg(lt, 0.3, 1.3));
-      $('cur3').style.left = lerp(1500, bx, ck) + 'px'; $('cur3').style.top = lerp(950, by, ck) + 'px';
-      $('cur3').style.opacity = lt < click + 0.5 ? 1 : 0;
-      $('cur3').style.transform = `scale(${lt > click && lt < click + 0.12 ? 0.8 : 1})`;
-      $('i3b').style.opacity = seg(lt, click + 0.05, click + 0.2);
-      const rk = seg(lt, click, click + 0.55), rs = lerp(60, 420, outCubic(rk));
-      Object.assign($('rip3').style, { left: bx - rs / 2 + 'px', top: by - rs / 2 + 'px', width: rs + 'px', height: rs + 'px', opacity: rk > 0 && rk < 1 ? 1 - rk : 0 });
-      $('v3').style.transform = `scale(${1 + 0.05 * sincePulse(lt, click, 10)})`;
-      $('sh3').style.opacity = seg(lt, click + 0.3, click + 0.7);
-      words($('t3a'), 'Один клик.', lt, click + 0.35, 0.16);
-      pop($('p3a'), lt, 2.5); pop($('p3b'), lt, 2.75); pop($('p3c'), lt, 3.0);
-    }
+      // Titles: swap with a short fade-up when the segment (or its kicker) changes.
+      const kick = (s.kick || []).filter(([at]) => t >= at).pop();
+      const kicker = kick ? kick[1] : s.kicker;
+      if ($('kicker').textContent !== kicker) $('kicker').textContent = kicker;
+      if ($('title').textContent !== s.title) $('title').textContent = s.title;
+      fadeUp($('kicker'), t - (kick ? kick[0] : s.t0), 0, 0.3, 14);
+      fadeUp($('title'), t - s.t0, 0.05, 0.35, 22);
 
-    // 04 — one theme per beat with a glowing wipe edge, then five slices
-    lt = scene('s4', t, 10, 14, 0.14);
-    if (lt >= 0) {
-      const sk = inOut(seg(lt, 2.5, 2.9));
-      THEMES.forEach((_, i) => {
-        const p = i === 0 ? 1 : outQuint(seg(lt, i * B, i * B + 0.26));
-        const left = lerp(0, i * 20, sk), right = i === 4 ? 0 : lerp(0, (4 - i) * 20, sk);
-        $(`th${i}`).style.clipPath = `inset(0 ${Math.max(right, (1 - p) * 100)}% 0 ${left}%)`;
-        frame($(`thc${i}`), 1920, 1080, mix(CONTENT, R(250, 110, 1120, 630), inOut(seg(lt, 0, 4))));
-        const edge = $(`the${i}`);
-        edge.style.left = p * 1920 - 8 + 'px';
-        edge.style.opacity = i > 0 && p > 0 && p < 1 ? 1 : 0;
-        pop($(`thl${i}`), lt, 2.9 + i * 0.1, 0.28);
-        if (i > 0) $(`thg${i}`).style.opacity = sk;
-      });
-      words($('t4'), 'Пять тем.', lt, 0.0, 0.18);
-    }
+      // Layers: the newest layer fades in over 0.15 s on top of the previous one.
+      const shown = s.layers.filter(([at]) => t >= at);
+      const layer = shown[shown.length - 1], prev = shown[shown.length - 2];
+      const lk = seg(t, layer[0], layer[0] + 0.15);
+      for (const f of SHOTS) {
+        const el = $(`L-${f}`);
+        el.style.opacity = f === layer[1] ? (prev ? lk : 1) : prev && f === prev[1] ? 1 : 0;
+        el.style.zIndex = f === layer[1] ? 2 : 1;
+      }
+      const rect = camera(s.cam, t, 0.7);
+      if (prev) apply($(`L-${prev[1]}`), WIN_W, WIN_H, rect);
+      const camState = apply($(`L-${layer[1]}`), WIN_W, WIN_H, rect);
 
-    // 05 — each accent spreads out of its dot as a circle
-    lt = scene('s5', t, 14, 17);
-    if (lt >= 0) {
-      const rect = mix(R(216, 100, 1010, 568), R(230, 110, 900, 506), inOut(seg(lt, 0, 3)));
-      const idx = lt < 0.5 ? 0 : Math.min(3, Math.floor((lt - 0.5) / B) + 1);
-      ACCENTS.forEach(([color, , dot], i) => {
-        frame($(`avc${i}`), 1920, 1080, rect);
-        const at = 0.5 + (i - 1) * B;
-        const p = i === 0 ? 1 : outCubic(seg(lt, at, at + 0.35));
-        const d = $(`d5${dot}`).getBoundingClientRect(), st = $('stage').getBoundingClientRect();
-        const k = 1920 / st.width;
-        const cx = (d.left + d.width / 2 - st.left) * k, cy = (d.top + d.height / 2 - st.top) * k;
-        $(`av${i}`).style.clipPath = i === 0 ? 'none' : `circle(${p * 2300}px at ${cx}px ${cy}px)`;
-        if (i === idx && i > 0) {
-          const bk = seg(lt, at, at + 0.4), bs = lerp(80, 900, outCubic(bk));
-          Object.assign($('burst5').style, { left: cx - bs / 2 + 'px', top: cy - bs / 2 + 'px', width: bs + 'px', height: bs + 'px',
-            border: `10px solid ${color}`, opacity: bk > 0 && bk < 1 ? 1 - bk : 0 });
-        }
-      });
-      if (idx === 0) $('burst5').style.opacity = 0;
-      const [color, , active] = ACCENTS[idx];
-      $('acc5').style.color = color;
-      slam($('t5a'), lt, 0.05); slam($('acc5'), lt, 0.2);
-      for (let i = 0; i < 6; i++) {
-        const dEl = $(`d5${i}`), on = i === active;
-        const beat = idx > 0 && on ? sincePulse(lt, 0.5 + (idx - 1) * B, 8) : 0;
-        dEl.style.transform = `scale(${(on ? 1.35 : 1) + beat * 0.5})`;
-        dEl.style.boxShadow = on ? '0 0 0 8px #000, 0 0 0 14px #fff' : 'none';
+      // Highlight: only while the camera holds still on the element.
+      const h = (s.hl || []).find(([a, b]) => t >= a && t < b);
+      if (h) {
+        const [a, b, shot, key, label] = h;
+        if ($('hlTag').textContent !== label) $('hlTag').textContent = label;
+        const hk = outCubic(seg(t, a, a + 0.22)) * (1 - seg(t, b - 0.18, b));
+        highlight($('hlBox'), $('hlTag'), null, camState, mark(shot, key), hk, WIN_W, WIN_H);
+      } else {
+        $('hlBox').style.opacity = 0; $('hlTag').style.opacity = 0;
+      }
+
+      // A click ripple on the install button.
+      const c = s.click;
+      const ck = c ? seg(t, c[0], c[0] + 0.5) : 0;
+      if (c && ck > 0 && ck < 1) {
+        const m = mark(c[1], c[2]);
+        const cx = (m.x + 70) * camState.s + camState.tx, cy = (m.y + 15) * camState.s + camState.ty, r = lerp(30, 140, outCubic(ck));
+        Object.assign($('ripple').style, { left: cx - r + 'px', top: cy - r + 'px', width: 2 * r + 'px', height: 2 * r + 'px', opacity: 1 - ck });
+      } else {
+        $('ripple').style.opacity = 0;
       }
     }
 
-    // 06 — a view per beat, then the grid assembles from flying cells
-    lt = scene('s6', t, 17, 21);
+    // Summary on the second drop.
+    lt = scene('summary', t, 44, 49, 0.5);
     if (lt >= 0) {
-      const g = 2.0;
-      const idx = Math.min(3, Math.floor(lt / B));
-      VIEWS.forEach((_, i) => {
-        const v = $(`vw${i}`);
-        const qx = (i % 2) * 960 + 10, qy = Math.floor(i / 2) * 540 + 10, qw = 940, qh = 520;
-        let x = 0, y = 0, w = 1920, h = 1080, op = i === idx ? 1 : 0, sc = 1;
-        if (lt < g) {
-          sc = 1 + 0.07 * sincePulse(lt, i * B, 9);
-        } else {
-          // Tiles (the last view) shrinks into its cell; the other three fly in from their corners.
-          const k = i === 3 ? inOut(seg(lt, g, g + 0.4)) : outQuint(seg(lt, g + 0.2 + i * 0.12, g + 0.6 + i * 0.12));
-          const fromX = i === 3 ? 0 : (i % 2 ? 1 : -1) * 1400 + qx, fromY = i === 3 ? 0 : (i < 2 ? -900 : 900) + qy;
-          const fw = i === 3 ? 1920 : qw, fh = i === 3 ? 1080 : qh;
-          x = lerp(fromX, qx, k); y = lerp(fromY, qy, k); w = lerp(fw, qw, k); h = lerp(fh, qh, k);
-          op = i === 3 || k > 0 ? 1 : 0;
-          v.style.boxShadow = `0 30px 60px rgba(0,0,0,${0.5 * k})`;
-        }
-        Object.assign(v.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', opacity: op,
-          borderRadius: (lt >= g ? 14 : 0) + 'px', zIndex: i === 3 ? 1 : 2, transform: `scale(${sc})` });
-        // In the grid each cell zooms onto the first rows so the layout reads even small.
-        frame(v.firstElementChild, w, h, lt < g ? CONTENT : mix(CONTENT, CELL, seg(lt, g, g + 0.5)));
-        pop($(`vwl${i}`), lt, g + 0.7 + i * 0.1, 0.25);
-      });
-      [...$('sw6').children].forEach((s, i) => s.classList.toggle('on', i === idx));
-      $('sw6').style.opacity = 1 - seg(lt, g, g + 0.2);
-      $('sw6').style.transform = `scale(${1 + 0.18 * sincePulse(lt, idx * B, 10)})`;
-      $('sh6').style.opacity = lt < g ? 1 : 1 - seg(lt, g, g + 0.3) + seg(lt, 3.0, 3.2);
-      if (lt < g) words($('t6'), VIEWS[idx][1], lt - idx * B, 0, 0.1);
-      else words($('t6'), 'Как удобно тебе.', lt, 3.0, 0.12);
+      fadeUp($('sk'), lt, 0.1); fadeUp($('st'), lt, 0.25);
+      for (let k = 0; k < 6; k++) fadeUp($(`tl${k}`), lt, 0.6 + k * 0.15, 0.5, 40);
     }
 
-    // 07 — the window lands, the badge slams onto the tab
-    lt = scene('s7', t, 21, 25);
+    // End card.
+    lt = scene('end', t, 49, DURATION + 1, 0.5);
     if (lt >= 0) {
-      const k = outQuint(seg(lt, 0, 0.55));
-      $('v7').style.transform = `translateY(${(1 - k) * 500}px) rotateX(${lerp(40, 14, k)}deg)`;
-      frame($('c7'), 1600, 1000, mix(FULL, R(0, 140, 1440, 900), inOut(seg(lt, 1.2, 4))));
-      const bk = seg(lt, 0.45, 0.7);
-      $('b7').style.left = lerp(900, 1255, outCubic(bk)) + 'px';
-      $('b7').style.top = lerp(560, 262 - 140 * inOut(seg(lt, 1.2, 4)) * 0.5, outCubic(bk)) + 'px';
-      $('b7').style.opacity = clamp(seg(lt, 0.25, 0.35));
-      $('b7').style.transform = `scale(${lerp(3.5, 1, outQuint(bk)) + 0.15 * (lt > 0.7 ? beatPulse(t) : 0)})`;
-      words($('t7a'), 'Обновления — в одном месте', lt, 0.2, 0.1);
-      [...$('t7a').children].slice(2).forEach((sp) => { sp.style.color = '#66c0f4'; });
-      rise($('t7b'), lt, 1.0, 0.3, 30);
+      const k = outCubic(seg(lt, 0.1, 0.9));
+      $('logo9').style.opacity = k; $('logo9').style.transform = `scale(${lerp(0.85, 1, k)})`;
+      fadeUp($('name9'), lt, 0.4); fadeUp($('sub9'), lt, 0.8); fadeUp($('cta9'), lt, 1.2); fadeUp($('url9'), lt, 1.5);
+      $('end').style.opacity = Math.min(Number($('end').style.opacity), 1 - seg(t, DURATION - 0.8, DURATION));
     }
-
-    // 08 — push in, rows tick off on the beat
-    lt = scene('s8', t, 25, 28);
-    if (lt >= 0) {
-      const f = frame($('c8'), 1920, 1080, mix(R(230, 90, 1210, 680), R(230, 160, 960, 540), outCubic(seg(lt, 0, 3))));
-      $('v8').style.transform = `scale(${1 + 0.04 * [0, 1, 2].reduce((a, i) => a + sincePulse(lt, 0.8 + i * B, 10), 0)})`;
-      [235, 290, 343].forEach((y, i) => {
-        const el = $(`ck${i}`);
-        el.style.left = 248 * f.s + f.tx - 37 + 'px'; el.style.top = y * f.s + f.ty - 37 + 'px';
-        pop(el, lt, 0.8 + i * B, 0.28);
-      });
-      words($('t8'), 'Все — одной кнопкой.', lt, 0.25, 0.12);
-      [...$('t8').children].slice(2).forEach((sp) => { sp.style.color = '#9fd65a'; });
-    }
-
-    // 09 — click, the stop, the version rewinds like a tape
-    lt = scene('s9', t, 28, 32);
-    if (lt >= 0) {
-      const f = frame($('c9'), 1920, 1080, mix(R(236, 340, 920, 517), R(258, 395, 880, 495), inOut(seg(lt, 0, 1.0))));
-      const hk = seg(lt, 0.8, 1.0);
-      Object.assign($('hl9').style, { left: 999 * f.s + f.tx + 'px', top: 489 * f.s + f.ty + 'px', width: 128 * f.s + 'px', height: 23 * f.s + 'px',
-        opacity: hk * (1 - seg(lt, 1.4, 1.5)) });
-      const bk = seg(lt, 1.45, 1.6);
-      $('v9').style.filter = bk > 0 ? `blur(${bk * 16}px) brightness(${1 - bk * 0.75})` : 'none';
-      // Tape rewind: digits spin backwards, scanlines and jitter, then lock on the old version.
-      const spin = seg(lt, 1.5, 2.4);
-      const versions = ['1.141.0', '1.140.9', '1.140.7', '1.140.6', '1.140.4', '1.140.3', '1.140.2'];
-      $('num9').textContent = versions[Math.min(versions.length - 1, Math.floor(inCubic(spin) * versions.length * 0.999 + (spin >= 1 ? 1 : 0)))];
-      $('num9').style.textShadow = spin > 0 && spin < 1 ? '-6px 0 #ff3b6b, 6px 0 #3bd5ff' : 'none';
-      $('num9').style.transform = `translateX(${spin > 0 && spin < 1 ? noise(t * 50) * 12 : 0}px)`;
-      $('scan9').style.opacity = spin > 0 && spin < 1 ? 1 : 0;
-      $('rew9').style.transform = `rotate(${-720 * outCubic(spin)}deg)`;
-      const vk = outQuint(seg(lt, 1.45, 1.7));
-      $('ver9').style.opacity = vk; $('ver9').style.transform = `scale(${lerp(0.6, 1, vk) + 0.06 * sincePulse(lt, 2.4, 8)})`;
-      slam($('t9a'), lt, 1.6); slam($('t9b'), lt, 2.45);
-    }
-
-    // 10 — rapid-fire features, a hard cut every two beats
-    lt = scene('sf', t, FEATS, BREAK, 0.16);
-    if (lt >= 0) {
-      const n = FEATURES.length, per = (BREAK - FEATS) / n;
-      const idx = Math.min(n - 1, Math.floor(lt / per)), ll = lt - idx * per;
-      FEATURES.forEach(([, a, b], i) => {
-        const v = $(`ft${i}`);
-        // display, not visibility: a visible child would show through its hidden scene.
-        v.style.display = i === idx ? 'block' : 'none';
-        if (i !== idx) return;
-        frame($(`ftc${i}`), 1920, 1080, mix(a, b, inOut(seg(ll, 0.05, per))));
-        v.style.transform = `scale(${1 + 0.1 * sincePulse(ll, 0, 10)}) translateX(${(1 - outQuint(seg(ll, 0, 0.14))) * 120}px)`;
-        v.style.filter = ll < 0.1 ? `blur(${(1 - ll / 0.1) * 10}px)` : 'none';
-      });
-      const [, , , title, sub] = FEATURES[idx];
-      words($('ftitle'), title, ll, 0.04, 0.08);
-      rise($('fsub'), ll, 0.22, 0.2, 24);
-      $('fsub').textContent = sub;
-      $('fcount').textContent = `${String(idx + 1).padStart(2, '0')}/${String(n).padStart(2, '0')}`;
-      $('fcount').style.transform = `scale(${1 + 0.25 * sincePulse(ll, 0, 12)})`;
-      FEATURES.forEach((_, i) => { $(`fd${i}`).style.background = i <= idx ? '#66c0f4' : 'rgba(255,255,255,.25)'; });
-    }
-
-    // 11 — snap into the light theme, glide down the suggestions
-    lt = scene('s10', t, BREAK, DROP2);
-    if (lt >= 0) {
-      frame($('c10'), 1920, 1080, mix(R(411, 290, 620, 349), R(411, 350, 620, 349), inOut(seg(lt, 0.2, 3.6))));
-      words($('t10'), 'Подскажет, что поставить ещё.', lt, 0.25, 0.1);
-      [...$('t10').children].slice(1).forEach((sp) => { sp.style.color = '#5a3fd6'; });
-    }
-
-    // 12 — the fan bursts open on the drop, a light sweep, then folds into the logo
-    lt = scene('s11', t, DROP2, END, 0.12);
-    if (lt >= 0) {
-      const k = outBack(seg(lt, 0, 0.55), 1.4), close = inOut(seg(lt, 4.4, 5));
-      FAN.forEach(([, kk], i) => {
-        const x = kk * 340 * k, y = Math.abs(kk) * 40 * k;
-        const sway = Math.sin(lt * 1.2) * 4;
-        $(`fn${i}`).style.transform = `perspective(2200px) translate(${x * (1 - close)}px, ${(y + 40) * (1 - close)}px) rotateY(${(-kk * 18 + sway) * k}deg) rotateZ(${kk * 4 * k}deg) scale(${(1 - Math.abs(kk) * 0.08 * k) * lerp(1, 0.2, close)})`;
-        $(`fn${i}`).style.opacity = 1 - close;
-      });
-      $('fan11').style.transform = `scale(${lerp(1.15, 0.95, outCubic(seg(lt, 0, 4)))})`;
-      $('sweep11').style.left = lerp(-600, 2000, inOut(seg(lt, 0.6, 1.8))) + 'px';
-      words($('t11a'), 'Твой Windows.', lt, 0.5, 0.14);
-      words($('t11b'), 'Твой вид.', lt, 1.5, 0.14);
-    }
-
-    // 13 — end card builds in four beats
-    lt = scene('s12', t, END, END + 5, 0.25);
-    if (lt >= 0) {
-      pop($('logo12'), lt, 0.0, 0.4);
-      slam($('name12'), lt, 0.3, 0.25, 1.8);
-      rise($('sub12'), lt, 0.7); pop($('cta12'), lt, 1.0, 0.35); rise($('url12'), lt, 1.3, 0.3, 30);
-      if (lt > 1.4) {
-        $('logo12').style.transform = `scale(${1 + 0.04 * Math.sin(lt * 2.4)})`;
-        $('cta12').style.transform = `scale(${1 + 0.035 * Math.sin(lt * 4)})`;
-      }
-      $('s12').style.opacity = 1 - seg(t, DURATION - 0.8, DURATION);
-    }
-
-    // Flashes and light bars on the drops.
-    const featCut = t >= FEATS && t < BREAK ? 0.35 * sincePulse(t, FEATS + Math.floor(t - FEATS), 22) : 0;
-    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), featCut);
-    $('flash').style.opacity = 0.8 * fl;
-    const bars = Math.max(sincePulse(t, DROP1, 5), sincePulse(t, DROP2, 5));
-    $('bars').style.background = bars > 0.02
-      ? `repeating-linear-gradient(100deg, rgba(102,192,244,${0.25 * bars}) 0 40px, transparent 40px 160px)` : 'none';
-    $('bars').style.transform = `translateX(${(t * 900) % 160}px)`;
   };
   window.render(0);
 </script>

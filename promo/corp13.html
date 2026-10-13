@@ -21,9 +21,11 @@
     box-shadow: 0 50px 110px rgba(16, 36, 70, .18), 0 0 0 1px rgba(14, 26, 43, .07); }
   .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
   .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; }
-  .callout { position: absolute; border-radius: 10px; border: 3px solid var(--accent); box-shadow: 0 0 0 6px rgba(26,115,200,.15); }
-  .tag { position: absolute; padding: 10px 18px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 26px; font-weight: 700;
-    white-space: nowrap; box-shadow: 0 12px 30px rgba(26,115,200,.3); }
+  /* Highlight: everything around the element is dimmed; a short label sits next to it. */
+  .hl-box { position: absolute; border-radius: 8px; opacity: 0; pointer-events: none;
+    box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(14, 26, 43, .28); }
+  .hl-tag { position: absolute; left: 0; top: 0; padding: 9px 16px; border-radius: 8px; background: var(--ink); color: #fff;
+    font-size: 22px; font-weight: 600; white-space: nowrap; opacity: 0; box-shadow: 0 10px 24px rgba(14,26,43,.25); }
 
   .kicker { font: 700 26px 'DejaVu Sans Mono', monospace; letter-spacing: .14em; color: var(--accent); }
   .title { font-size: 66px; font-weight: 800; letter-spacing: -.02em; line-height: 1.08; }
@@ -104,6 +106,7 @@
   <div id="debug"></div>
 </div>
 
+<script src="director.js"></script>
 <script>
   const BPM = 100, B = 60 / BPM, DURATION = 50;
   const params = new URLSearchParams(location.search);
@@ -169,36 +172,44 @@
       <div class="icon">${svg(i)}</div><div style="font-size:36px;font-weight:700">${b}</div><div class="body" style="font-size:26px">${s}</div>
       <div id="pcs${k}" style="height:4px;width:0;background:#d14d4d;border-radius:2px;margin-top:6px"></div></div>`).join('');
 
-  // Pillars: [id, start, kicker, title, body, bullets, shot timeline, side, callouts]
+  // Pillars: the window shows in full, then the camera visits two real elements
+  // (rects from marks.json) and highlights each once it has stopped.
   const P0 = 15.6, PLEN = 6;
   const PILLARS = [
-    { kicker: '01 · КАТАЛОГ', title: 'Всё в одном каталоге', bullets: ['Проверенный каталог, который растёт', 'Тысячи пакетов winget, Scoop и Chocolatey', 'Подборки и наборы в один клик'],
-      shots: [['L-search', FULL, R(232, 90, 1000, 562)], ['L-catalog', FULL, R(232, 110, 1000, 562)]],
-      side: 'right', callouts: [[0.9, 2.9, R(232, 215, 1190, 230), 'Один запрос — все источники'], [3.4, 5.6, R(1282, 178, 135, 32), '4 вида списка']] },
-    { kicker: '02 · УСТАНОВКА', title: 'Безопасно и без мастеров', bullets: ['Проверка SHA256 из манифестов winget', 'Тихая установка в фоне', 'Очередь с прогрессом и отменой'],
-      shots: [['L-install', FULL, R(560, 30, 880, 495)]],
-      side: 'left', callouts: [[1.2, 5.6, R(1110, 90, 320, 115), 'Очередь установок']] },
-    { kicker: '03 · ОБНОВЛЕНИЯ', title: 'Обновления под контролем', bullets: ['Все обновления на одной вкладке', 'История и откат в один клик', 'Проверка при запуске и раз в 6 часов'],
-      shots: [['L-updates', FULL, R(232, 150, 1000, 562)]],
-      side: 'right', callouts: [[0.9, 2.9, R(232, 200, 960, 165), 'Ожидают обновления'], [3.2, 5.6, R(995, 486, 135, 28), 'Откат до прошлой версии']] },
-    { kicker: '04 · ИНТЕРФЕЙС', title: 'Под ваш стиль работы', bullets: ['5 тем, включая Windows 11', 'Свой акцентный цвет и масштаб', 'Русский и English'],
-      shots: [['L-appearance', FULL, R(232, 90, 1000, 562)]],
-      side: 'left', callouts: [[0.9, 2.9, R(240, 205, 875, 155), '5 тем оформления'], [3.2, 5.6, R(240, 392, 430, 38), 'Свой акцент']] },
+    { kicker: '01 · КАТАЛОГ', title: 'Всё в одном каталоге', shot: 'L-search', side: 'right',
+      bullets: ['Проверенный каталог, который растёт', 'Тысячи пакетов winget, Scoop и Chocolatey', 'Подборки и наборы в один клик'],
+      focus: [['search', 'Один запрос'], ['results', 'Результаты из всех источников']] },
+    { kicker: '02 · УСТАНОВКА', title: 'Безопасно и без мастеров', shot: 'L-install', side: 'left',
+      bullets: ['Проверка SHA256 из манифестов winget', 'Тихая установка в фоне', 'Очередь с прогрессом и отменой'],
+      focus: [['heroCta', 'Установка идёт в фоне'], ['queueFirst', 'Очередь с прогрессом']] },
+    { kicker: '03 · ОБНОВЛЕНИЯ', title: 'Обновления под контролем', shot: 'L-updates', side: 'right',
+      bullets: ['Все обновления на одной вкладке', 'История и откат в один клик', 'Проверка при запуске и раз в 6 часов'],
+      focus: [['pending', 'Ожидают обновления'], ['rollback', 'Откат до прошлой версии', 'history']] },
+    { kicker: '04 · ИНТЕРФЕЙС', title: 'Под ваш стиль работы', shot: 'L-appearance', side: 'left',
+      bullets: ['5 тем, включая Windows 11', 'Свой акцентный цвет и масштаб', 'Русский и English'],
+      focus: [['themes', '5 тем оформления'], ['accent', 'Свой акцентный цвет']] },
   ];
-  const WIN = { right: { x: 800, y: 170, w: 1040, h: 650 }, left: { x: 80, y: 170, w: 1040, h: 650 } };
+  // Window 1040×650 keeps the screenshot's 16:10 aspect, so a view rect maps 1:1.
+  const WIN = { right: { x: 800, y: 175, w: 1040, h: 650 }, left: { x: 80, y: 175, w: 1040, h: 650 } };
+  // Per pillar: full view until 1.2 s, first stop at 2.0 s, second at 4.2 s.
+  const STOP_AT = [2.0, 4.2], HOLD = [[2.05, 3.6], [4.25, 5.6]];
+  PILLARS.forEach((p) => {
+    // A focus may frame a wider context (third item) than the element it highlights.
+    p.stops = [{ at: 0, rect: Director.FULL }, ...p.focus.map(([key, , frameKey], k) => ({ at: STOP_AT[k], rect: Director.fit(p.shot, frameKey || key, { pad: 70, maxZoom: 1.9 }) }))];
+  });
   $('pillars').innerHTML = PILLARS.map((p, i) => {
     const w = WIN[p.side], tx = p.side === 'right' ? 120 : 1200;
     return `<div class="scene" id="p${i}">
-      <div class="abs" style="left:${tx}px;top:230px;width:640px">
+      <div class="abs" style="left:${tx}px;top:230px;width:620px">
         <div class="kicker" id="pk${i}">${p.kicker}</div>
         <div class="title" id="pt${i}" style="margin-top:18px">${p.title}</div>
         <ul class="bullets" id="pb${i}" style="margin-top:44px">${p.bullets.map((b, k) => `<li id="pb${i}_${k}"><i>${svg('check', 24)}</i>${b}</li>`).join('')}</ul>
       </div>
       <div class="win" id="pw${i}" style="left:${w.x}px;top:${w.y}px;width:${w.w}px;height:${w.h}px">
-        ${p.shots.map(([f], k) => `<div class="cam" id="pc${i}_${k}"><img src="shots/13/${f}.png" alt=""></div>`).join('')}
-        ${p.callouts.map((_, k) => `<div class="callout" id="po${i}_${k}"></div>`).join('')}
+        <div class="cam" id="pcam${i}"><img src="shots/13/${p.shot}.png" alt=""></div>
+        <div class="hl-box" id="hb${i}"></div>
+        <div class="hl-tag" id="ht${i}"></div>
       </div>
-      ${p.callouts.map(([, , , label], k) => `<div class="tag" id="pg${i}_${k}">${label}</div>`).join('')}
     </div>`;
   }).join('');
 
@@ -255,32 +266,17 @@
       p.bullets.forEach((_, k) => fadeUp($(`pb${i}_${k}`), pl, 0.9 + k * 0.35, 0.6, 24));
       const w = WIN[p.side];
       const wk = outCubic(seg(pl, 0.2, 1.2));
-      $(`pw${i}`).style.transform = `translateX(${(1 - wk) * (p.side === 'right' ? 160 : -160)}px)`;
-      // Shots: crossfade between them halfway, each slowly pushing in.
-      const per = PLEN / p.shots.length;
-      let f = null;
-      p.shots.forEach(([, from, to], k) => {
-        const cam = $(`pc${i}_${k}`);
-        const sk = k === 0 ? 1 : seg(pl, k * per - 0.4, k * per + 0.2);
-        cam.style.opacity = sk;
-        const local = pl - k * per;
-        const tr = frame(cam, w.w, w.h, mix(from, to, inOut(seg(local, 0.6, per))));
-        if (pl >= k * per - 0.4) f = tr;
-      });
-      // Callouts: a box around the element and a label tag beside the window.
-      p.callouts.forEach(([c0, c1, r, label], k) => {
-        const box = $(`po${i}_${k}`), tag = $(`pg${i}_${k}`);
-        const shotIdx = Math.min(p.shots.length - 1, Math.floor(c0 / per));
-        const cam = $(`pc${i}_${shotIdx}`);
-        const { tx, ty, s } = cam.cameraState;
-        const x = r.x * 1440 * s + tx, y = r.y * 900 * s + ty, bw = r.w * 1440 * s, bh = r.h * 900 * s;
-        const k1 = outCubic(seg(pl, c0, c0 + 0.5)) * (1 - seg(pl, c1 - 0.4, c1));
-        Object.assign(box.style, { left: x - 8 + 'px', top: y - 8 + 'px', width: bw + 16 + 'px', height: bh + 16 + 'px', opacity: k1,
-          transform: `scale(${lerp(1.06, 1, k1)})` });
-        const tagX = clamp(w.x + x, 40, 1920 - 520), tagY = clamp(w.y + y + bh + 20, 60, 1000);
-        Object.assign(tag.style, { left: tagX + 'px', top: tagY + 'px', opacity: k1, transform: `translateY(${(1 - k1) * 12}px)` });
-      });
-      void f;
+      $(`pw${i}`).style.transform = `translateX(${(1 - wk) * (p.side === 'right' ? 120 : -120)}px)`;
+      const cam = Director.apply($(`pcam${i}`), w.w, w.h, Director.camera(p.stops, pl, 0.8));
+      // One highlight at a time; its label follows the element on screen.
+      const k = HOLD.findIndex(([h0, h1]) => pl >= h0 && pl < h1);
+      const box = $(`hb${i}`), tag = $(`ht${i}`);
+      if (k < 0) { box.style.opacity = 0; tag.style.opacity = 0; return; }
+      const [key, label] = p.focus[k];
+      if (tag.textContent !== label) tag.textContent = label;
+      const [h0, h1] = HOLD[k];
+      const hk = outCubic(seg(pl, h0, h0 + 0.35)) * (1 - seg(pl, h1 - 0.3, h1));
+      Director.highlight(box, tag, null, cam, Director.mark(p.shot, key), hk, w.w, w.h);
     });
     // Section progress under the pillars.
     const pv = t >= P0 - 0.3 && t < P0 + 4 * PLEN;

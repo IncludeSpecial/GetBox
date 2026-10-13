@@ -39,6 +39,37 @@ const server = http.createServer((req, res) => {
   const type = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg' }[path.extname(file)] ?? 'application/octet-stream';
   res.writeHead(200, { 'Content-Type': type }); fs.createReadStream(file).pipe(res);
 });
+// Rects of interface elements (CSS px in the 1440×900 shot), measured on every capture.
+// The promos frame and highlight these instead of guessing coordinates. Lists are unions of the
+// first few matches; a key is left out when the element is not on screen.
+const MARK_SELECTORS = {
+  search: ['.search-box'], tabs: ['.tab-bar'], viewSwitch: ['.view-switch'],
+  hero: ['.hero-banner'], heroActions: ['.hero-banner-actions'], heroCta: ['.hero-banner-actions > *', 3], forYou: ['.shelf >> nth=0'],
+  results: ['.list-row', 4], sources: ['.list-row-meta', 4], firstRows: ['.list-row', 3],
+  grid: ['.paged-grid'], gridTop: ['.capsule', 9], table: ['.app-table'], tableTop: ['.app-table tr', 8],
+  profiles: ['.profiles-section'], queue: ['.queue-panel.open .queue-list, .queue-panel.open'], queueFirst: ['.queue-item >> nth=0'],
+  pending: ['.upd-group >> nth=0'], history: ['.upd-group >> nth=1'], autoUpdate: ['.updates-aside'],
+  rollback: [(p) => p.getByRole('button', { name: 'Откатить до 1.140.2' })],
+  themes: ['.theme-gallery'], accent: ['.accent-row > *', 12], appearanceGrid: ['.appearance-grid'],
+  modalRelated: ['.modal-related', 2], modal: ['.modal'],
+};
+const MARKS = {};
+async function measure(page) {
+  const out = {};
+  for (const [key, [sel, count = 1]] of Object.entries(MARK_SELECTORS)) {
+    const loc = typeof sel === 'function' ? sel(page) : page.locator(sel);
+    const n = Math.min(await loc.count(), count);
+    let box = null;
+    for (let i = 0; i < n; i++) {
+      const b = await loc.nth(i).boundingBox();
+      if (!b || b.width < 2 || b.y > 900 || b.x > 1440) continue;
+      const r = { x: b.x, y: b.y, r: Math.min(1440, b.x + b.width), b: Math.min(900, b.y + b.height) };
+      box = box ? { x: Math.min(box.x, r.x), y: Math.min(box.y, r.y), r: Math.max(box.r, r.r), b: Math.max(box.b, r.b) } : r;
+    }
+    if (box) out[key] = { x: Math.round(box.x), y: Math.round(box.y), w: Math.round(box.r - box.x), h: Math.round(box.b - box.y) };
+  }
+  return out;
+}
 async function shot(browser, base, name, { owned = [], lang = 'ru', queue = [], act, look = {}, results = [], zoom = 1 }) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
   await page.addInitScript(({ d, lang, queue, look, results }) => {
@@ -73,6 +104,7 @@ async function shot(browser, base, name, { owned = [], lang = 'ru', queue = [], 
   if (zoom !== 1) await page.evaluate((z) => { document.documentElement.style.zoom = String(z); }, zoom);
   if (act) await act(page);
   await page.waitForTimeout(500);
+  MARKS[name] = await measure(page);
   await page.screenshot({ path: path.join(OUT, `${name}.png`) });
   await page.close();
   console.log('shot', name);
@@ -80,7 +112,8 @@ async function shot(browser, base, name, { owned = [], lang = 'ru', queue = [], 
 server.listen(0, async () => {
   const base = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch(launchOpts);
-  const me = ['vscode', 'steam', 'firefox', 'git'];
+  // Firefox (the featured hero app) stays uninstalled so the hero shows «Установить».
+  const me = ['vscode', 'steam', 'git'];
   const tab = (name) => (p) => p.getByRole('button', { name }).first().click();
   const catalogTab = tab(/Каталог/);
   const settings = (p) => p.locator('.sidebar').getByText('Расширенные').first().click();
@@ -142,5 +175,6 @@ server.listen(0, async () => {
   await shot(browser, base, 'modal-light', { owned: me, look: { theme: 'light' }, act: async (p) => {
     await catalogTab(p); await p.waitForTimeout(300); await p.locator('.capsule').first().click();
   } });
+  fs.writeFileSync(path.join(OUT, 'marks.json'), JSON.stringify(MARKS));
   await browser.close(); server.close();
 });
