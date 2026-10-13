@@ -74,7 +74,7 @@
     <div class="abs" style="left:100px;top:330px;width:740px">
       <div class="h2" id="t2a"></div>
       <div class="h2" id="t2b" style="color:#66c0f4"></div>
-      <div class="mono" id="t2c" style="margin-top:30px;font-size:30px;color:#93a3b3"><span id="n2" style="color:#fff;font-size:44px;font-weight:700">0</span> программ в каталоге<br>+ winget · Scoop · Chocolatey</div>
+      <div class="mono" id="t2c" style="margin-top:30px;font-size:30px;color:#93a3b3"><span style="color:#fff;font-size:44px;font-weight:700">Тысячи программ</span><br>каталог GetBox + winget · Scoop · Chocolatey</div>
     </div>
   </div>
 
@@ -369,7 +369,6 @@
       words($('t2a'), 'Все программы —', lt, 0.35);
       words($('t2b'), 'в одном окне', lt, 0.85);
       rise($('t2c'), lt, 1.3, 0.3, 30);
-      $('n2').textContent = Math.round(118 * outCubic(seg(lt, 1.3, 2.3)));
     }
 
     // 03 — punch into the hero button, click, the queue slides in

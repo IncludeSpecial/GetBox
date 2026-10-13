@@ -172,7 +172,7 @@
   // Pillars: [id, start, kicker, title, body, bullets, shot timeline, side, callouts]
   const P0 = 15.6, PLEN = 6;
   const PILLARS = [
-    { kicker: '01 · КАТАЛОГ', title: 'Всё в одном каталоге', bullets: ['118 проверенных программ', 'Поиск сразу в winget, Scoop и Chocolatey', 'Подборки и наборы в один клик'],
+    { kicker: '01 · КАТАЛОГ', title: 'Всё в одном каталоге', bullets: ['Проверенный каталог, который растёт', 'Тысячи пакетов winget, Scoop и Chocolatey', 'Подборки и наборы в один клик'],
       shots: [['L-search', FULL, R(232, 90, 1000, 562)], ['L-catalog', FULL, R(232, 110, 1000, 562)]],
       side: 'right', callouts: [[0.9, 2.9, R(232, 215, 1190, 230), 'Один запрос — все источники'], [3.4, 5.6, R(1282, 178, 135, 32), '4 вида списка']] },
     { kicker: '02 · УСТАНОВКА', title: 'Безопасно и без мастеров', bullets: ['Проверка SHA256 из манифестов winget', 'Тихая установка в фоне', 'Очередь с прогрессом и отменой'],
@@ -203,7 +203,7 @@
   }).join('');
 
   $('tiles8').innerHTML = [
-    ['grid', 'Каталог', '118 программ и наборы'], ['search', 'Поиск', 'каталог · winget · Scoop · Chocolatey'],
+    ['grid', 'Каталог', 'проверенные программы и наборы'], ['search', 'Поиск', 'каталог · winget · Scoop · Chocolatey'],
     ['shield', 'Безопасность', 'проверка SHA256 перед запуском'], ['refresh', 'Обновления', 'история и откат'],
     ['palette', 'Оформление', '5 тем, акцент, масштаб'], ['globe', 'Языки', 'русский и English'],
   ].map(([i, b, s], k) => `<div class="tile" id="tl${k}"><div class="icon">${svg(i)}</div><b>${b}</b><span>${s}</span></div>`).join('');
