@@ -14,7 +14,8 @@ node promo/render.cjs video promo.html            # покадровый рен�
 python3 promo/music.py                 # фоновая музыка → promo/music.wav (нужен numpy)
 ffmpeg -i promo/promo.mp4 -i promo/music.wav -c:v copy -c:a aac -b:a 192k -shortest promo/GetBox-promo.mp4
 
-# 1.3 — черновик 240p для проверки (скриншоты 1.3 лежат в promo/shots/13/)
+# 1.3 — скриншоты всех тем и видов → promo/shots/13/, затем черновик 240p
+node promo/capture13.cjs
 QUERY="h=240&debug=1" OUT_SUFFIX=-240p CRF=28 node promo/render.cjs video promo13.html
 python3 promo/music13.py
 ffmpeg -i promo/promo13-240p.mp4 -i promo/music13.wav -c:v copy -c:a aac -b:a 96k -shortest promo/GetBox-1.3-preview-240p.mp4

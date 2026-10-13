@@ -4,17 +4,15 @@
 <meta charset="utf-8">
 <title>GetBox 1.3 promo</title>
 <style>
-  :root {
-    --bg: #0b1219; --bg2: #111b25; --accent: #66c0f4; --accent2: #a5d8ff;
-    --green: #7cb928; --text: #dfe7ee; --muted: #93a3b3;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { overflow: hidden; background: #000; }
-  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: #dfe7ee; -webkit-font-smoothing: antialiased; }
   .mono { font-family: 'DejaVu Sans Mono', monospace; }
   /* Everything is laid out at 1920×1080 and scaled to the output size. */
-  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0;
-    background: radial-gradient(1100px 700px at 50% 50%, #12283c 0%, #070d13 70%); }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; background: #05090d; }
+  /* The world camera: beat punches and shakes move every scene at once. */
+  #world { position: absolute; inset: 0; transform-origin: 50% 50%;
+    background: radial-gradient(1100px 700px at 50% 50%, #12283c 0%, #05090d 72%); }
   .glow { position: absolute; width: 1000px; height: 1000px; border-radius: 50%; filter: blur(140px); opacity: .3; left: 460px; top: 40px; background: #1f6fa3; }
   .scene { position: absolute; inset: 0; visibility: hidden; }
   .abs { position: absolute; }
@@ -23,66 +21,77 @@
   /* A viewer onto a 1440×900 screenshot; frame() moves the camera. */
   .view { position: absolute; overflow: hidden; background: #0b1219; }
   .cam { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; }
-  .cam img { width: 1440px; height: 900px; display: block; }
+  .cam img { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; display: block; }
   .win { border-radius: 16px; box-shadow: 0 60px 140px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.12); }
 
-  .h1 { font-size: 104px; font-weight: 800; line-height: 1.02; letter-spacing: -.02em; }
-  .h2 { font-size: 72px; font-weight: 800; line-height: 1.06; letter-spacing: -.015em; }
+  .h1 { font-size: 112px; font-weight: 900; line-height: 1.0; letter-spacing: -.025em; }
+  .h2 { font-size: 78px; font-weight: 850; line-height: 1.05; letter-spacing: -.02em; }
+  .w { display: inline-block; white-space: pre; }
   .pill { display: inline-flex; align-items: center; padding: 12px 24px; border-radius: 10px; font-size: 34px; font-weight: 700; }
-  .shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(0deg, rgba(5,9,13,.97) 35%, rgba(5,9,13,0)); }
-  .shade-t { position: absolute; left: 0; right: 0; top: 0; height: 300px; background: linear-gradient(180deg, rgba(5,9,13,.92) 30%, rgba(5,9,13,0)); }
+  .shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 440px; background: linear-gradient(0deg, rgba(5,9,13,.97) 35%, rgba(5,9,13,0)); }
+  .shade-t { position: absolute; left: 0; right: 0; top: 0; height: 320px; background: linear-gradient(180deg, rgba(5,9,13,.92) 30%, rgba(5,9,13,0)); }
 
-  .ring { position: absolute; border-radius: 50%; border: 2px solid rgba(102,192,244,.45); }
-  .cursor { position: absolute; width: 56px; height: 66px; }
-  .ripple { position: absolute; border-radius: 50%; border: 6px solid rgba(159,214,90,.9); }
+  .ring { position: absolute; border-radius: 50%; border: 3px solid rgba(102,192,244,.5); }
+  .cursor { position: absolute; width: 60px; height: 70px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+  .ripple { position: absolute; border-radius: 50%; border: 8px solid rgba(159,214,90,.95); }
   .hl { position: absolute; border-radius: 10px; box-shadow: 0 0 0 5px #f2c98a, 0 0 50px 10px rgba(242,201,138,.5); }
-  .chip { position: absolute; padding: 12px 26px; border-radius: 30px; font-size: 32px; font-weight: 800; white-space: nowrap; transform: translateX(-50%); }
+  .chip { position: absolute; padding: 12px 26px; border-radius: 30px; font-size: 32px; font-weight: 800; white-space: nowrap; }
   .dot { width: 84px; height: 84px; border-radius: 50%; }
-  .badge { position: absolute; width: 130px; height: 130px; border-radius: 50%; display: grid; place-items: center; background: #66c0f4; color: #06131d;
-    font-size: 72px; font-weight: 800; box-shadow: 0 0 0 22px rgba(102,192,244,.25), 0 30px 60px rgba(0,0,0,.5); }
-  .switch { position: absolute; display: flex; gap: 6px; padding: 8px; border-radius: 14px; background: rgba(12,20,28,.92); border: 2px solid rgba(255,255,255,.12); }
-  .switch span { width: 74px; height: 58px; border-radius: 9px; display: grid; place-items: center; color: #93a3b3; font-size: 22px; font-weight: 800; }
+  .badge { position: absolute; width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; background: #66c0f4; color: #06131d;
+    font-size: 80px; font-weight: 900; box-shadow: 0 0 0 22px rgba(102,192,244,.25), 0 30px 60px rgba(0,0,0,.5); }
+  .switch { position: absolute; display: flex; gap: 8px; padding: 10px; border-radius: 16px; background: rgba(12,20,28,.94); border: 2px solid rgba(255,255,255,.14);
+    box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .switch span { width: 92px; height: 70px; border-radius: 10px; display: grid; place-items: center; color: #93a3b3; }
   .switch span.on { background: #66c0f4; color: #06131d; }
+  .switch svg { width: 34px; height: 34px; fill: currentColor; }
+  .burst { position: absolute; border-radius: 50%; pointer-events: none; }
+  .bars { position: absolute; inset: 0; pointer-events: none; }
   .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .scan { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 2px, transparent 2px 6px); }
   #debug { position: absolute; left: 24px; top: 20px; padding: 8px 16px; border-radius: 8px; background: rgba(0,0,0,.7); color: #ffd400;
     font: 600 34px 'DejaVu Sans Mono', monospace; display: none; z-index: 10; }
 </style>
 </head>
 <body>
 <div id="stage">
+<div id="world">
   <div class="glow" id="glow"></div>
 
   <!-- 01 Cold open -->
   <div class="scene center" id="s1">
-    <div class="ring" id="r1a" style="left:810px;top:290px;width:300px;height:300px"></div>
-    <div class="ring" id="r1b" style="left:810px;top:290px;width:300px;height:300px"></div>
+    <div class="ring" id="r1a" style="left:810px;top:270px;width:300px;height:300px"></div>
+    <div class="ring" id="r1b" style="left:810px;top:270px;width:300px;height:300px"></div>
+    <div class="ring" id="r1c" style="left:810px;top:270px;width:300px;height:300px"></div>
     <img id="logo1" src="../data/logo.png" alt="" style="width:240px;height:240px;filter:drop-shadow(0 0 60px rgba(102,192,244,.55))">
-    <div id="brand1" style="margin-top:34px;font-size:120px;font-weight:800;letter-spacing:.14em;height:150px"></div>
-    <div id="ver1" class="mono" style="margin-top:14px;padding:8px 30px;border-radius:30px;background:rgba(102,192,244,.16);color:#a5d8ff;font-size:44px">1.3</div>
+    <div id="brand1" style="margin-top:34px;font-size:130px;font-weight:900;letter-spacing:.16em;height:160px;display:flex"></div>
+    <div id="ver1" class="mono" style="margin-top:10px;padding:8px 30px;border-radius:30px;background:rgba(102,192,244,.18);color:#a5d8ff;font-size:46px">1.3</div>
   </div>
 
   <!-- 02 Everything in one window -->
-  <div class="scene" id="s2" style="perspective:2600px">
-    <div class="view win" id="v2" style="left:820px;top:170px;width:1280px;height:800px;transform-origin:left center"><div class="cam"><img src="shots/13/home-classic.png" alt=""></div></div>
-    <div class="abs" style="left:100px;top:360px;width:720px">
-      <div class="h2" id="t2a">Все программы —</div>
-      <div class="h2" id="t2b" style="color:#66c0f4">в одном окне</div>
-      <div class="mono" id="t2c" style="margin-top:26px;font-size:30px;color:#93a3b3">118 в каталоге · + winget, Scoop, Chocolatey</div>
+  <div class="scene" id="s2">
+    <div class="view win" id="v2" style="left:820px;top:170px;width:1280px;height:800px;transform-origin:left center"><div class="cam" id="c2"><img src="shots/13/home-classic.png" alt=""></div></div>
+    <div class="abs" style="left:100px;top:330px;width:740px">
+      <div class="h2" id="t2a"></div>
+      <div class="h2" id="t2b" style="color:#66c0f4"></div>
+      <div class="mono" id="t2c" style="margin-top:30px;font-size:30px;color:#93a3b3"><span id="n2" style="color:#fff;font-size:44px;font-weight:700">0</span> программ в каталоге<br>+ winget · Scoop · Chocolatey</div>
     </div>
   </div>
 
   <!-- 03 One click -->
   <div class="scene" id="s3">
-    <div class="view" id="v3" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="c3"><img src="shots/13/home-classic.png" alt=""></div></div>
+    <div class="view" id="v3" style="left:0;top:0;width:1920px;height:1080px">
+      <div class="cam" id="c3"><img id="i3a" src="shots/13/home-classic.png" alt=""><img id="i3b" src="shots/13/install-queue.png" alt="" style="opacity:0"></div>
+    </div>
     <div class="ripple" id="rip3"></div>
     <svg class="cursor" id="cur3" viewBox="0 0 24 28" aria-hidden="true"><path d="M3 2l17 12-8 1.5L16 25l-3.5 1.5L8.5 17 3 22z" fill="#fff" stroke="#0b1219" stroke-width="1.5"/></svg>
-    <div class="view" id="q3" style="right:0;top:0;width:560px;height:1080px;box-shadow:-40px 0 90px rgba(0,0,0,.6)"><div class="cam" id="qc3"><img src="shots/13/queue-install.png" alt=""></div></div>
-    <div class="shade-b" style="right:560px"></div>
+    <div class="shade-b" id="sh3"></div>
     <div class="abs" style="left:90px;bottom:80px">
-      <div class="h1" id="t3a">Один клик.</div>
-      <div style="display:flex;gap:18px;margin-top:22px">
-        <span class="pill mono" id="p3a" style="background:rgba(124,185,40,.22);color:#c4ec8f">SHA256 ✓</span>
-        <span class="pill mono" id="p3b" style="background:rgba(102,192,244,.18);color:#a5d8ff">тихая установка</span>
+      <div class="h1" id="t3a"></div>
+      <div style="display:flex;gap:18px;margin-top:24px">
+        <span class="pill mono" id="p3a" style="background:rgba(124,185,40,.24);color:#c4ec8f">SHA256 ✓</span>
+        <span class="pill mono" id="p3b" style="background:rgba(102,192,244,.2);color:#a5d8ff">тихая установка</span>
+        <span class="pill mono" id="p3c" style="background:rgba(255,255,255,.1);color:#dfe7ee">очередь</span>
       </div>
     </div>
   </div>
@@ -91,33 +100,34 @@
   <div class="scene" id="s4">
     <div id="themes"></div>
     <div class="shade-t"></div>
-    <div class="h1 abs" id="t4" style="left:80px;top:50px;color:#fff">Пять тем.</div>
+    <div class="h1 abs" id="t4" style="left:80px;top:50px;color:#fff"></div>
   </div>
 
   <!-- 05 Accent -->
   <div class="scene" id="s5" style="background:#000">
     <div id="acc5views"></div>
-    <div class="abs" style="left:0;right:0;bottom:0;height:330px;background:linear-gradient(0deg,#000 55%,rgba(0,0,0,0))"></div>
+    <div class="abs" style="left:0;right:0;bottom:0;height:340px;background:linear-gradient(0deg,#000 55%,rgba(0,0,0,0))"></div>
     <div class="abs" style="left:90px;right:90px;bottom:70px;display:flex;align-items:center;gap:40px">
-      <div class="h1" style="flex:1">Свой <span id="acc5">акцент.</span></div>
+      <div class="h1" style="flex:1"><span class="w" id="t5a">Свой </span><span class="w" id="acc5">акцент.</span></div>
       <div id="dots5" style="display:flex;gap:30px;align-items:center"></div>
     </div>
+    <div class="burst" id="burst5"></div>
   </div>
 
   <!-- 06 Four views -->
   <div class="scene" id="s6">
     <div id="views6"></div>
-    <div class="switch" id="sw6" style="right:60px;top:56px"><span>▦</span><span>☰</span><span>≡</span><span>▪▪</span></div>
-    <div class="shade-b"></div>
-    <div class="h1 abs" id="t6" style="left:90px;bottom:80px"></div>
+    <div class="switch" id="sw6" style="right:70px;top:60px;z-index:5"></div>
+    <div class="shade-b" id="sh6" style="z-index:4"></div>
+    <div class="h1 abs" id="t6" style="left:90px;bottom:80px;z-index:5"></div>
   </div>
 
   <!-- 07 Updates -->
   <div class="scene" id="s7" style="perspective:2600px">
-    <div class="view win" id="v7" style="left:110px;top:260px;width:1600px;height:1000px;transform-origin:center top"><div class="cam" id="c7"><img src="shots/13/updates.png" alt=""></div></div>
+    <div class="view win" id="v7" style="left:110px;top:270px;width:1600px;height:1000px;transform-origin:center top"><div class="cam" id="c7"><img src="shots/13/updates.png" alt=""></div></div>
     <div class="badge" id="b7">3</div>
     <div class="abs" style="left:110px;top:70px">
-      <div class="h2" id="t7a">Обновления — <span style="color:#66c0f4">в одном месте</span></div>
+      <div class="h2" id="t7a"></div>
       <div class="mono" id="t7b" style="margin-top:14px;font-size:30px;color:#93a3b3">winget · Scoop · Chocolatey</div>
     </div>
   </div>
@@ -127,24 +137,22 @@
     <div class="view" id="v8" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="c8"><img src="shots/13/updates-queue.png" alt=""></div></div>
     <div id="checks8"></div>
     <div class="shade-b"></div>
-    <div class="abs" style="left:90px;bottom:80px">
-      <div class="h1" id="t8">Все — <span style="color:#9fd65a">одной кнопкой.</span></div>
-    </div>
+    <div class="abs" style="left:90px;bottom:80px"><div class="h1" id="t8"></div></div>
   </div>
 
   <!-- 09 Rollback -->
   <div class="scene" id="s9" style="background:#070d13">
     <div class="view" id="v9" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="c9"><img src="shots/13/updates.png" alt=""></div></div>
     <div class="hl" id="hl9"></div>
-    <div class="abs center" id="ver9" style="left:0;right:0;top:300px;gap:40px">
-      <div style="display:flex;align-items:center;gap:50px;font:700 130px 'DejaVu Sans Mono',monospace">
-        <span id="old9" style="color:#6b7a8a;position:relative">1.141.0<i id="strike9" style="position:absolute;left:-10px;top:52%;height:10px;background:#e06767;border-radius:5px"></i></span>
-        <svg id="rew9" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="#f2c98a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-        <span id="new9" style="color:#fff">1.140.2</span>
+    <div class="scan" id="scan9"></div>
+    <div class="abs center" id="ver9" style="left:0;right:0;top:290px">
+      <div style="display:flex;align-items:center;gap:50px;font:700 150px 'DejaVu Sans Mono',monospace">
+        <svg id="rew9" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#f2c98a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        <span id="num9" style="color:#fff"></span>
       </div>
     </div>
     <div class="abs center" style="left:0;right:0;bottom:120px">
-      <div class="h2"><span id="t9a">Не понравилось?</span> <span id="t9b" style="color:#f2c98a">Откат в один клик.</span></div>
+      <div class="h2"><span class="w" id="t9a">Не понравилось? </span><span class="w" id="t9b" style="color:#f2c98a">Откат в один клик.</span></div>
     </div>
   </div>
 
@@ -152,32 +160,35 @@
   <div class="scene" id="s10" style="background:#eef2f6">
     <div class="view" id="v10" style="left:0;top:0;width:1920px;height:1080px;background:#eef2f6"><div class="cam" id="c10"><img src="shots/13/modal-light.png" alt=""></div></div>
     <div class="abs" style="left:0;right:0;top:0;height:300px;background:linear-gradient(180deg,rgba(238,242,246,.98) 45%,rgba(238,242,246,0))"></div>
-    <div class="h2 abs" id="t10" style="left:90px;top:60px;color:#14202b">Подскажет, <span style="color:#5a3fd6">что поставить ещё.</span></div>
+    <div class="h2 abs" id="t10" style="left:90px;top:60px;color:#14202b"></div>
   </div>
 
   <!-- 11 Fan -->
   <div class="scene" id="s11">
     <div id="fan11" class="abs" style="inset:0"></div>
+    <div class="abs" id="sweep11" style="top:0;bottom:0;width:500px;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.18),rgba(255,255,255,0))"></div>
     <div class="abs center" style="left:0;right:0;top:70px">
-      <div class="h1"><span id="t11a">Твой Windows.</span> <span id="t11b" style="color:#66c0f4">Твой вид.</span></div>
+      <div class="h1"><span class="w" id="t11a">Твой Windows. </span><span class="w" id="t11b" style="color:#66c0f4">Твой вид.</span></div>
     </div>
   </div>
 
   <!-- 12 End card -->
   <div class="scene center" id="s12">
     <img id="logo12" src="../data/logo.png" alt="" style="width:200px;height:200px;filter:drop-shadow(0 0 60px rgba(102,192,244,.5))">
-    <div style="margin-top:30px;display:flex;align-items:baseline;gap:30px"><span style="font-size:124px;font-weight:800;letter-spacing:.1em">GETBOX</span><span class="mono" style="font-size:64px;color:#66c0f4">1.3</span></div>
-    <div style="margin-top:10px;font-size:42px;color:#b7c4d0">Магазин программ для Windows 10 и 11</div>
+    <div id="name12" style="margin-top:30px;display:flex;align-items:baseline;gap:30px"><span style="font-size:130px;font-weight:900;letter-spacing:.1em">GETBOX</span><span class="mono" style="font-size:66px;color:#66c0f4">1.3</span></div>
+    <div id="sub12" style="margin-top:10px;font-size:42px;color:#b7c4d0">Магазин программ для Windows 10 и 11</div>
     <div id="cta12" style="margin-top:40px;padding:24px 56px;border-radius:10px;background:linear-gradient(180deg,#7cb928,#4c7a15);color:#fff;font-size:42px;font-weight:800">Скачать бесплатно</div>
-    <div class="mono" style="margin-top:28px;font-size:32px;color:#93a3b3">github.com/IncludeSpecial/GetBox/releases</div>
+    <div id="url12" class="mono" style="margin-top:28px;font-size:32px;color:#93a3b3">github.com/IncludeSpecial/GetBox/releases</div>
   </div>
-
+</div>
+  <div class="bars" id="bars"></div>
   <div class="flash" id="flash"></div>
   <div id="debug"></div>
 </div>
 
 <script>
   const BPM = 120, B = 60 / BPM, DURATION = 45;
+  const DROP1 = 10, STOP = 29.5, BREAK = 32, DROP2 = 36, END = 41;
   const params = new URLSearchParams(location.search);
   const OUT_H = Number(params.get('h') || 1080);
   const OUT_W = Math.round(OUT_H * 16 / 9 / 2) * 2;
@@ -192,36 +203,56 @@
   const lerp = (a, b, x) => a + (b - a) * x;
   const outCubic = (x) => 1 - Math.pow(1 - x, 3);
   const outQuint = (x) => 1 - Math.pow(1 - x, 5);
+  const inCubic = (x) => x * x * x;
   const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   const outBack = (x, c = 2.2) => 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
-  const beatPulse = (t) => Math.exp(-((t % B + B) % B) * 9);
+  const noise = (x) => { const s = Math.sin(x * 127.1) * 43758.5453; return (s - Math.floor(s)) * 2 - 1; };
+  const sincePulse = (t, at, k = 7) => (t >= at ? Math.exp(-(t - at) * k) : 0);
+  const inGroove = (t) => (t >= DROP1 && t < BREAK && !(t >= STOP && t < STOP + B)) || (t >= DROP2 && t < END);
+  const beatPulse = (t) => Math.exp(-((t % B + B) % B) * 10);
 
   const SHOTS = [
     [0, '01 Холодный старт'], [3, '02 Всё в одном окне'], [6, '03 Один клик'], [10, '04 Пять тем'],
     [14, '05 Свой акцент'], [17, '06 Четыре вида'], [21, '07 Обновления'], [25, '08 Обновить все'],
     [28, '09 Откат'], [32, '10 Подскажет'], [36, '11 Финальный веер'], [41, '12 Энд-кард'],
   ];
+  // Hits that kick the whole frame: drops, the badge, the rollback stop, the fan.
+  const HITS = [[DROP1, 1], [21.7, 0.6], [STOP, 0.7], [DROP2, 1.2], [END, 0.5]];
 
-  /** Scene window [a, b): quick zoom-in from blur, short fade out. */
-  function scene(id, t, a, b, w = 0.18) {
+  /** Scene window [a, b): whip in from the right, whip out to the left, with motion blur. */
+  function scene(id, t, a, b, w = 0.2) {
     const el = $(id);
-    const visible = t >= a && t < b + w;
+    const visible = t >= a - w * 0.5 && t < b + w * 0.5;
     el.style.visibility = visible ? 'visible' : 'hidden';
     if (!visible) return -1;
-    const inK = outQuint(seg(t, a, a + w)), outK = seg(t, b, b + w);
-    const s = lerp(1.08, 1, inK) * lerp(1, 0.96, outK);
-    const blur = (1 - inK) * 16 + outK * 20;
-    el.style.transform = `scale(${s})`;
-    el.style.filter = blur > 0.3 ? `blur(${blur}px)` : 'none';
-    el.style.opacity = Math.min(1, inK * 1.5) * (1 - outK);
+    const inK = outQuint(seg(t, a - w * 0.5, a + w * 0.5)), outK = inCubic(seg(t, b - w * 0.5, b + w * 0.5));
+    const x = (1 - inK) * 1500 - outK * 1500;
+    const blur = (1 - inK) * 28 + outK * 28;
+    el.style.transform = `translateX(${x}px) skewX(${((1 - inK) - outK) * -8}deg)`;
+    el.style.filter = blur > 0.5 ? `blur(${blur}px)` : 'none';
+    el.style.opacity = 1;
     return t - a;
   }
-  function show(el, k, dy = 60) {
+  /** Kinetic type: each word slams in from big and blurred, one after another. */
+  function words(el, text, lt, at, step = 0.12) {
+    if (el.dataset.text !== text) {
+      el.dataset.text = text;
+      el.innerHTML = text.split(' ').map((w) => `<span class="w">${w} </span>`).join('');
+    }
+    [...el.children].forEach((sp, i) => slam(sp, lt, at + i * step));
+  }
+  function slam(el, lt, at, dur = 0.22, from = 2.2) {
+    const x = outQuint(seg(lt, at, at + dur));
+    el.style.opacity = clamp(seg(lt, at, at + dur * 0.35));
+    el.style.transform = `scale(${lerp(from, 1, x)})`;
+    el.style.filter = x < 1 ? `blur(${(1 - x) * 14}px)` : 'none';
+  }
+  function rise(el, lt, at, dur = 0.3, dy = 60) {
+    const k = outQuint(seg(lt, at, at + dur));
     el.style.opacity = k;
     el.style.transform = `translateY(${(1 - k) * dy}px)`;
   }
-  const rise = (el, lt, at, dur = 0.3, dy = 60) => show(el, outQuint(seg(lt, at, at + dur)), dy);
-  function pop(el, lt, at, dur = 0.35, extra = '') {
+  function pop(el, lt, at, dur = 0.32, extra = '') {
     const x = seg(lt, at, at + dur);
     el.style.opacity = clamp(x * 3);
     el.style.transform = `${extra} scale(${x === 0 ? 0 : outBack(x)})`;
@@ -236,7 +267,7 @@
   }
   const R = (x, y, w, h) => ({ x: x / 1440, y: y / 900, w: w / 1440, h: h / 900 });
   const mix = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) });
-  const FULL = R(0, 0, 1440, 900), CONTENT = R(216, 88, 1224, 688);
+  const FULL = R(0, 0, 1440, 900), CONTENT = R(216, 88, 1224, 688), CELL = R(236, 205, 760, 422);
 
   // ---------- dynamic elements ----------
   const THEMES = [
@@ -246,6 +277,7 @@
   ];
   $('themes').innerHTML = THEMES.map(([f, label, bg, fg], i) => `
     <div class="view" id="th${i}" style="left:0;top:0;width:1920px;height:1080px"><div class="cam" id="thc${i}"><img src="shots/13/${f}.png" alt=""></div></div>
+    <div class="abs" id="the${i}" style="top:0;width:16px;height:1080px;background:${bg};box-shadow:0 0 40px 10px ${bg}"></div>
     <div class="chip" id="thl${i}" style="left:${192 + i * 384}px;bottom:70px;background:${bg};color:${fg}">${label}</div>`).join('') +
     [1, 2, 3, 4].map((i) => `<div class="abs" id="thg${i}" style="left:${i * 384 - 3}px;top:0;width:6px;height:1080px;background:#000;opacity:0"></div>`).join('');
 
@@ -255,10 +287,18 @@
   $('dots5').innerHTML = ['#66c0f4', '#8b6cff', '#2dd4bf', '#7cb928', '#f59e0b', '#ef5da8']
     .map((c, i) => `<span class="dot" id="d5${i}" style="background:${c}"></span>`).join('');
 
-  const VIEWS = [['home-classic', R(216, 440, 1224, 460), 'Карточки.'], ['cat-list', CONTENT, 'Список.'],
-    ['cat-table', CONTENT, 'Таблица.'], ['cat-tiles', CONTENT, 'Плитки.']];
+  const VIEW_COLORS = ['#66c0f4', '#8ee8da', '#cbbcff', '#ffe066'];
+  const VIEWS = [['cat-cards', 'Карточки.'], ['cat-list', 'Список.'], ['cat-table', 'Таблица.'], ['cat-tiles-hover', 'Плитки.']];
   $('views6').innerHTML = VIEWS.map(([f], i) =>
-    `<div class="view" id="vw${i}"><div class="cam" id="vwc${i}"><img src="shots/13/${f}.png" alt=""></div></div>`).join('');
+    `<div class="view" id="vw${i}"><div class="cam" id="vwc${i}"><img src="shots/13/${f}.png" alt=""></div>
+      <span class="chip" id="vwl${i}" style="left:20px;bottom:20px;font-size:30px;padding:8px 20px;background:rgba(7,13,19,.9);color:${VIEW_COLORS[i]}">${VIEWS[i][1].replace('.', '')}</span></div>`).join('');
+  const GLYPHS = [
+    '<rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>',
+    '<rect x="1" y="2" width="4" height="4" rx="1"/><rect x="7" y="3" width="8" height="2" rx="1"/><rect x="1" y="10" width="4" height="4" rx="1"/><rect x="7" y="11" width="8" height="2" rx="1"/>',
+    '<rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="14" height="2" rx="1"/>',
+    '<rect x="1" y="1" width="4" height="4" rx="1"/><rect x="6" y="1" width="4" height="4" rx="1"/><rect x="11" y="1" width="4" height="4" rx="1"/><rect x="1" y="6" width="4" height="4" rx="1"/><rect x="6" y="6" width="4" height="4" rx="1"/><rect x="11" y="6" width="4" height="4" rx="1"/><rect x="1" y="11" width="4" height="4" rx="1"/><rect x="6" y="11" width="4" height="4" rx="1"/><rect x="11" y="11" width="4" height="4" rx="1"/>',
+  ];
+  $('sw6').innerHTML = GLYPHS.map((g) => `<span><svg viewBox="0 0 16 16">${g}</svg></span>`).join('');
 
   $('checks8').innerHTML = [0, 1, 2].map((i) =>
     `<div class="abs" id="ck${i}" style="width:74px;height:74px;border-radius:50%;background:#7cb928;display:grid;place-items:center;color:#fff;font-size:44px;font-weight:900;box-shadow:0 0 0 12px rgba(124,185,40,.25)">✓</div>`).join('');
@@ -269,184 +309,244 @@
 
   // ---------- render ----------
   window.render = function render(t) {
-    $('glow').style.opacity = 0.22 + 0.18 * beatPulse(t) * (t >= 10 && t < 36 ? 1 : t >= 36 ? 1.4 : 0.6);
-    $('glow').style.transform = `scale(${1 + 0.05 * beatPulse(t)})`;
+    // World camera: punch on every beat in the groove, shake on the hits.
+    const punch = inGroove(t) ? 0.022 * beatPulse(t) : 0;
+    const shake = HITS.reduce((acc, [at, amp]) => acc + amp * sincePulse(t, at, 9), 0);
+    $('world').style.transform = `translate(${noise(t * 31) * 22 * shake}px, ${noise(t * 17 + 3) * 22 * shake}px) scale(${1 + punch + 0.03 * shake})`;
+    $('glow').style.opacity = 0.2 + 0.25 * (inGroove(t) ? beatPulse(t) : 0.3);
     const shot = [...SHOTS].reverse().find(([a]) => t >= a);
     $('debug').textContent = `${shot[1]} · ${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
 
-    // 01
-    let lt = scene('s1', t, 0, 3, 0.25);
+    // 01 — logo assembles, rings pulse, the name types out
+    let lt = scene('s1', t, 0, 3);
     if (lt >= 0) {
-      const k = outCubic(seg(lt, 0.2, 1.0));
-      $('logo1').style.opacity = k; $('logo1').style.transform = `scale(${lerp(0.6, 1, outBack(seg(lt, 0.2, 0.9), 1.6))})`;
-      [['r1a', 0], ['r1b', B]].forEach(([id, off]) => {
-        const p = ((lt - off) % (2 * B) + 2 * B) % (2 * B) / (2 * B);
-        $(id).style.transform = `scale(${1 + p * 1.6})`; $(id).style.opacity = lt > 0.6 ? (1 - p) * 0.8 : 0;
+      const k = seg(lt, 0.15, 0.75);
+      $('logo1').style.opacity = clamp(k * 2);
+      $('logo1').style.transform = `scale(${lerp(0.3, 1, outBack(k, 1.8))}) rotate(${(1 - outCubic(k)) * -90}deg)`;
+      ['r1a', 'r1b', 'r1c'].forEach((id, i) => {
+        const p = (((lt - i * B * 0.66) % (2 * B)) + 2 * B) % (2 * B) / (2 * B);
+        $(id).style.transform = `scale(${1 + p * 2})`; $(id).style.opacity = lt > 0.6 ? (1 - p) * 0.8 : 0;
       });
-      const word = 'GETBOX'; $('brand1').textContent = word.slice(0, Math.floor(seg(lt, 1.0, 1.9) * word.length + 0.001));
-      pop($('ver1'), lt, 2.0, 0.35);
+      const word = 'GETBOX';
+      if (!$('brand1').children.length) $('brand1').innerHTML = [...word].map((c) => `<span class="w">${c}</span>`).join('');
+      [...$('brand1').children].forEach((sp, i) => slam(sp, lt, 1.0 + i * 0.1, 0.18, 2.6));
+      pop($('ver1'), lt, 1.9, 0.3);
     }
 
-    // 02
+    // 02 — the window flies in, the title lands word by word, the count runs up
     lt = scene('s2', t, 3, 6);
     if (lt >= 0) {
-      const k = outQuint(seg(lt, 0, 0.7));
-      const v = $('v2');
-      v.style.transform = `translateX(${(1 - k) * 900}px) rotateY(${lerp(-30, -16, k)}deg) rotateX(6deg) scale(${lerp(1, 1.06, seg(lt, 0.7, 3))})`;
-      frame(v.firstElementChild, 1280, 800, FULL);
-      rise($('t2a'), lt, 0.5); rise($('t2b'), lt, 1.0); rise($('t2c'), lt, 1.5, 0.3, 30);
+      const k = outQuint(seg(lt, 0, 0.6));
+      $('v2').style.transform = `translate(${(1 - k) * 700}px, ${(1 - k) * 120}px) rotateY(${lerp(-40, -16, k)}deg) rotateX(${lerp(14, 6, k)}deg) scale(${lerp(0.8, 1.05, k) + 0.04 * seg(lt, 0.6, 3)})`;
+      $('v2').style.transform = 'perspective(2600px) ' + $('v2').style.transform;
+      frame($('c2'), 1280, 800, mix(FULL, R(0, 0, 1300, 812), seg(lt, 0.6, 3)));
+      words($('t2a'), 'Все программы —', lt, 0.35);
+      words($('t2b'), 'в одном окне', lt, 0.85);
+      rise($('t2c'), lt, 1.3, 0.3, 30);
+      $('n2').textContent = Math.round(118 * outCubic(seg(lt, 1.3, 2.3)));
     }
 
-    // 03
+    // 03 — punch into the hero button, click, the queue slides in
     lt = scene('s3', t, 6, 10);
     if (lt >= 0) {
-      const zk = inOut(seg(lt, 0, 0.5));
-      const f = frame($('c3'), 1920, 1080, mix(FULL, R(230, 440, 830, 467), zk));
-      const bx = 376 * f.s + f.tx, by = 636 * f.s + f.ty;
-      const ck = outCubic(seg(lt, 0.4, 1.4));
-      $('cur3').style.left = lerp(1300, bx, ck) + 'px'; $('cur3').style.top = lerp(900, by, ck) + 'px';
-      $('cur3').style.opacity = lt < 3.4 ? 1 : 0;
-      $('cur3').style.transform = `scale(${lt > 1.5 && lt < 1.65 ? 0.85 : 1})`;
-      const rk = seg(lt, 1.5, 2.1), rs = lerp(40, 220, outCubic(rk));
+      const click = 1.5;
+      const zin = inOut(seg(lt, 0, 0.6)), out = inOut(seg(lt, click + 0.25, click + 0.85));
+      const near = R(540, 250, 420, 236);
+      const rect = mix(mix(FULL, near, zin), R(216, 36, 1224, 688), out);
+      const f = frame($('c3'), 1920, 1080, rect);
+      const bx = 682 * f.s + f.tx, by = 345 * f.s + f.ty;
+      const ck = outCubic(seg(lt, 0.3, 1.3));
+      $('cur3').style.left = lerp(1500, bx, ck) + 'px'; $('cur3').style.top = lerp(950, by, ck) + 'px';
+      $('cur3').style.opacity = lt < click + 0.5 ? 1 : 0;
+      $('cur3').style.transform = `scale(${lt > click && lt < click + 0.12 ? 0.8 : 1})`;
+      $('i3b').style.opacity = seg(lt, click + 0.05, click + 0.2);
+      const rk = seg(lt, click, click + 0.55), rs = lerp(60, 420, outCubic(rk));
       Object.assign($('rip3').style, { left: bx - rs / 2 + 'px', top: by - rs / 2 + 'px', width: rs + 'px', height: rs + 'px', opacity: rk > 0 && rk < 1 ? 1 - rk : 0 });
-      const qk = outQuint(seg(lt, 1.7, 2.3));
-      $('q3').style.transform = `translateX(${(1 - qk) * 600}px)`;
-      frame($('qc3'), 560, 1080, R(1100, 0, 340, 900));
-      rise($('t3a'), lt, 1.6); pop($('p3a'), lt, 2.4); pop($('p3b'), lt, 2.9);
+      $('v3').style.transform = `scale(${1 + 0.05 * sincePulse(lt, click, 10)})`;
+      $('sh3').style.opacity = seg(lt, click + 0.3, click + 0.7);
+      words($('t3a'), 'Один клик.', lt, click + 0.35, 0.16);
+      pop($('p3a'), lt, 2.5); pop($('p3b'), lt, 2.75); pop($('p3c'), lt, 3.0);
     }
 
-    // 04 — a wipe per beat, then five slices
-    lt = scene('s4', t, 10, 14, 0.12);
+    // 04 — one theme per beat with a glowing wipe edge, then five slices
+    lt = scene('s4', t, 10, 14, 0.14);
     if (lt >= 0) {
-      const sk = inOut(seg(lt, 2.5, 3.0));
+      const sk = inOut(seg(lt, 2.5, 2.9));
       THEMES.forEach((_, i) => {
-        const p = i === 0 ? 1 : outQuint(seg(lt, i * B, i * B + 0.28));
+        const p = i === 0 ? 1 : outQuint(seg(lt, i * B, i * B + 0.26));
         const left = lerp(0, i * 20, sk), right = i === 4 ? 0 : lerp(0, (4 - i) * 20, sk);
         $(`th${i}`).style.clipPath = `inset(0 ${Math.max(right, (1 - p) * 100)}% 0 ${left}%)`;
-        frame($(`thc${i}`), 1920, 1080, CONTENT);
-        pop($(`thl${i}`), lt, 3.0 + i * 0.12, 0.3, 'translateX(-50%)');
+        frame($(`thc${i}`), 1920, 1080, mix(CONTENT, R(240, 100, 1150, 646), sincePulse(lt, i * B, 6)));
+        const edge = $(`the${i}`);
+        edge.style.left = p * 1920 - 8 + 'px';
+        edge.style.opacity = i > 0 && p > 0 && p < 1 ? 1 : 0;
+        pop($(`thl${i}`), lt, 2.9 + i * 0.1, 0.28);
         if (i > 0) $(`thg${i}`).style.opacity = sk;
       });
-      rise($('t4'), lt, 0.1);
+      words($('t4'), 'Пять тем.', lt, 0.0, 0.18);
     }
 
-    // 05 — accent cycles on the beat
+    // 05 — each accent spreads out of its dot as a circle
     lt = scene('s5', t, 14, 17);
     if (lt >= 0) {
-      const rect = mix(R(230, 140, 900, 506), R(250, 150, 780, 439), seg(lt, 0, 3));
+      const rect = mix(R(230, 140, 900, 506), R(260, 150, 760, 427), seg(lt, 0, 3));
       const idx = lt < 0.5 ? 0 : Math.min(3, Math.floor((lt - 0.5) / B) + 1);
-      ACCENTS.forEach((_, i) => {
+      ACCENTS.forEach(([color, , dot], i) => {
         frame($(`avc${i}`), 1920, 1080, rect);
-        // Each new accent sweeps in from the left over the previous one.
-        const p = i === 0 ? 1 : outQuint(seg(lt, 0.5 + (i - 1) * B, 0.5 + (i - 1) * B + 0.22));
-        $(`av${i}`).style.clipPath = `inset(0 ${(1 - p) * 100}% 0 0)`;
+        const at = 0.5 + (i - 1) * B;
+        const p = i === 0 ? 1 : outCubic(seg(lt, at, at + 0.35));
+        const d = $(`d5${dot}`).getBoundingClientRect(), st = $('stage').getBoundingClientRect();
+        const k = 1920 / st.width;
+        const cx = (d.left + d.width / 2 - st.left) * k, cy = (d.top + d.height / 2 - st.top) * k;
+        $(`av${i}`).style.clipPath = i === 0 ? 'none' : `circle(${p * 2300}px at ${cx}px ${cy}px)`;
+        if (i === idx && i > 0) {
+          const bk = seg(lt, at, at + 0.4), bs = lerp(80, 900, outCubic(bk));
+          Object.assign($('burst5').style, { left: cx - bs / 2 + 'px', top: cy - bs / 2 + 'px', width: bs + 'px', height: bs + 'px',
+            border: `10px solid ${color}`, opacity: bk > 0 && bk < 1 ? 1 - bk : 0 });
+        }
       });
+      if (idx === 0) $('burst5').style.opacity = 0;
       const [color, , active] = ACCENTS[idx];
       $('acc5').style.color = color;
+      slam($('t5a'), lt, 0.05); slam($('acc5'), lt, 0.2);
       for (let i = 0; i < 6; i++) {
-        const d = $(`d5${i}`), on = i === active;
-        d.style.transform = `scale(${on ? 1.35 : 1})`;
-        d.style.boxShadow = on ? '0 0 0 8px #000, 0 0 0 14px #fff' : 'none';
+        const dEl = $(`d5${i}`), on = i === active;
+        const beat = idx > 0 && on ? sincePulse(lt, 0.5 + (idx - 1) * B, 8) : 0;
+        dEl.style.transform = `scale(${(on ? 1.35 : 1) + beat * 0.5})`;
+        dEl.style.boxShadow = on ? '0 0 0 8px #000, 0 0 0 14px #fff' : 'none';
       }
     }
 
-    // 06 — cards → list → table → tiles, then a 2×2 grid
+    // 06 — a view per beat, then the grid assembles from flying cells
     lt = scene('s6', t, 17, 21);
     if (lt >= 0) {
-      const gk = inOut(seg(lt, 2.5, 3.0));
+      const g = 2.0;
       const idx = Math.min(3, Math.floor(lt / B));
-      VIEWS.forEach(([, rect], i) => {
+      VIEWS.forEach((_, i) => {
         const v = $(`vw${i}`);
-        const qx = (i % 2) * 960, qy = Math.floor(i / 2) * 540;
-        const x = lerp(0, qx + 8, gk), y = lerp(0, qy + 8, gk), w = lerp(1920, 944, gk), h = lerp(1080, 524, gk);
-        Object.assign(v.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: gk * 14 + 'px' });
-        const swap = seg(lt, i * B, i * B + 0.18);
-        const visible = gk > 0 ? 1 : (i === idx ? 1 : 0);
-        v.style.opacity = visible;
-        v.style.zIndex = i === idx ? 2 : 1;
-        v.style.transform = gk > 0 ? 'none' : `scale(${lerp(1.05, 1, outCubic(swap))})`;
-        frame(v.firstElementChild, w, h, rect);
+        const qx = (i % 2) * 960 + 10, qy = Math.floor(i / 2) * 540 + 10, qw = 940, qh = 520;
+        let x = 0, y = 0, w = 1920, h = 1080, op = i === idx ? 1 : 0, sc = 1;
+        if (lt < g) {
+          sc = 1 + 0.07 * sincePulse(lt, i * B, 9);
+        } else {
+          // Tiles (the last view) shrinks into its cell; the other three fly in from their corners.
+          const k = i === 3 ? inOut(seg(lt, g, g + 0.4)) : outQuint(seg(lt, g + 0.2 + i * 0.12, g + 0.6 + i * 0.12));
+          const fromX = i === 3 ? 0 : (i % 2 ? 1 : -1) * 1400 + qx, fromY = i === 3 ? 0 : (i < 2 ? -900 : 900) + qy;
+          const fw = i === 3 ? 1920 : qw, fh = i === 3 ? 1080 : qh;
+          x = lerp(fromX, qx, k); y = lerp(fromY, qy, k); w = lerp(fw, qw, k); h = lerp(fh, qh, k);
+          op = i === 3 || k > 0 ? 1 : 0;
+          v.style.boxShadow = `0 30px 60px rgba(0,0,0,${0.5 * k})`;
+        }
+        Object.assign(v.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', opacity: op,
+          borderRadius: (lt >= g ? 14 : 0) + 'px', zIndex: i === 3 ? 1 : 2, transform: `scale(${sc})` });
+        // In the grid each cell zooms onto the first rows so the layout reads even small.
+        frame(v.firstElementChild, w, h, lt < g ? CONTENT : mix(CONTENT, CELL, seg(lt, g, g + 0.5)));
+        pop($(`vwl${i}`), lt, g + 0.7 + i * 0.1, 0.25);
       });
       [...$('sw6').children].forEach((s, i) => s.classList.toggle('on', i === idx));
-      $('sw6').style.opacity = 1 - gk;
-      $('t6').textContent = lt < 2.5 ? VIEWS[idx][2] : 'Как удобно тебе.';
-      show($('t6'), outQuint(seg(lt % B, 0, 0.15)) * (lt < 2.5 ? 1 : outQuint(seg(lt, 2.6, 2.9))), 30);
+      $('sw6').style.opacity = 1 - seg(lt, g, g + 0.2);
+      $('sw6').style.transform = `scale(${1 + 0.18 * sincePulse(lt, idx * B, 10)})`;
+      $('sh6').style.opacity = lt < g ? 1 : 1 - seg(lt, g, g + 0.3) + seg(lt, 3.0, 3.2);
+      if (lt < g) words($('t6'), VIEWS[idx][1], lt - idx * B, 0, 0.1);
+      else words($('t6'), 'Как удобно тебе.', lt, 3.0, 0.12);
     }
 
-    // 07 — updates tab, badge pops
+    // 07 — the window lands, the badge slams onto the tab
     lt = scene('s7', t, 21, 25);
     if (lt >= 0) {
-      const k = outQuint(seg(lt, 0, 0.6));
-      $('v7').style.transform = `translateY(${(1 - k) * 300}px) rotateX(${lerp(30, 14, k)}deg)`;
-      frame($('c7'), 1600, 1000, mix(FULL, R(0, 120, 1440, 900), inOut(seg(lt, 1.4, 4))));
-      const bk = seg(lt, 0.8, 1.4);
-      $('b7').style.left = lerp(895, 1250, outCubic(bk)) + 'px';
-      $('b7').style.top = lerp(520, 255, outCubic(bk)) + 'px';
-      pop($('b7'), lt, 0.6, 0.4);
-      if (lt > 1.4) $('b7').style.transform = `scale(${1 + 0.12 * beatPulse(t)})`;
-      rise($('t7a'), lt, 0.3); rise($('t7b'), lt, 0.9, 0.3, 30);
+      const k = outQuint(seg(lt, 0, 0.55));
+      $('v7').style.transform = `translateY(${(1 - k) * 500}px) rotateX(${lerp(40, 14, k)}deg)`;
+      frame($('c7'), 1600, 1000, mix(FULL, R(0, 140, 1440, 900), inOut(seg(lt, 1.2, 4))));
+      const bk = seg(lt, 0.45, 0.7);
+      $('b7').style.left = lerp(900, 1255, outCubic(bk)) + 'px';
+      $('b7').style.top = lerp(560, 262 - 140 * inOut(seg(lt, 1.2, 4)) * 0.5, outCubic(bk)) + 'px';
+      $('b7').style.opacity = clamp(seg(lt, 0.25, 0.35));
+      $('b7').style.transform = `scale(${lerp(3.5, 1, outQuint(bk)) + 0.15 * (lt > 0.7 ? beatPulse(t) : 0)})`;
+      words($('t7a'), 'Обновления — в одном месте', lt, 0.2, 0.1);
+      [...$('t7a').children].slice(2).forEach((sp) => { sp.style.color = '#66c0f4'; });
+      rise($('t7b'), lt, 1.0, 0.3, 30);
     }
 
-    // 08 — update all, rows tick off
+    // 08 — push in, rows tick off on the beat
     lt = scene('s8', t, 25, 28);
     if (lt >= 0) {
-      const f = frame($('c8'), 1920, 1080, mix(R(230, 90, 1210, 680), R(230, 150, 1000, 562), seg(lt, 0, 3)));
+      const f = frame($('c8'), 1920, 1080, mix(R(230, 90, 1210, 680), R(230, 160, 960, 540), outCubic(seg(lt, 0, 3))));
+      $('v8').style.transform = `scale(${1 + 0.04 * [0, 1, 2].reduce((a, i) => a + sincePulse(lt, 0.8 + i * B, 10), 0)})`;
       [235, 290, 343].forEach((y, i) => {
         const el = $(`ck${i}`);
         el.style.left = 248 * f.s + f.tx - 37 + 'px'; el.style.top = y * f.s + f.ty - 37 + 'px';
-        pop(el, lt, 0.8 + i * B, 0.3);
+        pop(el, lt, 0.8 + i * B, 0.28);
       });
-      rise($('t8'), lt, 0.3);
+      words($('t8'), 'Все — одной кнопкой.', lt, 0.25, 0.12);
+      [...$('t8').children].slice(2).forEach((sp) => { sp.style.color = '#9fd65a'; });
     }
 
-    // 09 — rollback
+    // 09 — click, the stop, the version rewinds like a tape
     lt = scene('s9', t, 28, 32);
     if (lt >= 0) {
-      const f = frame($('c9'), 1920, 1080, mix(R(262, 380, 880, 495), R(560, 440, 600, 337), inOut(seg(lt, 0, 0.8))));
+      const f = frame($('c9'), 1920, 1080, mix(R(262, 380, 880, 495), R(620, 440, 560, 315), inOut(seg(lt, 0, 0.8))));
       const hk = seg(lt, 0.8, 1.0);
       Object.assign($('hl9').style, { left: 999 * f.s + f.tx + 'px', top: 489 * f.s + f.ty + 'px', width: 128 * f.s + 'px', height: 23 * f.s + 'px',
-        opacity: hk * (1 - seg(lt, 1.5, 1.7)) });
-      const bk = seg(lt, 1.4, 1.8);
-      $('v9').style.filter = bk > 0 ? `blur(${bk * 14}px) brightness(${1 - bk * 0.7})` : 'none';
-      const vk = outQuint(seg(lt, 1.5, 1.9));
-      $('ver9').style.opacity = vk; $('ver9').style.transform = `scale(${lerp(0.7, 1, vk)})`;
-      $('strike9').style.width = seg(lt, 1.9, 2.2) * 400 + 'px';
-      $('rew9').style.transform = `rotate(${-360 * inOut(seg(lt, 1.8, 2.6))}deg)`;
-      const nk = outQuint(seg(lt, 2.3, 2.7));
-      $('new9').style.opacity = nk; $('new9').style.transform = `translateY(${(1 - nk) * -80}px)`;
-      rise($('t9a'), lt, 1.8); rise($('t9b'), lt, 2.6);
+        opacity: hk * (1 - seg(lt, 1.4, 1.5)) });
+      const bk = seg(lt, 1.45, 1.6);
+      $('v9').style.filter = bk > 0 ? `blur(${bk * 16}px) brightness(${1 - bk * 0.75})` : 'none';
+      // Tape rewind: digits spin backwards, scanlines and jitter, then lock on the old version.
+      const spin = seg(lt, 1.5, 2.4);
+      const versions = ['1.141.0', '1.140.9', '1.140.7', '1.140.6', '1.140.4', '1.140.3', '1.140.2'];
+      $('num9').textContent = versions[Math.min(versions.length - 1, Math.floor(inCubic(spin) * versions.length * 0.999 + (spin >= 1 ? 1 : 0)))];
+      $('num9').style.textShadow = spin > 0 && spin < 1 ? '-6px 0 #ff3b6b, 6px 0 #3bd5ff' : 'none';
+      $('num9').style.transform = `translateX(${spin > 0 && spin < 1 ? noise(t * 50) * 12 : 0}px)`;
+      $('scan9').style.opacity = spin > 0 && spin < 1 ? 1 : 0;
+      $('rew9').style.transform = `rotate(${-720 * outCubic(spin)}deg)`;
+      const vk = outQuint(seg(lt, 1.45, 1.7));
+      $('ver9').style.opacity = vk; $('ver9').style.transform = `scale(${lerp(0.6, 1, vk) + 0.06 * sincePulse(lt, 2.4, 8)})`;
+      slam($('t9a'), lt, 1.6); slam($('t9b'), lt, 2.45);
     }
 
-    // 10 — suggestions in the light theme
+    // 10 — snap into the light theme, glide down the suggestions
     lt = scene('s10', t, 32, 36);
     if (lt >= 0) {
-      frame($('c10'), 1920, 1080, mix(R(411, 200, 620, 349), R(411, 400, 620, 349), inOut(seg(lt, 0.3, 3.2))));
-      rise($('t10'), lt, 0.3);
+      frame($('c10'), 1920, 1080, mix(R(411, 200, 620, 349), R(411, 400, 620, 349), inOut(seg(lt, 0.4, 3.3))));
+      words($('t10'), 'Подскажет, что поставить ещё.', lt, 0.25, 0.1);
+      [...$('t10').children].slice(1).forEach((sp) => { sp.style.color = '#5a3fd6'; });
     }
 
-    // 11 — the fan opens on the drop
-    lt = scene('s11', t, 36, 41, 0.1);
+    // 11 — the fan bursts open on the drop, a light sweep, then folds into the logo
+    lt = scene('s11', t, 36, 41, 0.12);
     if (lt >= 0) {
-      const k = outBack(seg(lt, 0, 0.7), 1.2), close = inOut(seg(lt, 4.4, 5));
+      const k = outBack(seg(lt, 0, 0.55), 1.4), close = inOut(seg(lt, 4.4, 5));
       FAN.forEach(([, kk], i) => {
-        const x = kk * 330 * k, y = Math.abs(kk) * 40 * k;
-        $(`fn${i}`).style.transform = `perspective(2200px) translate(${x}px, ${y + 40}px) rotateY(${Math.sin(lt * 0.8) * 5}deg) rotateY(${-kk * 16 * k}deg) rotateZ(${kk * 4 * k}deg) scale(${(1 - Math.abs(kk) * 0.08 * k) * (1 - close)})`;
+        const x = kk * 340 * k, y = Math.abs(kk) * 40 * k;
+        const sway = Math.sin(lt * 1.2) * 4;
+        $(`fn${i}`).style.transform = `perspective(2200px) translate(${x * (1 - close)}px, ${(y + 40) * (1 - close)}px) rotateY(${(-kk * 18 + sway) * k}deg) rotateZ(${kk * 4 * k}deg) scale(${(1 - Math.abs(kk) * 0.08 * k) * lerp(1, 0.2, close)})`;
         $(`fn${i}`).style.opacity = 1 - close;
       });
-      $('fan11').style.transform = `scale(${lerp(1, 0.94, seg(lt, 0, 4))})`;
-      rise($('t11a'), lt, 0.5); rise($('t11b'), lt, 1.5);
+      $('fan11').style.transform = `scale(${lerp(1.15, 0.95, outCubic(seg(lt, 0, 4)))})`;
+      $('sweep11').style.left = lerp(-600, 2000, inOut(seg(lt, 0.6, 1.8))) + 'px';
+      words($('t11a'), 'Твой Windows.', lt, 0.5, 0.14);
+      words($('t11b'), 'Твой вид.', lt, 1.5, 0.14);
     }
 
-    // 12 — end card
+    // 12 — end card builds in four beats
     lt = scene('s12', t, 41, 46, 0.25);
     if (lt >= 0) {
-      $('logo12').style.transform = `scale(${1 + 0.04 * Math.sin(lt * 2.4)})`;
-      $('cta12').style.transform = `scale(${1 + 0.03 * Math.sin(lt * 4)})`;
-      $('s12').style.opacity = Math.min(Number($('s12').style.opacity), 1 - seg(t, 44.2, 45));
+      pop($('logo12'), lt, 0.0, 0.4);
+      slam($('name12'), lt, 0.3, 0.25, 1.8);
+      rise($('sub12'), lt, 0.7); pop($('cta12'), lt, 1.0, 0.35); rise($('url12'), lt, 1.3, 0.3, 30);
+      if (lt > 1.4) {
+        $('logo12').style.transform = `scale(${1 + 0.04 * Math.sin(lt * 2.4)})`;
+        $('cta12').style.transform = `scale(${1 + 0.035 * Math.sin(lt * 4)})`;
+      }
+      $('s12').style.opacity = 1 - seg(t, 44.2, 45);
     }
 
-    // white flashes on the two drops
-    $('flash').style.opacity = 0.75 * Math.max(1 - seg(t, 10, 10.25), 0) * (t >= 10 ? 1 : 0) + 0.75 * (t >= 36 ? 1 - seg(t, 36, 36.25) : 0);
+    // Flashes and light bars on the drops.
+    const fl = Math.max(sincePulse(t, DROP1, 9), sincePulse(t, DROP2, 9), 0.5 * sincePulse(t, STOP, 12));
+    $('flash').style.opacity = 0.8 * fl;
+    const bars = Math.max(sincePulse(t, DROP1, 5), sincePulse(t, DROP2, 5));
+    $('bars').style.background = bars > 0.02
+      ? `repeating-linear-gradient(100deg, rgba(102,192,244,${0.25 * bars}) 0 40px, transparent 40px 160px)` : 'none';
+    $('bars').style.transform = `translateX(${(t * 900) % 160}px)`;
   };
   window.render(0);
 </script>

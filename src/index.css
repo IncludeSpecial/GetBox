@@ -1885,15 +1885,26 @@ button, input, select {
 .paged-grid--tiles { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
 .capsule--tile .capsule-art { aspect-ratio: 1 / 1; }
 .capsule--tile .capsule-logo { width: 46px; height: 46px; }
-.capsule--tile .capsule-body { flex-direction: column; align-items: stretch; gap: 6px; padding: 7px 8px 8px; }
+.capsule--tile .capsule-body { justify-content: center; padding: 7px 8px 8px; }
 .capsule--tile .capsule-name { text-align: center; font-size: 12px; }
 .capsule--tile .capsule-meta,
 .capsule--tile .capsule-reason { display: none; }
-.capsule--tile .capsule-cta { width: 100%; opacity: 0; transition: opacity 0.13s ease; }
-.capsule--tile:hover .capsule-cta,
-.capsule--tile:focus-within .capsule-cta,
-.capsule--tile .capsule-cta.busy,
-.capsule--tile .capsule-cta.failed { opacity: 1; }
+
+/* The action floats over the bottom of the art and shows on hover / focus. */
+.capsule-cta--tile {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  opacity: 0;
+  transition: opacity 0.13s ease;
+}
+
+.capsule--tile:hover .capsule-cta--tile,
+.capsule--tile:focus-within .capsule-cta--tile,
+.capsule-cta--tile.busy,
+.capsule-cta--tile.failed { opacity: 1; }
+.capsule--tile .capsule-installed { top: 6px; left: 6px; }
 
 /* List: one row per app with description. */
 .app-list { display: flex; flex-direction: column; gap: 4px; width: 100%; }

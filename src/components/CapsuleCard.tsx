@@ -49,13 +49,15 @@ function CapsuleCardInner({ app, categoryLabel, reason, job, onInstall, onRetry,
         >
           {app.isFavorite ? <IconStarFilled size={13} /> : <IconStar size={13} />}
         </button>
+        {/* Tiles keep the action over the art so the name row stays compact. */}
+        {tile && <AppAction app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} className="capsule-cta--tile" />}
       </div>
       <div className="capsule-body">
         <div className="capsule-text">
           <div className="capsule-name" title={app.name}>{app.name}</div>
           {categoryLabel && <div className="capsule-meta">{categoryLabel}</div>}
         </div>
-        <AppAction app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />
+        {!tile && <AppAction app={app} job={job} onInstall={onInstall} onRetry={onRetry} onCancel={onCancel} />}
       </div>
       {reason && <div className="capsule-reason" title={reason}>{reason}</div>}
     </article>
