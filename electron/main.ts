@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, protocol, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, protocol, Menu, clipboard } from 'electron';
 import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -10,6 +10,9 @@ import { searchPackages } from './search-cache.js';
 import { installQueue } from './queue/install-queue.js';
 import { updates } from './updates/updates.js';
 import { selfUpdater } from './self-update/self-update.js';
+import { installLogging, logDir } from './log.js';
+import { buildReport } from './diagnostics.js';
+import { SMOKE, runSmoke } from './smoke.js';
 import { buildIndex, isIndexEmptyOrSmall } from './index-builder.js';
 import { getSettings, updateSettings } from './store/settings.js';
 import { toggleFavorite, isFavorite } from './store/favorites.js';
@@ -46,8 +49,24 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 
+installLogging();
+
 let mainWindow: BrowserWindow | null = null;
 let bootstrapRunning = false;
+
+// One GetBox at a time: a second launch brings the open window forward instead of
+// running a second queue against the same settings (and locking the exe during an update).
+const singleInstance = SMOKE || app.requestSingleInstanceLock();
+if (!singleInstance) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+}
 
 /** Single entry point for index builds so the renderer always gets progress and a terminating event. */
 async function runIndexBuild(): Promise<{ ok: boolean; count: number; message?: string }> {
@@ -127,6 +146,7 @@ function createWindow(): void {
     show: false,
   });
 
+  if (SMOKE) runSmoke(mainWindow);
   mainWindow.on('maximize', () => sendToRenderer('window:state', { maximized: true }));
   mainWindow.on('unmaximize', () => sendToRenderer('window:state', { maximized: false }));
 
@@ -292,6 +312,15 @@ function setupIpc(): void {
     if (v) void shell.openExternal(`https://github.com/IncludeSpecial/GetBox/releases/tag/v${v}`);
   });
 
+  ipcMain.handle('diagnostics:copyReport', async () => {
+    clipboard.writeText(await buildReport());
+    return true;
+  });
+  ipcMain.handle('diagnostics:openLogs', () => {
+    fs.mkdirSync(logDir(), { recursive: true });
+    return shell.openPath(logDir());
+  });
+
   ipcMain.handle('updates:get', () => updates.getState());
   ipcMain.handle('updates:check', () => updates.check());
   ipcMain.handle('updates:clearHistory', () => updates.clearHistory());
@@ -441,6 +470,7 @@ function setupIpc(): void {
 }
 
 app.whenReady().then(async () => {
+  if (!singleInstance) return;
   // Drop the default File/Edit/View menu — chrome lives in the custom title bar.
   Menu.setApplicationMenu(null);
 
@@ -468,6 +498,8 @@ app.whenReady().then(async () => {
   });
 
   createWindow();
+  // The smoke run only checks that the app starts and renders; nothing that needs the network.
+  if (SMOKE) return;
   updates.schedule(true);
   selfUpdater.schedule(true);
 

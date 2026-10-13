@@ -150,6 +150,10 @@ export const translations = {
       channel: 'Канал обновлений',
       stable: 'Стабильный',
       beta: 'Бета',
+      diagnostics: 'Диагностика',
+      copyReport: 'Скопировать отчёт',
+      copied: 'Отчёт скопирован — вставьте его в issue на GitHub',
+      openLogs: 'Папка журналов',
     },
     whatsNew: {
       title: 'GetBox обновился',
@@ -412,6 +416,10 @@ export const translations = {
       channel: 'Update channel',
       stable: 'Stable',
       beta: 'Beta',
+      diagnostics: 'Diagnostics',
+      copyReport: 'Copy report',
+      copied: 'Report copied — paste it into a GitHub issue',
+      openLogs: 'Logs folder',
     },
     whatsNew: {
       title: 'GetBox has been updated',

@@ -12,6 +12,7 @@ import type {
 } from './types.js';
 import { getRuntimePaths, testScoop, loadRuntimeState } from '../bootstrap/runtime.js';
 import { runCliWithProgress } from './cli-progress.js';
+import { cleanQuery, shellCommand } from './shell-args.js';
 import { classifyError } from './install-errors.js';
 import { parseScoopStatus } from '../updates/parse.js';
 import { getAppDataDir } from '../paths.js';
@@ -43,7 +44,7 @@ async function resolveScoopExe(): Promise<{ exe: string; env?: Record<string, st
 async function runScoop(args: string[], timeout = 60000): Promise<string> {
   const resolved = await resolveScoopExe();
   if (!resolved) throw new Error('Scoop runtime not ready');
-  const { stdout } = await execFileAsync(resolved.exe, args, {
+  const { stdout } = await execFileAsync(shellCommand(resolved.exe, args), [], {
     timeout,
     windowsHide: true,
     shell: true,
@@ -160,7 +161,9 @@ export class ScoopProvider implements PackageProvider {
   async search(query: string): Promise<Package[]> {
     if (!(await this.available()).ok) return [];
     try {
-      const out = await runScoop(['search', query], 30000);
+      const q = cleanQuery(query);
+      if (!q) return [];
+      const out = await runScoop(['search', q], 30000);
       return this.parseSearchOutput(out);
     } catch {
       return [];

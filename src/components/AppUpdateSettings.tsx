@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useI18n } from '../i18n/I18nContext';
 import type { AppSettings, SelfUpdateState } from '../types';
 
@@ -11,6 +12,13 @@ interface AppUpdateSettingsProps {
 /** Settings → GetBox: version, background self-update and the release channel. */
 export function AppUpdateSettings({ settings, state, onChange, onShowWhatsNew }: AppUpdateSettingsProps) {
   const { t } = useI18n();
+  const [copied, setCopied] = useState(false);
+  const copyReport = async () => {
+    if (await window.getbox.copyDiagnostics()) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 4000);
+    }
+  };
   const status = !state
     ? ''
     : state.status === 'checking'
@@ -64,6 +72,12 @@ export function AppUpdateSettings({ settings, state, onChange, onShowWhatsNew }:
             </button>
           ))}
         </div>
+      </div>
+      <div className="setting-row app-update-row">
+        <span>{t.selfUpdate.diagnostics}</span>
+        <span className="app-update-status" role="status">{copied ? t.selfUpdate.copied : ''}</span>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={() => void copyReport()}>{t.selfUpdate.copyReport}</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => void window.getbox.openLogs()}>{t.selfUpdate.openLogs}</button>
       </div>
     </section>
   );

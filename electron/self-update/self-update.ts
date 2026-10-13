@@ -4,10 +4,13 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { app } from 'electron';
+import { app, net } from 'electron';
 import { getAppDataDir } from '../paths.js';
 import { getSettings } from '../store/settings.js';
 import type { SelfUpdateState } from '../providers/types.js';
+import { logger } from '../log.js';
+
+const log = logger('self-update');
 
 const REPO = 'IncludeSpecial/GetBox';
 const API = `https://api.github.com/repos/${REPO}/releases`;
@@ -57,21 +60,103 @@ function updatesDir(): string {
   return path.join(getAppDataDir(), 'self-update');
 }
 
+/**
+ * Electron's net.fetch goes through Chromium's network stack and so honours the Windows
+ * proxy settings, like the browser does; Node's fetch ignores them. Tests run without
+ * Electron and get the global fetch.
+ */
+function httpFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  const headers = { 'User-Agent': 'GetBox', ...(init.headers as Record<string, string> | undefined) };
+  return typeof net?.fetch === 'function' ? net.fetch(url, { ...init, headers }) : fetch(url, { ...init, headers });
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'GetBox' } });
+  const res = await httpFetch(url, { headers: { Accept: 'application/vnd.github+json' } });
   if (!res.ok) throw new Error(`GitHub ${res.status}`);
   return (await res.json()) as T;
 }
 
 async function fetchText(url: string): Promise<string> {
-  const res = await fetch(url, { headers: { 'User-Agent': 'GetBox' }, redirect: 'follow' });
+  const res = await httpFetch(url, { redirect: 'follow' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
+}
+
+/**
+ * Where `url` redirects to (null when it answers directly). net.fetch neither reports the final
+ * URL nor supports manual redirects, so Electron's net.request is used; Node's fetch in tests.
+ */
+export function redirectTarget(url: string): Promise<string | null> {
+  if (typeof net?.request !== 'function') {
+    return fetch(url, { method: 'HEAD', redirect: 'manual', headers: { 'User-Agent': 'GetBox' } })
+      .then((res) => (res.status >= 300 && res.status < 400 ? res.headers.get('location') : null));
+  }
+  return new Promise((resolve, reject) => {
+    const req = net.request({ url, method: 'HEAD', redirect: 'manual' });
+    req.setHeader('User-Agent', 'GetBox');
+    req.on('redirect', (_status, _method, location) => { req.abort(); resolve(location); });
+    req.on('response', () => resolve(null));
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+/**
+ * Without the API: github.com/…/releases/latest redirects to the newest stable release's
+ * tag page, and asset URLs follow from the tag. Used when the API refuses (it allows 60
+ * anonymous requests an hour per IP, which a shared office or mobile IP runs out of).
+ * Release notes are not available this way.
+ */
+export async function latestViaRedirect(): Promise<GhRelease | null> {
+  const page = await redirectTarget(`https://github.com/${REPO}/releases/latest`);
+  const m = /\/releases\/tag\/v?([0-9][\w.-]*)$/.exec(page ?? '');
+  return page && m ? releaseFromTag(m[1], page) : null;
+}
+
+export function releaseFromTag(version: string, pageUrl: string): GhRelease {
+  const exe = `GetBox-${version}-portable.exe`;
+  const base = `https://github.com/${REPO}/releases/download/v${version}/`;
+  return {
+    tag_name: `v${version}`, name: `GetBox ${version}`, body: '', html_url: pageUrl, prerelease: false, draft: false,
+    assets: [{ name: exe, browser_download_url: base + exe, size: 0 }, { name: `${exe}.sha256`, browser_download_url: `${base}${exe}.sha256`, size: 0 }],
+  };
+}
+
+async function listReleases(channel: 'stable' | 'beta'): Promise<GhRelease[]> {
+  try {
+    return await fetchJson<GhRelease[]>(`${API}?per_page=15`);
+  } catch (err) {
+    // Prereleases are only listed by the API; the stable channel can do without it.
+    if (channel !== 'stable') throw err;
+    log.warn('API unavailable, using the releases/latest redirect:', err instanceof Error ? err.message : String(err));
+    const latest = await latestViaRedirect();
+    if (!latest) throw err;
+    return [latest];
+  }
 }
 
 function assertAllowed(url: string): void {
   const u = new URL(url);
   if (u.protocol !== 'https:' || !ALLOWED_HOSTS.has(u.hostname)) throw new Error(`Недопустимый адрес загрузки: ${u.hostname}`);
+}
+
+/**
+ * The cmd script that replaces the portable exe once GetBox (process `pid`) has exited:
+ * waits for the process, copies `next` over `exe`, optionally starts it, deletes itself.
+ */
+export function swapScript(pid: number, next: string, exe: string, restart: boolean): string {
+  const q = (p: string) => `"${p.replace(/"/g, '')}"`;
+  return [
+    '@echo off',
+    ':wait',
+    `tasklist /FI "PID eq ${pid}" | find "${pid}" >nul && (timeout /t 1 /nobreak >nul & goto wait)`,
+    // No write access to the exe's folder: bring the old version back instead of leaving GetBox closed.
+    `copy /Y ${q(next)} ${q(exe)} >nul || (${restart ? `start "" ${q(exe)} & ` : ''}goto end)`,
+    `del ${q(next)} >nul 2>&1`,
+    restart ? `start "" ${q(exe)}` : 'rem no restart',
+    ':end',
+    'del "%~f0"',
+  ].join('\r\n');
 }
 
 class SelfUpdater extends EventEmitter {
@@ -95,17 +180,20 @@ class SelfUpdater extends EventEmitter {
     this.set({ status: 'checking', error: undefined });
     try {
       const { appUpdateChannel } = getSettings();
-      const releases = await fetchJson<GhRelease[]>(`${API}?per_page=15`);
+      const releases = await listReleases(appUpdateChannel);
       const found = pickRelease(releases, appUpdateChannel);
       if (!found || compareVersions(found.version, this.state.current) <= 0) {
+        log.info(`up to date: ${this.state.current} (latest ${found?.version ?? '—'}, ${appUpdateChannel})`);
         this.set({ status: 'idle', latest: found?.version, checkedAt: Date.now() });
         return this.getState();
       }
+      log.info(`found ${found.version} (current ${this.state.current}, ${manual ? 'manual' : 'scheduled'} check, portable: ${this.state.canApply})`);
       this.set({
         status: 'available', latest: found.version, notes: found.release.body, releaseUrl: found.release.html_url, checkedAt: Date.now(),
       });
       if (this.state.canApply && (manual || getSettings().autoUpdateApp)) await this.download(found.release, found.asset);
     } catch (err) {
+      log.error('check/download failed:', err);
       // A failed download keeps the update visible as «available» so it can be retried.
       const status = this.state.status === 'downloading' || this.state.status === 'available' ? 'available' : 'error';
       this.set({ status, progress: undefined, error: err instanceof Error ? err.message : String(err) });
@@ -128,9 +216,12 @@ class SelfUpdater extends EventEmitter {
     const part = target + '.part';
     this.set({ status: 'downloading', progress: 0 });
 
-    const res = await fetch(asset.browser_download_url, { headers: { 'User-Agent': 'GetBox' }, redirect: 'follow' });
+    // github.com hands the file to its object storage; that host is checked before anything is read.
+    const source = (await redirectTarget(asset.browser_download_url)) ?? asset.browser_download_url;
+    assertAllowed(source);
+    log.info(`downloading ${asset.name} from ${new URL(source).hostname}`);
+    const res = await httpFetch(source, { redirect: 'follow' });
     if (!res.ok || !res.body) throw new Error(`Загрузка: HTTP ${res.status}`);
-    assertAllowed(res.url);
     const total = Number(res.headers.get('content-length')) || asset.size;
     const hash = crypto.createHash('sha256');
     const out = fs.createWriteStream(part);
@@ -154,6 +245,7 @@ class SelfUpdater extends EventEmitter {
       throw new Error(`SHA256 не совпал: ${actual}`);
     }
     fs.renameSync(part, target);
+    log.info(`downloaded ${asset.name}, ${done} bytes, SHA256 ok`);
     this.set({ status: 'ready', progress: 100, downloadedPath: target });
   }
 
@@ -167,19 +259,9 @@ class SelfUpdater extends EventEmitter {
     const next = this.state.downloadedPath;
     if (!exe || !next || this.state.status !== 'ready' || !fs.existsSync(next)) return false;
     const script = path.join(os.tmpdir(), `getbox-update-${process.pid}.cmd`);
-    const q = (p: string) => `"${p.replace(/"/g, '')}"`;
-    fs.writeFileSync(script, [
-      '@echo off',
-      ':wait',
-      `tasklist /FI "PID eq ${process.pid}" | find "${process.pid}" >nul && (timeout /t 1 /nobreak >nul & goto wait)`,
-      // No write access to the exe's folder: bring the old version back instead of leaving GetBox closed.
-      `copy /Y ${q(next)} ${q(exe)} >nul || (${restart ? `start "" ${q(exe)} & ` : ''}goto end)`,
-      `del ${q(next)} >nul 2>&1`,
-      restart ? `start "" ${q(exe)}` : 'rem no restart',
-      ':end',
-      'del "%~f0"',
-    ].join('\r\n'));
+    fs.writeFileSync(script, swapScript(process.pid, next, exe, restart));
     spawn('cmd.exe', ['/c', script], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+    log.info(`applying ${this.state.latest} over ${exe} (restart: ${restart})`);
     return true;
   }
 

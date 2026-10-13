@@ -6,6 +6,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 
+// Modules under test write logs and caches under %LOCALAPPDATA%\GetBox; keep them out of the repo.
+process.env.LOCALAPPDATA = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'getbox-smoke-'));
+
 let passed = 0;
 let failed = 0;
 
@@ -729,5 +732,82 @@ console.log('\nself-update:');
   });
 }
 
-console.log(`\n${passed} passed, ${failed} failed\n`);
-process.exit(failed > 0 ? 1 : 0);
+
+console.log('\nshell arguments:');
+{
+  const { quoteArg, shellCommand, cleanQuery } = loadTsModule(path.join(__dirname, '..', 'electron', 'providers', 'shell-args.ts'));
+  test('plain arguments pass, multi-word ones are quoted', () => {
+    assert.equal(quoteArg('Mozilla.Firefox'), 'Mozilla.Firefox');
+    assert.equal(quoteArg('visual studio'), '"visual studio"');
+    assert.equal(quoteArg('extras/vlc@3.0.20'), 'extras/vlc@3.0.20');
+  });
+  test('cmd.exe metacharacters are refused', () => {
+    for (const bad of ['vlc&calc', 'a|b', 'x>y', '%PATH%', 'a"b', 'a^b', 'line\nbreak']) {
+      assert.throws(() => quoteArg(bad), (e) => e.code === 'untrusted', bad);
+    }
+  });
+  test('the command line quotes the exe and drops empty arguments', () => {
+    assert.equal(shellCommand('C:\\Users\\A B\\scoop\\shims\\scoop.cmd', ['search', '']), '"C:\\Users\\A B\\scoop\\shims\\scoop.cmd" search');
+    assert.equal(shellCommand('winget', ['install', '--id', 'Notepad++.Notepad++', '-e']), '"winget" install --id Notepad++.Notepad++ -e');
+  });
+  test('typed queries keep letters, digits and separators only', () => {
+    assert.equal(cleanQuery('vlc & calc'), 'vlc calc');
+    assert.equal(cleanQuery('  Notepad++ '), 'Notepad++');
+    assert.equal(cleanQuery('телеграм|x'), 'телеграм x');
+    assert.equal(cleanQuery('"; rm -rf'), 'rm -rf');
+    assert.equal(cleanQuery('%%%'), '');
+  });
+}
+
+// Tests that need to await: run in order after the synchronous ones.
+const asyncTests = [];
+const testAsync = (name, fn) => asyncTests.push([name, fn]);
+
+{
+  const su = loadTsModule(path.join(__dirname, '..', 'electron', 'self-update', 'self-update.ts'), {
+    electron: { ...electronStub, app: { ...electronStub.app, getVersion: () => '1.3.0' } },
+    'electron-store': class { get() { return {}; } set() {} },
+  });
+  test('a release built from its tag points at the exe and its checksum', () => {
+    const r = su.releaseFromTag('1.3.2', 'https://github.com/IncludeSpecial/GetBox/releases/tag/v1.3.2');
+    assert.equal(su.pickRelease([r], 'stable').version, '1.3.2');
+    assert.deepEqual(r.assets.map((a) => a.browser_download_url), [
+      'https://github.com/IncludeSpecial/GetBox/releases/download/v1.3.2/GetBox-1.3.2-portable.exe',
+      'https://github.com/IncludeSpecial/GetBox/releases/download/v1.3.2/GetBox-1.3.2-portable.exe.sha256',
+    ]);
+  });
+  testAsync('a rate-limited API falls back to the releases/latest redirect', async () => {
+    const realFetch = global.fetch;
+    global.fetch = async (url) => {
+      if (String(url).startsWith('https://api.github.com/')) return new Response('{"message":"rate limit"}', { status: 403 });
+      if (String(url).endsWith('/releases/latest')) {
+        return new Response(null, { status: 302, headers: { location: 'https://github.com/IncludeSpecial/GetBox/releases/tag/v9.9.9' } });
+      }
+      throw new Error(`unexpected ${url}`);
+    };
+    try {
+      const state = await su.selfUpdater.check(false);
+      assert.equal(state.status, 'available');
+      assert.equal(state.latest, '9.9.9');
+    } finally {
+      global.fetch = realFetch;
+    }
+  });
+}
+
+(async () => {
+  if (asyncTests.length) console.log('\nasync:');
+  for (const [name, fn] of asyncTests) {
+    try {
+      await fn();
+      passed++;
+      console.log(`  ✓ ${name}`);
+    } catch (err) {
+      failed++;
+      console.error(`  ✗ ${name}`);
+      console.error(`    ${err.message}`);
+    }
+  }
+  console.log(`\n${passed} passed, ${failed} failed\n`);
+  process.exit(failed > 0 ? 1 : 0);
+})();

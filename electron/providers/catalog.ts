@@ -573,7 +573,7 @@ function runInstaller(
       reject(new InstallError('untrusted', 'Недопустимые аргументы установщика', args));
       return;
     }
-    const child = spawn(`"${exe}"`, args ? [args] : [], { windowsHide: true, shell: true });
+    const child = spawn(args ? `"${exe}" ${args}` : `"${exe}"`, { windowsHide: true, shell: true });
     let settled = false;
 
     const timer = setTimeout(() => {
